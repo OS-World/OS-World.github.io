@@ -341,7 +341,7 @@
       <md-block>
         Below we show the data explorer, which allows you to explore the training data in more detail.
         You can click `Random Task` to load a random task.
-        Or select a `Domain`, `Website`, and type to search for a task.
+        Or select a `Domain`, `TaskID`, and type to search for a task.
       </md-block>
       <br>
       <div class="column is-full-wdith interpolation-panel">
@@ -409,11 +409,11 @@
                 <script>
                   function randomSelectTask() {
                     var randomTask = allTasks[Math.floor(Math.random() * allTasks.length)];
-                    var randomWebsite = randomTask.website;
-                    var randomDomain = domainForWebsite[randomWebsite];
+                    var randomTaskID = randomTask.id;
+                    var randomDomain = domainFortaskID[randomTaskID];
                     document.getElementById("domain").value = randomDomain;
-                    updateWebsites();
-                    document.getElementById("website").value = randomWebsite;
+                    updateTaskIDs();
+                    document.getElementById("taskID").value = randomTaskID;
                     updateTasks();
                     document.getElementById("search-task").value = randomTask.task.toLowerCase();
                     autoResize(document.getElementById("search-task"));
@@ -422,12 +422,24 @@
                   }
                 </script>
               </div>
-              <h5 class="title is-5">Domain & Website</h5>
+              <h5 class="title is-5">Domain & TaskID</h5>
               <div class="columns is-vcentered">
                 <div class="column is-half has-text-centered">
                   <div class="select">
-                    <select id="domain" onchange="updateWebsites()">
+                    <select id="domain" onchange="updateTaskIDs()">
                       <option value="">-- Domain --</option>
+                      <optgroup label="applications">
+                        <option value="applications.chrome">Chrome</option>
+                        <option value="applications.LibreOffice_calc">LibreOffice Calc</option>
+                        <option value="applications.libreoffice_writer">LibreOffice Writer</option>
+                        <option value="applications.libreoffice_impress">LibreOffice Impress</option>
+                        <option value="applications.os">OS</option>
+                        <option value="applications.thunderbird">Thunderbird</option>
+                        <option value="applications.gimp">Gimp</option>
+                        <option value="applications.vlc">VLC</option>
+                        <option value="applications.vscode">VSCode</option>
+                        <option value="applications.multi_apps">Multiple Apps</option>
+                      </optgroup>
                       <!--<optgroup label="Service">
                         <option value="Service.government">Government</option>
                         <option value="Service.health">Health</option>
@@ -436,13 +448,13 @@
                         <option value="Service.pet">Pet</option>
                         <option value="Service.shipping">Shipping</option>
                       </optgroup>-->
-                      <optgroup label="Entertainment">
+                      <!-- <optgroup label="Entertainment">
                         <option value="Entertainment.sports">Sports</option>
                         <option value="Entertainment.event">Event</option>
                         <option value="Entertainment.game">Game</option>
                         <option value="Entertainment.movie">Movie</option>
                         <option value="Entertainment.music">Music</option>
-                      </optgroup>
+                      </optgroup> -->
                       <!--<optgroup label="Info">
                         <option value="Info.cooking">Cooking</option>
                         <option value="Info.education">Education</option>
@@ -451,7 +463,7 @@
                         <option value="Info.job">Job</option>
                         <option value="Info.weather">Weather</option>
                       </optgroup>-->
-                      <optgroup label="Shopping">
+                      <!-- <optgroup label="Shopping">
                         <option value="Shopping.general">General</option>
                         <option value="Shopping.auto">Auto</option>
                         <option value="Shopping.department">Department</option>
@@ -467,37 +479,37 @@
                         <option value="Travel.hotel">Hotel</option>
                         <option value="Travel.restaurant">Restaurant</option>
                         <option value="Travel.other">Other</option>
-                      </optgroup>
+                      </optgroup> -->
                     </select>
                   </div>
                 </div>
                 <div class=" column is-half has-text-centered">
                   <div class="select" onchange="updateTasks()">
-                    <select id="website">
-                      <option value="">-- Website --</option>
+                    <select id="taskID">
+                      <option value="">-- TaskID --</option>
                     </select>
                   </div>
                 </div>
               </div>
               <script>
-                let websitePerDomain;
-                let domainForWebsite = {};
+                let taskIDPerDomain;
+                let domainFortaskID = {};
 
-                fetch("./static/data/website_domain.json")
+                fetch("./static/data/test_small.json")
                   .then(response => response.json())
                   .then(data => {
-                    websitePerDomain = data;
-                    for (const domain in websitePerDomain) {
-                      const websites = websitePerDomain[domain];
-                      for (const website of websites) {
-                        domainForWebsite[website] = domain;
+                    taskIDPerDomain = data;
+                    for (const domain in taskIDPerDomain) {
+                      const taskIDs = taskIDPerDomain[domain];
+                      for (const taskID of taskIDs) {
+                        domainFortaskID[taskID] = domain;
                       }
                     }
                   })
                   .catch(error => console.error(error));
 
                 let allTasks;
-                fetch("./static/data/training_annotations.json")
+                fetch("./static/data/test_small_annotations.json")
                   .then(response => response.json())
                   .then(data => {
                     allTasks = data;
@@ -506,39 +518,39 @@
 
                 let candidateTasks = allTasks;
 
-                function updateWebsites() {
+                function updateTaskIDs() {
                   const domainSelect = document.getElementById("domain");
-                  const websiteSelect = document.getElementById("website");
+                  const taskIDSelect = document.getElementById("taskID");
 
                   // Clear the website select options
-                  websiteSelect.innerHTML = "";
+                  taskIDSelect.innerHTML = "";
 
                   // Get the selected domain
                   const selectedDomain = domainSelect.value;
 
                   // Update the website select options based on the selected domain
-                  if (selectedDomain in websitePerDomain) {
-                    const websites = websitePerDomain[selectedDomain];
+                  if (selectedDomain in taskIDPerDomain) {
+                    const taskIDs = taskIDPerDomain[selectedDomain];
                     const option = document.createElement("option");
                     option.value = "None";
-                    option.text = "-- Website --";
-                    websiteSelect.appendChild(option);
-                    for (let i = 0; i < websites.length; i++) {
-                      const website = websites[i];
+                    option.text = "-- TaskID --";
+                    taskIDSelect.appendChild(option);
+                    for (let i = 0; i < taskIDs.length; i++) {
+                      const taskID = taskIDs[i];
                       const option = document.createElement("option");
-                      option.value = website;
-                      option.text = website;
-                      websiteSelect.appendChild(option);
+                      option.value = taskID;
+                      option.text = taskID;
+                      taskIDSelect.appendChild(option);
                     }
                   }
                 }
 
                 function updateTasks() {
-                  const websiteSelect = document.getElementById("website");
+                  const taskIDSelect = document.getElementById("taskID");
 
-                  // Get the selected website
-                  const selectedWebsite = websiteSelect.value;
-                  candidateTasks = allTasks.filter(task => task.website === selectedWebsite);
+                  // Get the selected taskID
+                  const selectedtaskID = taskIDSelect.value;
+                  candidateTasks = allTasks.filter(task => task.id === selectedtaskID);
                 }
               </script>
               <div class="columns">
@@ -594,7 +606,7 @@
                       var iframe = document.getElementById('traceViewer');
                       iframe.src = task.trace_url;
                       var recording_window = document.getElementById('recordingPanel');
-                      recording_window.querySelector('source').src = task.trace_url.replace("trace.zip", "mp4").replace("./trace/?trace=", "");
+                      recording_window.querySelector('source').src = task.video;
                       recording_window.querySelector('video').style.display = "block";
                       recording_window.querySelector('video').load();
                       recording_window.querySelector('video').play();
@@ -608,8 +620,8 @@
                       // Filter items based on search text
                       const searchText = searchBox.value.toLowerCase();
                       for (let i = 0; i < candidateTasks.length; i++) {
-                        if (candidateTasks[i].task.toLowerCase().includes(searchText)) {
-                          suggestions.push([i, candidateTasks[i].task]);
+                        if (candidateTasks[i].instruction.toLowerCase().includes(searchText)) {
+                          suggestions.push([i, candidateTasks[i].instruction]);
                         }
                       }
 
@@ -643,7 +655,7 @@
                         searchItems.mdContent = "";
                         searchDropdown.classList.remove("is-active");
                       }
-                      if (selectedTask != null && (taskOnDisplay == null || taskOnDisplay.trace_url != selectedTask.trace_url)) {
+                      if (selectedTask != null && (taskOnDisplay == null || taskOnDisplay.video != selectedTask.video)) {
                         displayTask(selectedTask);
                       }
                     });
