@@ -551,11 +551,15 @@
                   // Get the selected taskID
                   const selectedtaskID = taskIDSelect.value;
                   candidateTasks = allTasks.filter(task => task.domain === selectedtaskID);
+                  selectedTask = candidateTasks[0];
+                  if (selectedTask != null && (taskOnDisplay == null || taskOnDisplay.video != selectedTask.video)) {
+                    displayTask(selectedTask);
+                  }
                 }
               </script>
               <div class="columns">
                 <div class="column">
-                  <h5 class="title is-5">Task</h5>
+                  <h5 class="title is-5">instruction</h5>
                   <div class="dropdown" id="task-dropdown" style="display: inline">
                     <div class="dropdown-trigger">
                       <textarea class="textarea" rows="1" oninput="autoResize(this)" id="search-task"
@@ -604,7 +608,7 @@
                         taskInfo.appendChild(action_table);
                       }
                       var iframe = document.getElementById('traceViewer');
-                      iframe.src = task.trace_url;
+                      iframe.src = task.video;
                       var recording_window = document.getElementById('recordingPanel');
                       recording_window.querySelector('source').src = task.video;
                       recording_window.querySelector('video').style.display = "block";
