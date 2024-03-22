@@ -550,7 +550,7 @@
 
                   // Get the selected taskID
                   const selectedtaskID = taskIDSelect.value;
-                  candidateTasks = allTasks.filter(task => task.domain === selectedtaskID);
+                  candidateTasks = allTasks.filter(task => task.id === selectedtaskID);
                   selectedTask = candidateTasks[0];
                   if (selectedTask != null && (taskOnDisplay == null || taskOnDisplay.video != selectedTask.video)) {
                     displayTask(selectedTask);
