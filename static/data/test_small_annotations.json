@@ -31,14 +31,14 @@
         "id": "357ef137-7eeb-4c80-a3bb-0951f26a8aff",
         "domain": "libreoffice_calc",
         "instruction": "I have calculated the total work hours from the everday hours. And I have an hourly rate. Now I want to multiply the total hours with the hourly rate to get a total earned amount. However, I can't get a correct answer by directly multiply the two cells. Here the \"total hours\" is of time and \"hourly rate\" is just a number. How can I get the correct product of them?",
-        "video": "",
+        "video": "https://www.youtube.com/embed/3GMoOKlpVQ0",
         "actions": ""
     },
     {
         "id": "42e0a640-4f19-4b28-973d-729602b5a4a7",
         "domain": "libreoffice_calc",
         "instruction": "Compute the sum of \"Revenue\" and \"Total Expenses\" and put the results under two columns named \"Total Revenue\" and \"Total Expenses\" of a new sheet",
-        "video": "",
+        "video": "https://www.youtube.com/embed/3GMoOKlpVQ0",
         "actions": ""
     },
     {
