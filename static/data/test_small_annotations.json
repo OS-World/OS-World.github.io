@@ -17,14 +17,14 @@
         "id": "7a4deb26-d57d-4ea9-9a73-630f66a7b568",
         "domain": "gimp",
         "instruction": "Could you tone down the brightness of my photo?",
-        "video": "https://drive.google.com/file/d/1guHSfNkiqJT_jI26UNOtNtmQ0ozXAaA6/preview?autoplay=1",
+        "video": "https://drive.google.com/file/d/1guHSfNkiqJT_jI26UNOtNtmQ0ozXAaA6/preview",
         "actions": ""
     },
     {
         "id": "554785e9-4523-4e7a-b8e1-8016f565f56a",
         "domain": "gimp",
         "instruction": "Could you assist me in enhancing the color vibrancy of my photo?",
-        "video": "https://drive.google.com/file/d/1uhYkepn-m6dFgrEozGYrvi2iC47xWRQO/preview?autoplay=1",
+        "video": "https://drive.google.com/file/d/1uhYkepn-m6dFgrEozGYrvi2iC47xWRQO/preview",
         "actions": ""
     },
     {
