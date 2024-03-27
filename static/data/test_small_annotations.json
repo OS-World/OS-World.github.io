@@ -3,14 +3,14 @@
         "id": "bb5e4c0d-f964-439c-97b6-bdb9747de3f4",
         "domain": "chrome",
         "instruction": "Can you make Bing the main search thingy when I look stuff up on the internet?",
-        "video": "https://drive.usercontent.google.com/download?id=1YlOGh5hBNsyJlWEkp1Wq9KaVW0SSqBwK&export=download&authuser=0&confirm=t&uuid=afa8f017-1f27-4e0d-93f9-373a1364a2c2&at=APZUnTWg3MZsXQuf48AKSS0_SQdq:1710844730417",
+        "video": "https://drive.google.com/file/d/160HPByxLYOB5Ft8mvM1qEHlXNGoM1-G5/preview",
         "actions": ""
     },
     {
         "id": "7b6c7e24-c58a-49fc-a5bb-d57b80e5b4c3",
         "domain": "chrome",
         "instruction": "Can you help me clean up my computer by getting rid of all the tracking things that Amazon might have saved? I want to make sure my browsing is private and those sites don't remember me.",
-        "video": "https://drive.usercontent.google.com/download?id=107Ixl_Lwj1TAmyF6QsTEpvVVDwzU_E7r&export=download&authuser=0&confirm=t&uuid=6994c004-45f2-4b1b-82e5-19d04806e6a1&at=APZUnTWYvbEPBxTI-O-5z9FnVZJL:1710844702760",
+        "video": "https://drive.google.com/file/d/1sImkvNpduwd9h7bn2bFa5b0bfBnEhUm0/preview",
         "actions": ""
     },
     {
@@ -31,14 +31,14 @@
         "id": "357ef137-7eeb-4c80-a3bb-0951f26a8aff",
         "domain": "libreoffice_calc",
         "instruction": "I have calculated the total work hours from the everday hours. And I have an hourly rate. Now I want to multiply the total hours with the hourly rate to get a total earned amount. However, I can't get a correct answer by directly multiply the two cells. Here the \"total hours\" is of time and \"hourly rate\" is just a number. How can I get the correct product of them?",
-        "video": "https://www.youtube.com/embed/3GMoOKlpVQ0",
+        "video": "https://drive.google.com/file/d/1lM9HCkEozeXenaIMQWqaQXCxmok4FQcT/preview",
         "actions": ""
     },
     {
         "id": "42e0a640-4f19-4b28-973d-729602b5a4a7",
         "domain": "libreoffice_calc",
         "instruction": "Compute the sum of \"Revenue\" and \"Total Expenses\" and put the results under two columns named \"Total Revenue\" and \"Total Expenses\" of a new sheet",
-        "video": "https://www.youtube.com/embed/3GMoOKlpVQ0",
+        "video": "https://drive.google.com/file/d/1dx99JrgYMDIqVJo1MIo94lrwKtFQO96U/preview",
         "actions": ""
     },
     {
@@ -59,14 +59,14 @@
         "id": "0810415c-bde4-4443-9047-d5f70165a697",
         "domain": "libreoffice_writer",
         "instruction": "Make the line spacing of first two paragraph into double line spacing",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1B7WTbRZzuLJz85sjRxlNwdL2DdU5HbeS/preview",
         "actions": ""
     },
     {
         "id": "0a0faba3-5580-44df-965d-f562a99b291c",
         "domain": "libreoffice_writer",
         "instruction": "I would like to make the first three words of the sentence left-aligned and the rest right-aligned. I basically want to have some empty space in the middle to add some photos. Assume that every sentence will have at least three words. Could you help me on alignment for me using tabstops?",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1lluxOqdEi3v2vUlc88vMEbc_mq_jPC1E/preview",
         "actions": ""
     },
     {
@@ -420,13 +420,6 @@
         "actions": ""
     },
     {
-        "id": "bb7db4c2-30b5-4be7-8dd7-b8c4ec7d3108",
-        "domain": "multi_apps",
-        "instruction": "I have a background image named 'anmi.png'. I need the image to be enhanced for better sharpness, as 'anmi_sharper.png'. Next, please use it as the background image for my 'index.html' page.",
-        "video": "",
-        "actions": ""
-    },
-    {
         "id": "3c8f201a-009d-4bbe-8b65-a6f8b35bb57f",
         "domain": "multi_apps",
         "instruction": "Download the image from \"https://drive.google.com/uc?export=download&id=1i8j5dGS57sA07jEuPNAlQW-sn5uqUnuK\", and then use GIMP to compress it to under 600KB as \"compressed.jpeg\" on the Desktop. Resize if needed.",
@@ -556,6 +549,90 @@
         "id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb",
         "domain": "vs_code",
         "instruction": "Please help me use VS Code to open the \"project\" in the \"user\" folder under \"home\".",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "7efeb4b1-3d19-4762-b163-63328d66303b",
+        "domain": "Excel",
+        "instruction": "Fill the Sequence Numbers as \"No. #\" in the \"Seq No.\" column",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+        "domain": "Excel",
+        "instruction": "Reorder the columns to be \"Date\", \"First Name\", \"Last Name\", \"Order ID\", \"Sales\"",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "3aaa4e37-dc91-482e-99af-132a612d40f3",
+        "domain": "Excel",
+        "instruction": "Could you help me to export the current sheet to a csv file? Export the contents just as they are shown on the screen. Just keep the other options untouched. A default csv format is ok. The csv should share the file name with the original xlsx.",
+        "video": "https://drive.google.com/file/d/1eklG9cxrPyJx-4VNFjgK7_4pnvRwn7cY/preview",
+        "actions": ""
+    },
+    {
+        "id": "b21acd93-60fd-4127-8a43-2f5178f4a830",
+        "domain": "Word",
+        "instruction": "I have been practicing professional writing lately. Now I am writing essay which requires one paragraph each for introduction, body and conclusion with single-space for introduction, double-space for body then one-and-a-half-space for conclusion. Could you help me on this?",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "e528b65e-1107-4b8c-8988-490e4fece599",
+        "domain": "Word",
+        "instruction": "Capitalize the first letter of all words.",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "ecc2413d-8a48-416e-a3a2-d30106ca36cb",
+        "domain": "Word",
+        "instruction": "Hey, can you throw in a blank page right after this one?",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "3b27600c-3668-4abd-8f84-7bcdebbccbdb",
+        "domain": "PowerPoint",
+        "instruction": "Please make the background blue on all my slides. I was stuck by finding the entrance to do that for a while...",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+        "domain": "PowerPoint",
+        "instruction": "I want to turn the rectangular image of Columbus on the first page into a cover page. Could you help me stretch this image to fill the entire page, keeping its proportion and centering the image?",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "9ec204e4-f0a3-42f8-8458-b772a6797cab",
+        "domain": "PowerPoint",
+        "instruction": "Make a duplicate of the last two slides for me, please.",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "455d3c66-7dc6-4537-a39a-36d3e9119df7",
+        "domain": "PowerPoint",
+        "instruction": "Could you help me export the PowerPoint file to a .png image file and save it as res.png at the same position as the file? ",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "ce88f674-ab7a-43da-9201-468d38539e4a",
+        "domain": "PowerPoint",
+        "instruction": "Please set my slides upright instead of sideways.",
+        "video": "",
+        "actions": ""
+    },
+    {
+        "id": "09a37c51-e625-49f4-a514-20a773797a8a",
+        "domain": "multi_app",
+        "instruction": "I've received a request from my friend who asked for assistance in editing an image. The document with the requirements and the picture to be adjusted are on the Desktop. Please make the necessary modifications to the image as his instructions and save the edited picture as \"pic.jpg\" on the Desktop. Thank you!",
         "video": "",
         "actions": ""
     }

@@ -381,14 +381,13 @@
                 </script>
               </div>
               <figure class="media is-1by1" id="recordingPanel">
-                <video id="recording" autoplay controls style="display: none;">
-                  <source src="" type="video/mp4">
-                </video>
+                <iframe id="recordingViewer" src="" width="520" height="320" allow="autoplay" allowfullscreen></iframe>
                 <div class="column has-text-centered is-vcentered">Select a task to view the recording</div>
               </figure>
               <figure class="image is-1by1" id="tracePanel" style="display: none;">
-                <iframe class="has-ratio" id="traceViewer" src="./trace/" allow="autoplay" frameborder="0"
-                  allowfullscreen" onload="hideSidebar()"></iframe>
+                <iframe class="has-ratio" id="traceViewer"
+                  src="//player.bilibili.com/player.html?aid=586241270&bvid=BV13z4y1S7dB&cid=281386260&page=1"
+                  allow="autoplay" frameborder="0" allowfullscreen" onload="hideSidebar()"></iframe>
                 <script>
                   function hideSidebar() {
                     var iframe = document.getElementById('traceViewer');
@@ -426,26 +425,24 @@
                   <div class="select">
                     <select id="domain" onchange="updateTaskIDs()">
                       <option value="">-- Domain --</option>
-                      <!-- <optgroup label="applications"> -->
-                      <option value="chrome">Chrome</option>
-                      <option value="libreoffice_calc">LibreOffice Calc</option>
-                      <option value="libreoffice_writer">LibreOffice Writer</option>
-                      <option value="libreoffice_impress">LibreOffice Impress</option>
-                      <option value="os">OS</option>
-                      <option value="thunderbird">Thunderbird</option>
-                      <option value="gimp">Gimp</option>
-                      <option value="vlc">VLC</option>
-                      <option value="vs_code">VSCode</option>
-                      <option value="multi_apps">Multiple Apps</option>
-                      <!-- </optgroup> -->
-                      <!--<optgroup label="Service">
-                        <option value="Service.government">Government</option>
-                        <option value="Service.health">Health</option>
-                        <option value="Service.home service">Home Service</option>
-                        <option value="Service.moving">Moving</option>
-                        <option value="Service.pet">Pet</option>
-                        <option value="Service.shipping">Shipping</option>
-                      </optgroup>-->
+                      <optgroup label="Ubuntu">
+                        <option value="chrome">Chrome</option>
+                        <option value="libreoffice_calc">LibreOffice Calc</option>
+                        <option value="libreoffice_writer">LibreOffice Writer</option>
+                        <option value="libreoffice_impress">LibreOffice Impress</option>
+                        <option value="os">OS</option>
+                        <option value="thunderbird">Thunderbird</option>
+                        <option value="gimp">GIMP</option>
+                        <option value="vlc">VLC</option>
+                        <option value="vs_code">VSCode</option>
+                        <option value="multi_apps">Multiple Apps</option>
+                      </optgroup>
+                      <optgroup label="Windows">
+                        <option value="Excel">Excel</option>
+                        <option value="Word">Word</option>
+                        <option value="PowerPoint">PowerPoint</option>
+                        <option value="multi_app">Multiple Apps</option>
+                      </optgroup>
                       <!-- <optgroup label="Entertainment">
                         <option value="Entertainment.sports">Sports</option>
                         <option value="Entertainment.event">Event</option>
@@ -493,7 +490,7 @@
                 let taskIDPerDomain;
                 let domainFortaskID = {};
 
-                fetch("./static/data/test_small.json")
+                fetch("./static/data/test_small_recording.json")
                   .then(response => response.json())
                   .then(data => {
                     taskIDPerDomain = data;
@@ -607,13 +604,13 @@
                       }
                       var iframe = document.getElementById('traceViewer');
                       iframe.src = task.video;
-                      var recording_window = document.getElementById('recordingPanel');
-                      recording_window.querySelector('source').src = task.video;
-                      recording_window.querySelector('video').style.display = "block";
-                      recording_window.querySelector('video').load();
-                      recording_window.querySelector('video').play();
-                      recording_window.querySelector('video').playbackRate = 0.5;
-                      recording_window.querySelector('div').style.display = "none";
+                      var recording_window = document.getElementById('recordingViewer');
+                      recording_window.src = task.video;
+                      // recording_window.querySelector('video').style.display = "block";
+                      // recording_window.querySelector('video').load();
+                      // recording_window.querySelector('video').play();
+                      // recording_window.querySelector('video').playbackRate = 0.5;
+                      // recording_window.querySelector('div').style.display = "none";
                     }
 
                     function search_task() {
