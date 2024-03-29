@@ -7,6 +7,7 @@
   <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nerfies: Deformable Neural Radiance Fields</title>
+  <script type="module" src="https://md-block.verou.me/md-block.js"></script>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -351,7 +352,7 @@
               <div class="tabs">
                 <ul>
                   <li class="is-active"><a>Recording</a></li>
-                  <li><a>Raw Trace</a></li>
+                  <!-- <li><a>Raw Trace</a></li> -->
                 </ul>
                 <script>
                   var tabs = document.getElementsByClassName('tabs')[0];
@@ -362,13 +363,13 @@
                       var tab = e.target;
                       var tabName = tab.innerHTML;
                       var recordingPanel = document.getElementById('recordingPanel');
-                      var tracePanel = document.getElementById('tracePanel');
+                      // var tracePanel = document.getElementById('tracePanel');
+                      recordingPanel.style.setProperty("display", "block");
                       if (tabName == 'Recording') {
-                        recordingPanel.style.setProperty("display", "block");
-                        tracePanel.style.setProperty("display", "none");
+                        // tracePanel.style.setProperty("display", "none");
                       } else {
                         recordingPanel.style.setProperty("display", "none");
-                        tracePanel.style.setProperty("display", "block");
+                        // tracePanel.style.setProperty("display", "block");
                       }
                       tab.parentElement.classList.add('is-active');
                       for (var j = 0; j < tabLinks.length; j++) {
@@ -380,25 +381,11 @@
                   }
                 </script>
               </div>
-              <figure class="media is-1by1" id="recordingPanel">
-                <iframe id="recordingViewer" src="" width="520" height="320" allow="autoplay" allowfullscreen></iframe>
+              <figure class="media is-1by1" id="recordingPanel" style="display: block;">
                 <div class="column has-text-centered is-vcentered">Select a task to view the recording</div>
+                <iframe id="recordingViewer" src="" width="520" height="320" allow="autoplay" allowfullscreen></iframe>
               </figure>
-              <figure class="image is-1by1" id="tracePanel" style="display: none;">
-                <iframe class="has-ratio" id="traceViewer"
-                  src="//player.bilibili.com/player.html?aid=586241270&bvid=BV13z4y1S7dB&cid=281386260&page=1"
-                  allow="autoplay" frameborder="0" allowfullscreen" onload="hideSidebar()"></iframe>
-                <script>
-                  function hideSidebar() {
-                    var iframe = document.getElementById('traceViewer');
-                    var elements = iframe.contentWindow.document.getElementsByClassName('split-view-sidebar');
-                    elements[0].style.setProperty("flex-basis", "170px");
-                    elements[1].style.setProperty("flex-basis", "0px");
-                    var header = iframe.contentWindow.document.getElementsByClassName('header')[0];
-                    header.style.setProperty("display", "none");
-                  }
-                </script>
-              </figure>
+
             </div>
             <div class="column is-one-third">
               <div class="column has-text-centered" style="padding: 20px;">
@@ -443,38 +430,6 @@
                         <option value="PowerPoint">PowerPoint</option>
                         <option value="multi_app">Multiple Apps</option>
                       </optgroup>
-                      <!-- <optgroup label="Entertainment">
-                        <option value="Entertainment.sports">Sports</option>
-                        <option value="Entertainment.event">Event</option>
-                        <option value="Entertainment.game">Game</option>
-                        <option value="Entertainment.movie">Movie</option>
-                        <option value="Entertainment.music">Music</option>
-                      </optgroup> -->
-                      <!--<optgroup label="Info">
-                        <option value="Info.cooking">Cooking</option>
-                        <option value="Info.education">Education</option>
-                        <option value="Info.finance">Finance</option>
-                        <option value="Info.housing">Housing</option>
-                        <option value="Info.job">Job</option>
-                        <option value="Info.weather">Weather</option>
-                      </optgroup>-->
-                      <!-- <optgroup label="Shopping">
-                        <option value="Shopping.general">General</option>
-                        <option value="Shopping.auto">Auto</option>
-                        <option value="Shopping.department">Department</option>
-                        <option value="Shopping.digital">Digital</option>
-                        <option value="Shopping.fashion">Fashion</option>
-                        <option value="Shopping.speciality">Speciality</option>
-                      </optgroup>
-                      <optgroup label="Travel">
-                        <option value="Travel.general">General</option>
-                        <option value="Travel.airlines">Airlines</option>
-                        <option value="Travel.car rental">Car Rental</option>
-                        <option value="Travel.ground">Ground</option>
-                        <option value="Travel.hotel">Hotel</option>
-                        <option value="Travel.restaurant">Restaurant</option>
-                        <option value="Travel.other">Other</option>
-                      </optgroup> -->
                     </select>
                   </div>
                 </div>
@@ -555,7 +510,12 @@
               <div class="columns">
                 <div class="column">
                   <h5 class="title is-5">instruction</h5>
-                  <div class="dropdown" id="task-dropdown" style="display: inline">
+                  <div class="panel-body" style="height: 100px; overflow-y:scroll">
+                    <div style="border: 1px  #000000; height: 30%; width: 100%; margin: 0 auto;">
+                      <span id="instruction-text"></span>
+                    </div>
+                  </div>
+                  <!-- <div class="dropdown" id="task-dropdown" style="display: inline">
                     <div class="dropdown-trigger">
                       <textarea class="textarea" rows="1" oninput="autoResize(this)" id="search-task"
                         contenteditable="true"></textarea>
@@ -564,18 +524,15 @@
                       <div class="dropdown-content" id="task-items">
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   <script>
                     var taskOnDisplay = null;
                     function autoResize(textarea) {
                       // Reset the height of the textarea
                       textarea.style.height = "auto";
-
                       // Set the height of the textarea to fit its content
                       textarea.style.height = textarea.scrollHeight + "px";
                     }
-
-
                     const searchBox = document.getElementById("search-task");
                     const searchItems = document.getElementById("task-items");
                     const searchDropdown = document.getElementById("task-dropdown");
@@ -602,15 +559,10 @@
                         }
                         taskInfo.appendChild(action_table);
                       }
-                      var iframe = document.getElementById('traceViewer');
-                      iframe.src = task.video;
                       var recording_window = document.getElementById('recordingViewer');
                       recording_window.src = task.video;
-                      // recording_window.querySelector('video').style.display = "block";
-                      // recording_window.querySelector('video').load();
-                      // recording_window.querySelector('video').play();
-                      // recording_window.querySelector('video').playbackRate = 0.5;
-                      // recording_window.querySelector('div').style.display = "none";
+                      var instruction_text = document.getElementById('instruction-text');
+                      instruction_text.innerHTML = task.instruction;
                     }
 
                     function search_task() {
