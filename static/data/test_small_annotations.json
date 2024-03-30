@@ -150,42 +150,28 @@
         "id": "510f64c8-9bcc-4be1-8d30-638705850618",
         "domain": "multi_apps",
         "instruction": "Could you start VS Code in folder ~/Desktop/project from the terminal?",
-        "video": "",
-        "actions": ""
-    },
-    {
-        "id": "897e3b53-5d4d-444b-85cb-2cdc8a97d903",
-        "domain": "multi_apps",
-        "instruction": "I have a LibreOffice Writer file form.docx on the desktop. Help me convert it to PDF format and store the PDF in the forms/ folder in my Google Drive.",
-        "video": "",
+        "video": "https://drive.google.com/file/d/11XySt0SoF9n1Ytr-2aebrlUAm3V0CiPV/view?usp=drive_link",
         "actions": ""
     },
     {
         "id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
         "domain": "multi_apps",
         "instruction": "Please assist me in exporting my contacts of Personal Address Book from Thunderbird into contacts.csv file in the desktop and convert it to .xlsx with Libreoffice Calc.",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1Q-gx4G7MR41Fn5F1unnYR-oArZqYSvr2/view?usp=drive_link",
         "actions": ""
     },
     {
         "id": "e135df7c-7687-4ac0-a5f0-76b74438b53e",
         "domain": "multi_apps",
         "instruction": "Please convert a .xlsx file opened in LibreOffice Calc to a .html file and view it in Chrome.",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1_L84V7vbmjq9MIoZs2vbdLGvfs7UtrLj/view?usp=drive_link",
         "actions": ""
     },
     {
         "id": "f7dfbef3-7697-431c-883a-db8583a4e4f9",
         "domain": "multi_apps",
         "instruction": "Could you convert all `.doc` files in current directory to PDF all at once in the command line?",
-        "video": "",
-        "actions": ""
-    },
-    {
-        "id": "6d72aad6-187a-4392-a4c4-ed87269c51cf",
-        "domain": "multi_apps",
-        "instruction": "Could you please converting OpenOffice Impress presentation to video and play it with VLC?",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1kID01wcUI-9v-kcVGLfFu9BB841Wpc_z/view?usp=drive_link",
         "actions": ""
     },
     {
@@ -234,14 +220,7 @@
         "id": "d1acdb87-bb67-4f30-84aa-990e56a09c92",
         "domain": "multi_apps",
         "instruction": "Hello! I'm eagerly planning a culinary adventure to Hong Kong and have curated a list of must-visit restaurants that I've been longing to explore. However, I could use some assistance in compiling a few essential details about these establishments. Would you be so kind as to help me out? It would be fantastic if you could search for these restaurants on Google Maps. I'm particularly interested in obtaining their addresses, any available websites, and contact phone numbers. If you could gather this information and input it into my form file, I would be immensely grateful. Many thanks in advance!",
-        "video": "",
-        "actions": ""
-    },
-    {
-        "id": "deec51c9-3b1e-4b9e-993c-4776f20e8bb2",
-        "domain": "multi_apps",
-        "instruction": "Find a paper list of all the new foundation language models issued on 11st Oct. 2023 via arxiv daily, and organize it into the sheet I opened.",
-        "video": "",
+        "video": "https://drive.google.com/file/d/18Mq_2Ynk67pwajhuq6fQJVaQ2YoPE6yc/view?usp=drive_link",
         "actions": ""
     },
     {
