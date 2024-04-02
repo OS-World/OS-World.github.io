@@ -391,8 +391,7 @@
             <div class="column is-two-thirds is-vcentered">
               <div class="tabs">
                 <ul>
-                  <li class="is-active"><a>Recording</a></li>
-                  <!-- <li><a>Raw Trace</a></li> -->
+                  <li class="is-active" style="font-size: 1.2em;"><a>Recording</a></li>
                 </ul>
                 <script>
                   var tabs = document.getElementsByClassName('tabs')[0];
@@ -422,7 +421,8 @@
                 </script>
               </div>
               <figure class="media is-1by1" id="recordingPanel" style="display: block;">
-                <div class="column has-text-centered is-vcentered">Select a task to view the recording</div>
+                <div class="column has-text-centered is-vcentered" style="font-weight: 400; font-size: 1.3em">Select a
+                  task to view the recording</div>
                 <iframe id="recordingViewer" src="" width="520" height="320" allow="autoplay" allowfullscreen></iframe>
               </figure>
 
@@ -446,7 +446,6 @@
                   }
                 </script>
               </div>
-              <h5 class="title is-5">Domain & TaskID</h5>
               <div class="columns is-vcentered">
                 <div class="column is-half has-text-centered">
                   <div class="select">
@@ -551,20 +550,10 @@
                 <div class="column">
                   <h5 class="title is-5">instruction</h5>
                   <div class="panel-body" style="height: 100px; overflow-y:scroll">
-                    <div style="border: 1px  #000000; height: 30%; width: 100%; margin: 0 auto;">
-                      <span id="instruction-text"></span>
+                    <div style="height: 15%; width: 100%; margin: 0 auto;">
+                      <md-block id="instruction-text"></md-block>
                     </div>
                   </div>
-                  <!-- <div class="dropdown" id="task-dropdown" style="display: inline">
-                    <div class="dropdown-trigger">
-                      <textarea class="textarea" rows="1" oninput="autoResize(this)" id="search-task"
-                        contenteditable="true"></textarea>
-                    </div>
-                    <div class="dropdown-menu" role="menu">
-                      <div class="dropdown-content" id="task-items">
-                      </div>
-                    </div>
-                  </div> -->
                   <script>
                     var taskOnDisplay = null;
                     function autoResize(textarea) {
