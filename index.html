@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments">
+  <meta name="description"
+    content="OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments">
   <meta name="keywords" content="General-Purpose Agent, Human Computer Interaction">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments</title>
@@ -158,14 +159,14 @@
             <div class="column has-text-centered">
               <div class="publication-links">
                 <!-- PDF Link. -->
-<!--                <span class="link-block">-->
-<!--                  <a href="https://arxiv.org/pdf/2011.12948" class="external-link button is-normal is-rounded is-dark">-->
-<!--                    <span class="icon">-->
-<!--                      <i class="fas fa-file-pdf"></i>-->
-<!--                    </span>-->
-<!--                    <span>Paper</span>-->
-<!--                  </a>-->
-<!--                </span>-->
+                <!--                <span class="link-block">-->
+                <!--                  <a href="https://arxiv.org/pdf/2011.12948" class="external-link button is-normal is-rounded is-dark">-->
+                <!--                    <span class="icon">-->
+                <!--                      <i class="fas fa-file-pdf"></i>-->
+                <!--                    </span>-->
+                <!--                    <span>Paper</span>-->
+                <!--                  </a>-->
+                <!--                </span>-->
                 <span class="link-block">
                   <a href="https://arxiv.org/abs/2011.12948" class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
@@ -186,7 +187,8 @@
                 <!--                </span>-->
                 <!-- Code Link. -->
                 <span class="link-block">
-                  <a href="https://github.com/xlang-ai/OSWorld" class="external-link button is-normal is-rounded is-dark">
+                  <a href="https://github.com/xlang-ai/OSWorld"
+                    class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                       <i class="fab fa-github"></i>
                     </span>
@@ -387,7 +389,7 @@
                   .catch(error => console.error(error));
 
                 let allTasks;
-                fetch("./static/data/test_small_annotations.json")
+                fetch("./static/data/test_small_annotations_02.json")
                   .then(response => response.json())
                   .then(data => {
                     allTasks = data;
@@ -437,10 +439,17 @@
               </script>
               <div class="columns">
                 <div class="column">
-                  <h5 class="title is-5">instruction</h5>
+                  <h5 class="title is-5">Instruction</h5>
                   <div class="panel-body" style="height: 100px; overflow-y:scroll">
                     <div style="height: 15%; width: 100%; margin: 0 auto;">
                       <md-block id="instruction-text"></md-block>
+                    </div>
+                  </div>
+                  <h6 class="title is-6"></h6>
+                  <h5 class="title is-5">Actions</h5>
+                  <div class="panel-body" style="height: 140px; overflow-y:scroll">
+                    <div style="height: 30%; width: 100%; margin: 0 auto;">
+                      <md-block id="action-text"></md-block>
                     </div>
                   </div>
                   <script>
@@ -458,29 +467,12 @@
 
                     function displayTask(task) {
                       taskOnDisplay = task;
-                      taskInfo = document.getElementById("task-info")
-                      taskInfo.innerHTML = "";
-                      action_header = document.createElement("h5");
-                      action_header.classList.add("title");
-                      action_header.classList.add("is-5");
-                      action_header.innerHTML = "Actions";
-                      taskInfo.appendChild(action_header);
-                      {
-                        action_table = document.createElement("table");
-                        for (let i = 0; i < task.actions.length; i++) {
-                          action_type = '<span class="action_type">' + task.actions[i][0] + "</span>";
-                          node_type = '<span class="node_type">' + task.actions[i][1] + "</span>";
-                          node_repr = '<span class="node_repr">' + task.actions[i][2] + "</span>";
-                          action_table.innerHTML += "<tr><td>" + (i + 1) + ".</td><td>" + action_type +
-                            "</td ><td style='padding-left:0; padding-right:0;  vertical-align: top'>⮞</td><td>" +
-                            node_type + "<br>" + node_repr + "</td></tr > ";
-                        }
-                        taskInfo.appendChild(action_table);
-                      }
                       var recording_window = document.getElementById('recordingViewer');
                       recording_window.src = task.video;
                       var instruction_text = document.getElementById('instruction-text');
                       instruction_text.innerHTML = task.instruction;
+                      var action_text = document.getElementById('action-text');
+                      action_text.innerHTML = task.actions;
                     }
 
                     function search_task() {
@@ -546,18 +538,18 @@
   <section class="section">
     <!-- Concurrent Work. -->
     <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Related Links</h2>
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Related Links</h2>
 
-        <div class="content has-text-justified">
-          <p>
-            TBD
-          </p>
+          <div class="content has-text-justified">
+            <p>
+              TBD
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-    <!--/ Concurrent Work. -->
+      <!--/ Concurrent Work. -->
 
     </div>
   </section>
@@ -565,18 +557,20 @@
   <section class="section">
     <!-- Acknowledgement. -->
     <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Acknowledgement</h2>
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Acknowledgement</h2>
 
-        <div class="content has-text-justified">
-          <p>
-            We thank <a href="https://www.sidaw.xyz/">Sida Wang</a>, <a href="https://pengcheng.in/">Pengcheng Yin</a>, <a href="https://chenwu.io/">Chen Henry Wu</a>, and <a href="https://lilei-nlp.github.io/">Lei Li</a> for their helpful feedback on this work.
-          </p>
+          <div class="content has-text-justified">
+            <p>
+              We thank <a href="https://www.sidaw.xyz/">Sida Wang</a>, <a href="https://pengcheng.in/">Pengcheng
+                Yin</a>, <a href="https://chenwu.io/">Chen Henry Wu</a>, and <a href="https://lilei-nlp.github.io/">Lei
+                Li</a> for their helpful feedback on this work.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-    <!--/ Acknowledgement. -->
+      <!--/ Acknowledgement. -->
 
     </div>
   </section>
