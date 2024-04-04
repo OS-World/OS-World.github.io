@@ -227,7 +227,7 @@
         "id": "8e116af7-7db7-4e35-a68b-b0939c066c78",
         "domain": "multi-apps",
         "instruction": "Please update my bookkeeping sheet with the recent transactions from the provided folder, detailing my expenses over the past few days.",
-        "video": "https://drive.google.com/file/d/1FBREUOKeyTizX8XCswIqHTETVuInL6Yu/preview",
+        "video": "https://drive.google.com/file/d/1oPCqFUKURGnnY21DZY7WohjJ2-LUU1bC/preview",
         "actions": ""
     },
     {
@@ -276,14 +276,14 @@
         "id": "e2392362-125e-4f76-a2ee-524b183a3412",
         "domain": "multi-apps",
         "instruction": "I recently started using the famous personal academic homepage template from academicpages.github.io to build my own personal homepage, and I have cloned it to my local ~/Code/Website folder. According to an online tutorial, I can configure my name and contact information in the _config.yaml file. However, I am not familiar with the YAML file format. Please help me find the sections related to the name and contact information in this file and change them to \"Test Account\" and \"Test@gmail.com\".",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1JO0CkfcgKw-AjmTUmio4HAi8TmcsqwlB/preview",
         "actions": ""
     },
     {
         "id": "26660ad1-6ebb-4f59-8cba-a8432dfe8d38",
         "domain": "multi-apps",
         "instruction": "I want to test the quality of the network environment my laptop is currently in. Please measure my network situation through speedtest.net, export the measurement results, and save them to ~/Test/Speed (if the dir does not exist, create it).",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1hC3KWDG8oqN9AFql9Wql2qYNKisbZjJO/preview",
         "actions": ""
     },
     {
@@ -304,14 +304,14 @@
         "id": "716a6079-22da-47f1-ba73-c9d58f986a38",
         "domain": "multi-apps",
         "instruction": "I remember there is a file named \"secret.docx\" on this computer, but I can't remember where it is. Please find the path where this file is stored and copy it to the clipboard.",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1HqF8kkWFOEKEAkNaNzZUpZ8F0KlDVCgV/preview",
         "actions": ""
     },
     {
         "id": "a74b607e-6bb5-4ea8-8a7c-5d97c7bbcd2a",
         "domain": "multi-apps",
         "instruction": "I have developed a new Chrome extension myself, so it needs to be installed manually. Please help me install the extension located in the Desktop directory into the Chrome browser.",
-        "video": "",
+        "video": "https://drive.google.com/file/d/1CedPm07WPgRdNZ3_gdx-B1Clg8J667nV/preview",
         "actions": ""
     },
     {

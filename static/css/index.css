@@ -8,6 +8,10 @@ body {
   color: #000;
 }
 
+.duck_icon a {
+  background-color: transparent;
+}
+
 .link-block a {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -147,7 +151,9 @@ body {
   border-radius: 5px;
 }
 
-.interpolation-video-column {}
+.columns {
+  background-color: transparent;
+}
 
 .interpolation-panel .slider {
   margin: 0 !important;
