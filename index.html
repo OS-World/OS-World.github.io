@@ -280,9 +280,14 @@
       <!-- Environment Infrastructure. -->
       <h2 class="title is-3">Environment Infrastructure</h2>
       <div class="content has-text-justified">
-        <p>
-          TOBEFILL
-        </p>
+        <img src="static/images/env.png" width="100%" alt="environment infrastructure" class="responsive-image">
+        <md-block>The **OSWORLD** environment uses a configuration file for
+          initializing tasks *(highlighted in red)*, agent interaction, post-processing upon agent
+          completion *(highlighted in orange)*, retrieving files and information *(highlighted in yellow)*, and
+          executing the evaluation function *(highlighted in green)*. The corresponding configuration items are
+          highlighted in colors that match their respective components within the environment. Environments
+          can run in parallel on a single host machine for learning or evaluation purposes. Headless operation
+          is supported.</md-block>
       </div>
       <!--/ Environment Infrastructure. -->
     </div>
@@ -299,23 +304,20 @@
               <thead>
                 <tr>
                   <th style="border: 0">&nbsp;</th>
-                  <th style="vertical-align: middle" rowspan="2">OSWORLD</th>
+                  <th style="vertical-align: middle" rowspan="1">OSWORLD</th>
                 </tr>
-                <tr>
-                  <th>&nbsp;</th>
-                </tr>
+
               </thead>
               <tr>
                 <td style="font-weight: bold">Size</td>
                 <td style="text-align: center;">369</td>
               </tr>
               <tr>
-                <td style="font-weight: bold">Excecutable <br> Env.</td>
+                <td style="font-weight: bold">Excecutable Env.</td>
                 <td style="text-align: center;">Computer</td>
               </tr>
               <tr>
-                <td style="font-weight: bold">Environment <br>
-                  Scalability?</td>
+                <td style="font-weight: bold">Environment Scalability?</td>
                 <td style="text-align: center;">✔️</td>
               </tr>
               <tr>
@@ -352,237 +354,171 @@
                     style="margin: 0 auto; background-color: rgba(0,0,0,0); width:600px; text-align: center;">
                     <thead style="text-align: center;">
                       <tr>
-                        <th colspan="3">Web Task</th>
-                      </tr>
-                      <tr>
-                        <th style="width: 33%"><a href="https://miniwob.farama.org/" target="_blank">MiniWoB++</a>
+                        <th style="width: 33%"><a href="https://llmbench.ai/agent" target="_blank">AGENTBENCH</a>
                         </th>
-                        <th style="width: 33%"><a href="https://webshop-pnlp.github.io/" target="_blank">WebShop</a>
+                        <th style="width: 33%"><a href="https://intercode-benchmark.github.io/"
+                            target="_blank">INTERCODE</a>
                         </th>
-                        <th style="width: 33%"><a href="https://paperswithcode.com/dataset/russ-dataset"
-                            target="_blank">RUSS</a></th>
-                      </tr>
-                    </thead>
-                    <tr>
-                      <td>-</td>
-                      <td>1</td>
-                      <td>-</td>
-                    </tr>
-                    <tr>
-                      <td>100 websites/webpages</td>
-                      <td>1 website<br>8 webpages</td>
-                      <td>22 websites</td>
-                    </tr>
-                    <tr>
-                      <td>Simplified ATARI-like website</td>
-                      <td>Simplified shopping website</td>
-                      <td>Real world websites</td>
-                    </tr>
-                    <tr>
-                      <td>27.5</td>
-                      <td>38.0</td>
-                      <td>801.4</td>
-                    </tr>
-                    <tr>
-                      <td>100</td>
-                      <td>12,000 instantiation with different products</td>
-                      <td>80</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Game like task<br>
-                        Low level instruction
-                      </td>
-                      <td>
-                        Product searching<br>
-                        High level goal
-                      </td>
-                      <td>
-                        Help task<br>
-                        High + Low level
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        3.6
-                      </td>
-                      <td>
-                        11.3
-                      </td>
-                      <td>
-                        5.4
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-                <div class="column">
-                  <table class="table is-hoverable is-striped"
-                    style="margin: 0 auto; background-color: rgba(0,0,0,0); width:400px; text-align: center;">
-                    <thead style="text-align: center;">
-                      <tr>
-                        <th colspan="2">Web Extraction & QA</th>
-                      </tr>
-                      <tr>
-                        <th style="width: 50%"><a
-                            href="https://academictorrents.com/details/411576c7e80787e4b40452360f5f24acba9b5159"
-                            target="_blank">SWDE</a></th>
-                        <th style="width: 50%"><a href="https://x-lance.github.io/WebSRC/" target="_blank">WebSRC</a>
+                        <th style="width: 33%"><a href="https://huggingface.co/gaia-benchmark" target="_blank">GAIA</a>
                         </th>
-                      </tr>
-                    </thead>
-                    <tr>
-                      <td>8</td>
-                      <td>11</td>
-                    </tr>
-                    <tr>
-                      <td>80<br>websites/webpages</td>
-                      <td>70 websites</td>
-                    </tr>
-                    <tr>
-                      <td>Real world websites</td>
-                      <td>Snippets of real world websites</td>
-                    </tr>
-                    <tr>
-                      <td>898.0</td>
-                      <td>119.3</td>
-                    </tr>
-                    <tr>
-                      <td>32<br>attributes</td>
-                      <td>460<br>unique questions</td>
-                    </tr>
-                    <tr>
-                      <td>Information extraction<br>
-                        High level goal</td>
-                      <td>
-                        -<br>
-                        High level goal
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>1</td>
-                    </tr>
-                  </table>
-                </div>
-                <div class="column">
-                  <table class="table is-hoverable is-striped"
-                    style="margin: 0 auto; background-color: rgba(0,0,0,0); width:600px; text-align: center;">
-                    <thead style="text-align: center;">
-                      <tr>
-                        <th colspan="3">Mobile App Task</th>
-                      </tr>
-                      <tr>
+                        <th style="width: 33%"><a href="https://miniwob.farama.org/" target="_blank">MINIWOB++</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://webshop-pnlp.github.io/" target="_blank">WEBSHOP</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://osu-nlp-group.github.io/Mind2Web/"
+                            target="_blank">MIND2WEB</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://webarena.dev/" target="_blank">WEBARENA</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://jykoh.com/vwa" target="_blank">VWEBARENA</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://mcgill-nlp.github.io/weblinx/"
+                            target="_blank">WEBLINX</a>
+                        </th>
                         <th style="width: 33%"><a href="https://paperswithcode.com/dataset/pixelhelp"
-                            target="_blank">PixelHelp</a></th>
-                        <th style="width: 33%"><a href="https://x-lance.github.io/META-GUI-Leaderboard/"
-                            target="_blank">META-GUI</a></th>
-                        <th style="width: 33%"><a href="https://github.com/aburns4/MoTIF" target="_blank">MoTIF</a>
+                            target="_blank">PIXELHELP</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://huggingface.co/gaia-benchmark"
+                            target="_blank">METAGUI</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://huggingface.co/gaia-benchmark"
+                            target="_blank">WIKIHOW</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://huggingface.co/gaia-benchmark" target="_blank">AITW</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://huggingface.co/gaia-benchmark"
+                            target="_blank">ASSISTGUI</a>
+                        </th>
+                        <th style="width: 33%"><a href="https://huggingface.co/gaia-benchmark"
+                            target="_blank">OMNIACT</a>
                         </th>
                       </tr>
                     </thead>
                     <tr>
-                      <td>4</td>
-                      <td>6</td>
-                      <td>15</td>
-                    </tr>
-                    <tr>
-                      <td>4 Apps<br>&nbsp;</td>
-                      <td>11 Apps</td>
-                      <td>125 Apps</td>
-                    </tr>
-                    <tr>
-                      <td>Mobile Apps<br>&nbsp;</td>
-                      <td>Mobile Apps</td>
-                      <td>Mobile Apps</td>
-                    </tr>
-                    <tr>
-                      <td>-</td>
-                      <td>79.4</td>
-                      <td>188.4</td>
-                    </tr>
-                    <tr>
+
+                      <td>1091</td>
+                      <td>1350</td>
+                      <td>466</td>
+                      <td>104</td>
+                      <td>12k</td>
+                      <td>2350</td>
+                      <td>812</td>
+                      <td>910</td>
+                      <td>2337</td>
                       <td>187</td>
-                      <td>
-                        1,125 dialogues<br>
-                        4,648 turns
-                      </td>
-                      <td>
-                        4,707 demonstrations<br>
-                        756 unique tasks
-                      </td>
+                      <td>1125</td>
+                      <td>150</td>
+                      <td>30k</td>
+                      <td>100</td>
+                      <td>9802</td>
+
                     </tr>
                     <tr>
-                      <td>
-                        Help task<br>
-                        High + Low level
-                      </td>
-                      <td>
-                        Daily task<br>
-                        High level goal
-                      </td>
-                      <td>
-                        Daily task<br>
-                        High + Low level
-                      </td>
-                    </tr>
-                    <tr>
+                      <td>Heterogeneous</td>
+                      <td>Code</td>
                       <td>-</td>
-                      <td>4.3</td>
-                      <td>4.4</td>
+                      <td>Web</td>
+                      <td>Web</td>
+                      <td>-</td>
+                      <td>Web</td>
+                      <td>Web</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>Mobile</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
                     </tr>
-                  </table>
-                </div>
-                <div class="column">
-                  <table class="table is-hoverable is-striped"
-                    style="margin: 0 auto; background-color: rgba(0,0,0,0); width:400px; text-align: center;">
-                    <thead style="text-align: center;">
-                      <tr>
-                        <th colspan="2">Dialogue</th>
-                      </tr>
-                      <tr>
-                        <th style="width: 50%"><a
-                            href="https://github.com/google-research-datasets/dstc8-schema-guided-dialogue"
-                            target="_blank">SGD</a></th>
-                        <th style="width: 50%"><a href="https://github.com/budzianowski/multiwoz"
-                            target="_blank">MultiWOZ</a></th>
-                      </tr>
-                    </thead>
                     <tr>
-                      <td>20</td>
+                      <td>❌<br>&nbsp;</td>
+                      <td>❌</td>
+                      <td>-</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>-</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>❌</td>
+                      <td>-</td>
+                      <td>❌</td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>❌<br>&nbsp;</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                    </tr>
+                    <tr>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                    </tr>
+                    <tr>
+                      <td>❌<br>&nbsp;</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>✔️</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>✔️</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>❌</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                      <td>✔️</td>
+                    </tr>
+                    <tr>
                       <td>7</td>
-                    </tr>
-                    <tr>
-                      <td>45 services<br>&nbsp;</td>
-                      <td>-</td>
-                    </tr>
-                    <tr>
-                      <td>-<br>&nbsp;</td>
-                      <td>-</td>
-                    </tr>
-                    <tr>
-                      <td>-</td>
-                      <td>-</td>
-                    </tr>
-                    <tr>
-                      <td>86 Intents / 314 slots<br>16,142 dialogues</td>
-                      <td>13 Intents / 24 slots<br>8,438 dialogues</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Daily task<br>
-                        High level goal
-                      </td>
-                      <td>
-                        Daily task<br>
-                        High level goal
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>-</td>
-                      <td>-</td>
+                      <td>3</td>
+                      <td>0</td>
+                      <td>104</td>
+                      <td>1</td>
+                      <td>0</td>
+                      <td>5</td>
+                      <td>6</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>16</td>
+                      <td>0</td>
+                      <td>2</td>
+                      <td>0</td>
                     </tr>
                   </table>
                 </div>
+
+
               </div>
             </div>
           </div>
@@ -878,7 +814,7 @@
           <div class="col-md-12">
             <div class="infoCard">
               <div class="infoBody">
-                <div class="tabs">
+                <div class="tabs" style="height: 50%;">
                   <ul>
                     <li><a>A11y tree</a></li>
                     <li><a>Screenshot</a></li>
@@ -896,35 +832,33 @@
                         var BoardPanel2 = document.getElementById('BoardPanel2');
                         var BoardPanel3 = document.getElementById('BoardPanel3');
                         if (tabName == 'A11y tree') {
-                          BoardPanel1.style.setProperty("display", "block");
-                          BoardPanel2.style.setProperty("display", "none");
-                          BoardPanel3.style.setProperty("display", "none");
                         } else if (tabName == 'Screenshot') {
-                          BoardPanel1.style.setProperty("display", "none");
                           BoardPanel2.style.setProperty("display", "block");
+                          BoardPanel1.style.setProperty("display", "none");
                           BoardPanel3.style.setProperty("display", "none");
                         } else if (tabName == 'Screenshot + A11y tree') {
+                          BoardPanel3.style.setProperty("display", "block");
                           BoardPanel1.style.setProperty("display", "none");
                           BoardPanel2.style.setProperty("display", "none");
-                          BoardPanel3.style.setProperty("display", "block");
+
                         }
-                        tab.parentElement.classList.add('is-active');
+
                         for (var j = 0; j < tabLinks.length; j++) {
                           if (tabLinks[j] != tab) {
                             tabLinks[j].parentElement.classList.remove('is-active');
                           }
                         }
+                        tab.parentElement.classList.add('is-active');
                       });
                     }
                   </script>
                 </div>
-
-                <figure class="media is-1by1" id="BoardPanel1" style="display: none;">
-                  <div class="content has-text-justified">
-                    <md-block>
-                      Notice: t = temperature, top-p = top-p cutoff, len = max generation length
-                    </md-block>
-                  </div>
+                <figure class="media is-1by1" id="BoardPanel1" style="display: block;">
+                  <!-- <div class="content has-text-justified"> -->
+                  <md-block>
+                    Notice: t = temperature, top-p = top-p cutoff, len = max generation length
+                  </md-block>
+                  <!-- </div> -->
                   <table class="table performanceTable">
                     <tr>
                       <th>Rank</th>
@@ -975,11 +909,11 @@
                   </table>
                 </figure>
                 <figure class="media is-1by1" id="BoardPanel2" style="display: none;">
-                  <div class="content has-text-justified">
-                    <md-block>
-                      Notice: t = temperature, top-p = top-p cutoff, len = max generation length
-                    </md-block>
-                  </div>
+                  <!-- <div class="content has-text-justified"> -->
+                  <md-block>
+                    Notice: t = temperature, top-p = top-p cutoff, len = max generation length
+                  </md-block>
+                  <!-- </div> -->
 
                   <table class=" table performanceTable">
                     <tr>
@@ -1033,11 +967,11 @@
 
                 <figure class="media is-1by1" id="BoardPanel3" style="display: none;">
 
-                  <div class="content has-text-justified">
-                    <md-block>
-                      Notice: t = temperature, top-p = top-p cutoff, len = max generation length
-                    </md-block>
-                  </div>
+                  <!-- <div class="content has-text-justified"> -->
+                  <md-block>
+                    Notice: t = temperature, top-p = top-p cutoff, len = max generation length
+                  </md-block>
+                  <!-- </div> -->
 
                   <table class="table performanceTable">
                     <tr>

@@ -114,6 +114,11 @@ body {
 
 }
 
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+}
+
 .publication-video iframe {
   position: absolute;
   top: 0;
