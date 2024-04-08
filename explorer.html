@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Enhanced Data Explorer with Bulma</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        .is-halfheight {
+            height: 50vh;
+            overflow-y: scroll;
+        }
+
+        iframe {
+            max-width: 100%;
+        }
+
+        .duck_icon {
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        .category {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+        }
+
+        .category:hover {
+            background-color: #ccc;
+        }
+
+        .task-list {
+            padding-left: 20px;
+            display: none;
+            list-style-type: none;
+        }
+
+        .active,
+        .accordion:hover {
+            background-color: #ccc;
+        }
+
+        .accordion:after {
+            content: '\002B';
+            color: #777;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+
+        .active:after {
+            content: "\2212";
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="title is-3">Data Explorer</h2>
+            <div class="notification is-info">
+                <md-block>
+                    Below we show the data explorer, which allows you to explore the data in more detail.
+                </md-block>
+            </div>
+
+            <div class="columns">
+                <div class="column is-one-quarter" id="categoriesContainer">
+
+                </div>
+                <div class="column">
+                    <!-- Data Explorer UI Portions -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="content">
+
+                                <div class="box">
+                                    <h5>Recording</h5>
+
+                                    <div class="column has-text-centered is-vcentered"
+                                        style="font-weight: 300; font-size: 1.1em">Select a
+                                        task to view the recording.</div>
+                                    <iframe id="recordingViewer" src="" width="736" height="414" allow="autoplay"
+                                        allowfullscreen></iframe>
+                                    <h6 class="title is-6"></h6>
+                                    <div class="columns" style="font-weight: 100; font-size: 1.0em">*
+                                        Recordings are created with &thinsp; <a
+                                            href="https://github.com/TheDuckAI/DuckTrack">Ducktrack</a><img
+                                            class="duck_icon" src="static/images/duck_icon-removebg-preview.png"
+                                            width="30" height="30">.
+                                    </div>
+                                </div>
+
+                                <div class="box">
+                                    <h5>Instructions</h5>
+                                    <div style="height: 100px; width: 100%; overflow-y:scroll">
+                                        <div style="height: 5%; width: 100%; margin: 0 auto;;">
+                                            <md-block id="instruction-text"></md-block>
+                                        </div>
+                                    </div>
+                                    <h6 class="title is-6"></h6>
+                                    <h5>Actions</h5>
+                                    <div class="panel-body" style="height: 140px; width: 100%; overflow-y:scroll">
+                                        <div style="height: 30%; width: 100%; margin: 0 auto;">
+                                            <md-block id="action-text"></md-block>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            fetch('./static/data/test_small_recording.json')
+                .then(response => response.json())
+                .then(jsonData => {
+                    const container = document.getElementById('categoriesContainer');
+
+                    Object.keys(jsonData).forEach(category => {
+                        // Create category button
+                        const catButton = document.createElement('button');
+                        catButton.textContent = category;
+                        catButton.classList.add('category');
+                        container.appendChild(catButton);
+                        var i;
+
+                        for (i = 0; i < container.length; i++) {
+                            container[i].addEventListener("click", function () {
+                                this.classList.toggle("active");
+                                var panel = this.nextElementSibling;
+                                if (panel.style.maxHeight) {
+                                    panel.style.maxHeight = null;
+                                } else {
+                                    panel.style.maxHeight = panel.scrollHeight + "px";
+                                }
+                            });
+                        }
+
+                        // Create hidden list for task IDs
+                        const taskList = document.createElement('ul');
+                        taskList.classList.add('panel');
+                        jsonData[category].forEach(taskId => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = taskId;
+                            taskList.appendChild(listItem);
+                            listItem.addEventListener('click', () => {
+                                // Load the task data and update the UI
+                                fetch(`./static/data/test_small_annotations_2.json`)
+                                    .then(response => response.json())
+                                    .then(taskData => {
+                                        // Update the instruction and action text
+                                        for (i = 0; i < taskData.length; i++) {
+                                            if (taskData[i].id == taskId) {
+                                                taskData = taskData[i];
+                                                break;
+                                            }
+                                        }
+                                        document.getElementById('instruction-text').innerHTML = taskData.instruction;
+                                        document.getElementById('action-text').innerHTML = taskData.actions;
+
+                                        // Update the recording viewer
+                                        document.getElementById('recordingViewer').src = taskData.video;
+                                    });
+                            });
+                        });
+                        container.appendChild(taskList);
+
+                        // Add click event to toggle visibility of task list
+                        catButton.addEventListener('click', () => {
+                            taskList.style.display = taskList.style.display === 'block' ? 'none' : 'block';
+                        });
+                    });
+                })
+                .catch(error => console.error('Error loading the JSON file:', error));
+        });
+    </script>
+
+
+</body>
+
+</html>
