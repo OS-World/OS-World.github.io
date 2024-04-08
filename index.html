@@ -814,46 +814,35 @@
           <div class="col-md-12">
             <div class="infoCard">
               <div class="infoBody">
-                <div class="tabs" style="height: 50%;">
+                <div class="tabs is-centered example_lst">
                   <ul>
-                    <li><a>A11y tree</a></li>
-                    <li><a>Screenshot</a></li>
-                    <li><a>Screenshot + A11y tree</a></li>
+                    <li class="is-active"><a title="A11y tree">A11y tree</a></li>
+                    <li><a title="Screenshot">Screenshot</a></li>
+                    <li><a title="Screenshot + A11y tree">Screenshot + A11y tree</a></li>
                   </ul>
-                  <script>
-                    var tabs = document.getElementsByClassName('tabs')[1];
-                    var tabLinks = tabs.getElementsByTagName('a');
-                    for (var i = 0; i < tabLinks.length; i++) {
-                      tabLinks[i].addEventListener('click', function (e) {
-                        e.preventDefault();
-                        var tab = e.target;
-                        var tabName = tab.innerHTML;
-                        var BoardPanel1 = document.getElementById('BoardPanel1');
-                        var BoardPanel2 = document.getElementById('BoardPanel2');
-                        var BoardPanel3 = document.getElementById('BoardPanel3');
-                        if (tabName == 'A11y tree') {
-                        } else if (tabName == 'Screenshot') {
-                          BoardPanel2.style.setProperty("display", "block");
-                          BoardPanel1.style.setProperty("display", "none");
-                          BoardPanel3.style.setProperty("display", "none");
-                        } else if (tabName == 'Screenshot + A11y tree') {
-                          BoardPanel3.style.setProperty("display", "block");
-                          BoardPanel1.style.setProperty("display", "none");
-                          BoardPanel2.style.setProperty("display", "none");
 
-                        }
-
-                        for (var j = 0; j < tabLinks.length; j++) {
-                          if (tabLinks[j] != tab) {
-                            tabLinks[j].parentElement.classList.remove('is-active');
-                          }
-                        }
-                        tab.parentElement.classList.add('is-active');
-                      });
-                    }
-                  </script>
                 </div>
-                <figure class="media is-1by1" id="BoardPanel1" style="display: block;">
+                <script type="text/javascript">
+                  document.querySelectorAll(".example_lst li").forEach(e => {
+                    e.addEventListener("click", Click_1)
+                  })
+
+                  function Click_1(eve) {
+                    const iTxt = eve.srcElement.innerText
+                    for (let v of document.querySelectorAll(".example_lst a")) {
+                      if (iTxt === v.innerText) {
+                        v.parentElement.className = "is-active";
+                      } else {
+                        v.parentElement.className = "";
+                      }
+                    }
+                    for (let block of document.getElementsByClassName('lib_examples')) {
+                      block.style.display = (block.title === iTxt) ? 'block' : 'none';
+                    }
+                  }
+
+                </script>
+                <div title="A11y tree" class="lib_examples" id="BoardPanel1" style="display: block;">
                   <!-- <div class="content has-text-justified"> -->
                   <md-block>
                     Notice: t = temperature, top-p = top-p cutoff, len = max generation length
@@ -871,44 +860,82 @@
                       <td>
                         <p>1</p>
                         <span class="date label label-default">
-                          Jun 05, 2023
+                          Mar 20, 2024
                         </span>
                       </td>
                       <td style="word-break:break-word;">
-                        gpt-3.5-turbo + SelfEvolve
-                        <p class="institution">Shanghai Jiao Tong University</p>
-                        <a class="link" href="https://arxiv.org/abs/2306.02907">Shuyang et al., '23</a>
+                        GPT-4
+                        <p class="institution">OpenAI</p>
+                        <a class="link" href="https://arxiv.org/abs/2303.08774">OpenAI, '23</a>
                       </td>
                       <td style="word-break:break-word;">
-                        Insertion
-                        <p>t=0.2, top-p=0.95</p>
-                        <p>len = 1024</p>
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
                       </td>
-                      <td>57.1</td>
+                      <td>12.24</td>
                     </tr>
 
                     <tr>
                       <td>
                         <p>2</p>
                         <span class="date label label-default">
-                          Nov 08, 2022
+                          Mar 20, 2024
                         </span>
                       </td>
                       <td style="word-break:break-word;">
-                        codex-davinci-002
-                        <p class="institution">OpenAI</p>
-                        <a class="link" href="https://arxiv.org/abs/2107.03374">Chen et al., '21</a>
+                        Mixtral-8x7B
+                        <p class="institution">MistralAI</p>
+                        <a class="link" href="https://arxiv.org/abs/2401.04088">Jiang et al., '24</a>
                       </td>
                       <td style="word-break:break-word;">
-                        Insertion
-                        <p>t=0.2, top-p=0.95</p>
-                        <p>len = 1024</p>
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
                       </td>
-                      <td>43.3</td>
+                      <td>2.98</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>3</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        GPT-3.5
+                        <p class="institution">OpenAI</p>
+                        <a class="link" href="https://platform.openai.com/docs/models/gpt-3-5-turbo">OpenAI, '23</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
+                      </td>
+                      <td>2.69</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>4</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        Gemini-Pro
+                        <p class="institution"> Google</p>
+                        <a class="link" href="https://arxiv.org/abs/2312.11805"> Gemini Team,
+                          Google, '23</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 2048</p>
+                      </td>
+                      <td>2.37</td>
                     </tr>
                   </table>
-                </figure>
-                <figure class="media is-1by1" id="BoardPanel2" style="display: none;">
+                </div>
+
+                <div title="Screenshot" class="lib_examples" id="BoardPanel2" style="display: none;">
                   <!-- <div class="content has-text-justified"> -->
                   <md-block>
                     Notice: t = temperature, top-p = top-p cutoff, len = max generation length
@@ -922,50 +949,88 @@
                       <th>Details</th>
                       <th>Score</th>
                     </tr>
-
                     <tr>
                       <td>
                         <p>1</p>
                         <span class="date label label-default">
-                          Jun 05, 2023
+                          Mar 20, 2024
                         </span>
                       </td>
                       <td style="word-break:break-word;">
-                        gpt-3.5-turbo + SelfEvolve
-                        <p class="institution">Shanghai Jiao Tong University</p>
-                        <a class="link" href="https://arxiv.org/abs/2306.02907">Shuyang et al., '23</a>
+                        Gemini-Pro Vision
+                        <p class="institution"> Google</p>
+                        <a class="link" href="https://arxiv.org/abs/2312.11805"> Gemini Team,
+                          Google, '23</a>
                       </td>
                       <td style="word-break:break-word;">
-                        Insertion
-                        <p>t=0.2, top-p=0.95</p>
-                        <p>len = 1024</p>
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
                       </td>
-                      <td>57.1</td>
+                      <td>5.80</td>
                     </tr>
 
                     <tr>
                       <td>
                         <p>2</p>
                         <span class="date label label-default">
-                          Nov 08, 2022
+                          Mar 20, 2024
                         </span>
                       </td>
                       <td style="word-break:break-word;">
-                        codex-davinci-002
+                        GPT-4 Vision
                         <p class="institution">OpenAI</p>
-                        <a class="link" href="https://arxiv.org/abs/2107.03374">Chen et al., '21</a>
+                        <a class="link" href="https://openai.com/research/gpt-4v-system-card">OpenAI, '23</a>
                       </td>
                       <td style="word-break:break-word;">
-                        Insertion
-                        <p>t=0.2, top-p=0.95</p>
-                        <p>len = 1024</p>
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
                       </td>
-                      <td>43.3</td>
+                      <td>5.26</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>3</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        Claude-3-Opus
+                        <p class="institution">AnthropicAI</p>
+                        <a class="link"
+                          href="https://www-cdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/Model_Card_Claude_3.pdf">Anthropic,
+                          '24</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
+                      </td>
+                      <td>2.42</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>4</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        CogAgent
+                        <p class="institution"> Tsinghua University & Zhipu AI</p>
+                        <a class="link" href="https://arxiv.org/abs/2312.08914"> Hong et al., '23</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 2048</p>
+                      </td>
+                      <td>1.11</td>
                     </tr>
                   </table>
-                </figure>
+                </div>
 
-                <figure class="media is-1by1" id="BoardPanel3" style="display: none;">
+                <div title="Screenshot + A11y tree" class="lib_examples" id="BoardPanel3" style="display: none;">
 
                   <!-- <div class="content has-text-justified"> -->
                   <md-block>
@@ -985,43 +1050,82 @@
                       <td>
                         <p>1</p>
                         <span class="date label label-default">
-                          Jun 05, 2023
+                          Mar 20, 2024
                         </span>
                       </td>
                       <td style="word-break:break-word;">
-                        gpt-3.5-turbo + SelfEvolve
-                        <p class="institution">Shanghai Jiao Tong University</p>
-                        <a class="link" href="https://arxiv.org/abs/2306.02907">Shuyang et al., '23</a>
+                        GPT-4 Vision
+                        <p class="institution">OpenAI</p>
+                        <a class="link" href="https://openai.com/research/gpt-4v-system-card">OpenAI, '23</a>
                       </td>
                       <td style="word-break:break-word;">
-                        Insertion
-                        <p>t=0.2, top-p=0.95</p>
-                        <p>len = 1024</p>
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
                       </td>
-                      <td>57.1</td>
+                      <td>12.17</td>
                     </tr>
 
                     <tr>
                       <td>
                         <p>2</p>
                         <span class="date label label-default">
-                          Nov 08, 2022
+                          Mar 20, 2024
                         </span>
                       </td>
                       <td style="word-break:break-word;">
-                        codex-davinci-002
-                        <p class="institution">OpenAI</p>
-                        <a class="link" href="https://arxiv.org/abs/2107.03374">Chen et al., '21</a>
+                        Claude-3-Opus
+                        <p class="institution">AnthropicAI</p>
+                        <a class="link"
+                          href="https://www-cdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/Model_Card_Claude_3.pdf">Anthropic,
+                          '24</a>
                       </td>
                       <td style="word-break:break-word;">
-                        Insertion
-                        <p>t=0.2, top-p=0.95</p>
-                        <p>len = 1024</p>
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
                       </td>
-                      <td>43.3</td>
+                      <td>24.41</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>3</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        Gemini-Pro Vision
+                        <p class="institution"> Google</p>
+                        <a class="link" href="https://arxiv.org/abs/2312.11805"> Gemini Team,
+                          Google, '23</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 4096</p>
+                      </td>
+                      <td>3.48</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>4</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        CogAgent
+                        <p class="institution"> Tsinghua University & Zhipu AI</p>
+                        <a class="link" href="https://arxiv.org/abs/2312.08914"> Hong et al., '23</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 2048</p>
+                      </td>
+                      <td>1.32</td>
                     </tr>
                   </table>
-                </figure>
+                </div>
 
               </div>
             </div>
