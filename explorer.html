@@ -221,6 +221,14 @@
                                         document.getElementById('recordingViewer').src = taskData.video;
                                     });
                             });
+                            listItem.addEventListener("click", function () {
+                                var preClick = document.getElementsByClassName("task-list");
+                                for (i = 0; i < preClick.length; i++) {
+                                    preClick[i].classList.remove("task-active");
+                                }
+                                listItem.classList.toggle("task-active");
+                            });
+
                         });
                         container.appendChild(taskList);
 
@@ -237,18 +245,7 @@
                             }
                         });
                     }
-                    var task = document.getElementsByClassName("task-list");
-                    for (i = 0; i < task.length; i++) {
-                        task[i].addEventListener("click", function () {
-                            this.classList.toggle("task-active");
-                            var panel = this.nextElementSibling;
-                            if (panel.style.maxHeight) {
-                                panel.style.maxHeight = null;
-                            } else {
-                                panel.style.maxHeight = panel.scrollHeight + "px";
-                            }
-                        });
-                    }
+
                 })
                 .catch(error => console.error('Error loading the JSON file:', error));
         });
