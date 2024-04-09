@@ -59,7 +59,7 @@
     </div>
     <div class="navbar-menu">
       <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-        <a class="navbar-item" href="https://keunhong.com">
+        <a class="navbar-item" href="https://www.xlang.ai/">
           <span class="icon">
             <i class="fas fa-home"></i>
           </span>
@@ -562,6 +562,7 @@
                     <li class="is-active"><a title="A11y tree">A11y tree</a></li>
                     <li><a title="Screenshot">Screenshot</a></li>
                     <li><a title="Screenshot + A11y tree">Screenshot + A11y tree</a></li>
+                    <li><a title="Set-of-Mark">Set-of-Mark</a></li>
                   </ul>
 
                 </div>
@@ -588,7 +589,7 @@
                 <div title="A11y tree" class="lib_examples" id="BoardPanel1" style="display: block;">
                   <!-- <div class="content has-text-justified"> -->
                   <md-block>
-                    Notice: t = temperature, top-p = top-p cutoff, len = max generation length
+                    Notice: t = temperature, top-p = top-p cutoff, len = max context length
                   </md-block>
                   <!-- </div> -->
                   <table class="table performanceTable">
@@ -613,7 +614,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 128k</p>
                       </td>
                       <td>12.24</td>
                     </tr>
@@ -632,7 +633,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 32k</p>
                       </td>
                       <td>2.98</td>
                     </tr>
@@ -651,7 +652,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 16,385</p>
                       </td>
                       <td>2.69</td>
                     </tr>
@@ -671,7 +672,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 2048</p>
+                        <p>len = 32k</p>
                       </td>
                       <td>2.37</td>
                     </tr>
@@ -681,7 +682,7 @@
                 <div title="Screenshot" class="lib_examples" id="BoardPanel2" style="display: none;">
                   <!-- <div class="content has-text-justified"> -->
                   <md-block>
-                    Notice: t = temperature, top-p = top-p cutoff, len = max generation length
+                    Notice: t = temperature, top-p = top-p cutoff, len = max context length
                   </md-block>
                   <!-- </div> -->
 
@@ -707,7 +708,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 32k</p>
                       </td>
                       <td>5.80</td>
                     </tr>
@@ -726,7 +727,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 32k</p>
                       </td>
                       <td>5.26</td>
                     </tr>
@@ -747,7 +748,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 200k</p>
                       </td>
                       <td>2.42</td>
                     </tr>
@@ -766,7 +767,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 2048</p>
+                        <p>len = </p>
                       </td>
                       <td>1.11</td>
                     </tr>
@@ -777,7 +778,7 @@
 
                   <!-- <div class="content has-text-justified"> -->
                   <md-block>
-                    Notice: t = temperature, top-p = top-p cutoff, len = max generation length
+                    Notice: t = temperature, top-p = top-p cutoff, len = max context length
                   </md-block>
                   <!-- </div> -->
 
@@ -803,7 +804,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 32k</p>
                       </td>
                       <td>12.17</td>
                     </tr>
@@ -824,7 +825,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 200k</p>
                       </td>
                       <td>4.41</td>
                     </tr>
@@ -844,7 +845,7 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 4096</p>
+                        <p>len = 32k</p>
                       </td>
                       <td>3.48</td>
                     </tr>
@@ -863,9 +864,106 @@
                       </td>
                       <td style="word-break:break-word;">
                         <p>t=1.0, top-p=0.9</p>
-                        <p>len = 2048</p>
+                        <p>len = </p>
                       </td>
                       <td>1.32</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <div title="Set-of-Mark" class="lib_examples" id="BoardPanel4" style="display: none;">
+
+                  <!-- <div class="content has-text-justified"> -->
+                  <md-block>
+                    Notice: t = temperature, top-p = top-p cutoff, len = max context length
+                  </md-block>
+                  <!-- </div> -->
+
+                  <table class="table performanceTable">
+                    <tr>
+                      <th>Rank</th>
+                      <th>Model</th>
+                      <th>Details</th>
+                      <th>Score</th>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>1</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        GPT-4 Vision
+                        <p class="institution">OpenAI</p>
+                        <a class="link" href="https://openai.com/research/gpt-4v-system-card">OpenAI, '23</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 32k</p>
+                      </td>
+                      <td>11.77</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>2</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        Claude-3-Opus
+                        <p class="institution">AnthropicAI</p>
+                        <a class="link"
+                          href="https://www-cdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/Model_Card_Claude_3.pdf">Anthropic,
+                          '24</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 200k</p>
+                      </td>
+                      <td>6.72</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>3</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        Gemini-Pro Vision
+                        <p class="institution"> Google</p>
+                        <a class="link" href="https://arxiv.org/abs/2312.11805"> Gemini Team,
+                          Google, '23</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = 32k</p>
+                      </td>
+                      <td>1.06</td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <p>4</p>
+                        <span class="date label label-default">
+                          Mar 20, 2024
+                        </span>
+                      </td>
+                      <td style="word-break:break-word;">
+                        CogAgent
+                        <p class="institution"> Tsinghua University & Zhipu AI</p>
+                        <a class="link" href="https://arxiv.org/abs/2312.08914"> Hong et al., '23</a>
+                      </td>
+                      <td style="word-break:break-word;">
+                        <p>t=1.0, top-p=0.9</p>
+                        <p>len = </p>
+                      </td>
+                      <td>0.99</td>
                     </tr>
                   </table>
                 </div>
