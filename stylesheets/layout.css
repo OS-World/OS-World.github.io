@@ -478,7 +478,8 @@ hr {
 }
 
 .qa-item h3 {
-  font-size: 1.2rem; /* 调整问题和答案标题的大小 */
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .qa-item p, .qa-item table {
@@ -491,7 +492,7 @@ table {
 }
 
 table, th, td {
-  border: 1px solid #ddd; /* 表格边框 */
+  border: 1px solid #ddd;
 }
 
 th, td {
@@ -500,9 +501,9 @@ th, td {
 }
 
 th {
-  background-color: #f2f2f2; /* 表头背景色 */
+  background-color: #f2f2f2;
 }
 
 tr:nth-child(even) {
-  background-color: #f9f9ff; /* 交替行背景色 */
+  background-color: #f9f9ff;
 }
