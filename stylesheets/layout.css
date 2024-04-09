@@ -467,3 +467,43 @@ hr {
     padding: 0px 0px;
   }
 }
+
+.section {
+  padding: 2rem 0;
+}
+
+
+.qa-item {
+  margin-top: 2rem;
+}
+
+.qa-item h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.qa-item p, .qa-item table {
+  margin-top: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid #ddd;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9ff;
+}
