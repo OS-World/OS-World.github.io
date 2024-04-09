@@ -24,7 +24,7 @@
             background-color: #eee;
             color: #444;
             cursor: pointer;
-            padding: 18px;
+            padding: 10px;
             width: 100%;
             border: none;
             text-align: left;
@@ -38,7 +38,7 @@
         }
 
         .task-list {
-            padding-left: 20px;
+            padding-left: 10px;
             display: none;
             list-style-type: none;
         }
@@ -59,6 +59,20 @@
         .active:after {
             content: "\2212";
         }
+
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+
+        .categorycontainer {
+
+            max-height: 150vh;
+            overflow-y: scroll;
+        }
     </style>
     </style>
 </head>
@@ -76,7 +90,7 @@
             </div>
 
             <div class="columns">
-                <div class="column is-one-quarter" id="categoriesContainer">
+                <div class="column is-one-quarter categorycontainer" id="categoriesContainer">
 
                 </div>
                 <div class="column">
@@ -91,7 +105,7 @@
                                     <div class="column has-text-centered is-vcentered"
                                         style="font-weight: 300; font-size: 1.1em">Select a
                                         task to view the recording.</div>
-                                    <iframe id="recordingViewer" src="" width="736" height="414" allow="autoplay"
+                                    <iframe id="recordingViewer" src="" width="744" height="420" allow="autoplay"
                                         allowfullscreen></iframe>
                                     <h6 class="title is-6"></h6>
                                     <div class="columns" style="font-weight: 100; font-size: 1.0em">*
@@ -104,10 +118,10 @@
 
                                 <div class="box">
                                     <h5>Instructions</h5>
-                                    <div style="height: 100px; width: 100%; overflow-y:scroll">
-                                        <div style="height: 5%; width: 100%; margin: 0 auto;;">
-                                            <md-block id="instruction-text"></md-block>
-                                        </div>
+                                    <div style="width: 100%; height: auto;">
+
+                                        <md-block id="instruction-text"></md-block>
+
                                     </div>
                                     <h6 class="title is-6"></h6>
                                     <h5>Actions</h5>
@@ -141,17 +155,6 @@
                         container.appendChild(catButton);
                         var i;
 
-                        for (i = 0; i < container.length; i++) {
-                            container[i].addEventListener("click", function () {
-                                this.classList.toggle("active");
-                                var panel = this.nextElementSibling;
-                                if (panel.style.maxHeight) {
-                                    panel.style.maxHeight = null;
-                                } else {
-                                    panel.style.maxHeight = panel.scrollHeight + "px";
-                                }
-                            });
-                        }
 
                         // Create hidden list for task IDs
                         const taskList = document.createElement('ul');
@@ -182,11 +185,19 @@
                         });
                         container.appendChild(taskList);
 
-                        // Add click event to toggle visibility of task list
-                        catButton.addEventListener('click', () => {
-                            taskList.style.display = taskList.style.display === 'block' ? 'none' : 'block';
-                        });
                     });
+                    var acc = document.getElementsByClassName("category");
+                    for (i = 0; i < acc.length; i++) {
+                        acc[i].addEventListener("click", function () {
+                            this.classList.toggle("active");
+                            var panel = this.nextElementSibling;
+                            if (panel.style.maxHeight) {
+                                panel.style.maxHeight = null;
+                            } else {
+                                panel.style.maxHeight = panel.scrollHeight + "px";
+                            }
+                        });
+                    }
                 })
                 .catch(error => console.error('Error loading the JSON file:', error));
         });
