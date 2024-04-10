@@ -29,98 +29,98 @@
     },
     {
         "id": "357ef137-7eeb-4c80-a3bb-0951f26a8aff",
-        "domain": "libreoffice_calc",
+        "domain": "LibreOffice Calc",
         "instruction": "I have calculated the total work hours from the everyday hours. And I have an hourly rate. Now I want to multiply the total hours with the hourly rate to get a total earned amount. However, I can't get a correct answer by directly multiply the two cells. Here the \"total hours\" is of time and \"hourly rate\" is just a number. How can I get the correct product of them?",
         "video": "https://drive.google.com/file/d/1lM9HCkEozeXenaIMQWqaQXCxmok4FQcT/preview",
         "actions": ""
     },
     {
         "id": "42e0a640-4f19-4b28-973d-729602b5a4a7",
-        "domain": "libreoffice_calc",
+        "domain": "LibreOffice Calc",
         "instruction": "Compute the sum of \"Revenue\" and \"Total Expenses\" and put the results under two columns named \"Total Revenue\" and \"Total Expenses\" of a new sheet",
         "video": "https://drive.google.com/file/d/1dx99JrgYMDIqVJo1MIo94lrwKtFQO96U/preview",
         "actions": ""
     },
     {
         "id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "I want to turn the rectangular image of Columbus on the first page into a cover page. Could you help me stretch this image to fill the entire page, keeping its proportion and centering the image?",
         "video": "https://drive.google.com/file/d/1I2fL6ibTKg4-JMTWKROZ8ymeeuCe0TQN/preview",
         "actions": ""
     },
     {
         "id": "550ce7e7-747b-495f-b122-acdc4d0b8e54",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "I am checking our soccer club's to-do list for the last semester and adding strike-through sign on the line we have already accomplished. Could you help me add a strike-through on the first and second line?",
         "video": "https://drive.google.com/file/d/1k_Bnzz4bXPoijF1EvypuJZgr9fbXIU-n/preview",
         "actions": ""
     },
     {
         "id": "9ec204e4-f0a3-42f8-8458-b772a6797cab",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "Make a duplicate of the last two slides for me, please.",
         "video": "https://drive.google.com/file/d/13ZQ26_crqwi6YfGRTRKVWrG3EGWMQsfz/preview",
         "actions": ""
     },
     {
         "id": "358aa0a7-6677-453f-ae35-e440f004c31e",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "Do you have any suggestions on how to modify the font for all text boxes in an Impress presentation? I want to standardize the font to 'Liberation Sans Narrow', but I don't want to manually select each individual text box.",
         "video": "https://drive.google.com/file/d/1Nr55TRMeuj1Ttwlo7aIxJSyejBiDVMLz/preview",
         "actions": ""
     },
     {
         "id": "986fc832-6af2-417c-8845-9272b3a1528b",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "underline the content and make the font color on this slide (including the table) dark red 2.",
         "video": "https://drive.google.com/file/d/139rUdv8FmsHlA4_q7g-f5fv_d96Mhs4j/preview",
         "actions": ""
     },
     {
         "id": "21760ecb-8f62-40d2-8d85-0cee5725cb72",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "Could you help me add slide transition \"dissolve\" to my first page?",
         "video": "https://drive.google.com/file/d/1vvNa_1Ta2rRwJJsSl42SEaP9T0SPdD6j/preview",
         "actions": ""
     },
     {
         "id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "I am making PPT on LibreOffice Impress for presentation tomorrow. I need to summarize contents on one slide use Impress \"Summary Slide\" feature. Could you make that for me?",
         "video": "https://drive.google.com/file/d/123Q2iLwsGFniUwXqCCYDXqdEgCEXltHe/preview",
         "actions": ""
     },
     {
         "id": "bf4e9888-f10f-47af-8dba-76413038b73c",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "I have a series of .png images, saved as pic1.png, pic2.png,..., pic6.png on the Desktop. Now I want to insert these pictures into the current blank presentation to create a document suitable to run continuously in a kiosk or multimedia show. Could you help me?",
         "video": "https://drive.google.com/file/d/1JvZGa4fLoA0mTe6aOZoWpNg-cUK1IyZj/preview",
         "actions": ""
     },
     {
         "id": "ce88f674-ab7a-43da-9201-468d38539e4a",
-        "domain": "libreoffice_impress",
+        "domain": "LibreOffice  Impress",
         "instruction": "Please set my slides upright instead of sideways.",
         "video": "https://drive.google.com/file/d/1V2Kmxxw2W-bU0nBIborrvke_Ojt0q5S8/preview",
         "actions": ""
     },
     {
         "id": "0810415c-bde4-4443-9047-d5f70165a697",
-        "domain": "libreoffice_writer",
+        "domain": "LibreOffice Writer",
         "instruction": "Make the line spacing of first two paragraph into double line spacing",
         "video": "https://drive.google.com/file/d/1B7WTbRZzuLJz85sjRxlNwdL2DdU5HbeS/preview",
         "actions": ""
     },
     {
         "id": "0a0faba3-5580-44df-965d-f562a99b291c",
-        "domain": "libreoffice_writer",
+        "domain": "LibreOffice Writer",
         "instruction": "I would like to make the first three words of the sentence left-aligned and the rest right-aligned. I basically want to have some empty space in the middle to add some photos. Assume that every sentence will have at least three words. Could you help me on alignment for me using tabstops?",
         "video": "https://drive.google.com/file/d/1lluxOqdEi3v2vUlc88vMEbc_mq_jPC1E/preview",
         "actions": ""
     },
     {
         "id": "6a33f9b9-0a56-4844-9c3f-96ec3ffb3ba2",
-        "domain": "libreoffice_writer",
+        "domain": "LibreOffice Writer",
         "instruction": "I have been editing my document and some words that needed to be rewritten are highlighted in yellow. As I fixed those words, please help me remove all highlight. I want to make sure that there is no highlight word.",
         "video": "https://drive.google.com/file/d/1Z-LPZpT5dSfYC4Ti6b7O7d32xhuibivG/preview",
         "actions": ""
@@ -603,77 +603,77 @@
     },
     {
         "id": "7efeb4b1-3d19-4762-b163-63328d66303b",
-        "domain": "Windows/excel",
+        "domain": "Excel",
         "instruction": "Fill the Sequence Numbers as \"No. #\" in the \"Seq No.\" column",
         "video": "https://drive.google.com/file/d/1AA6aWKhtkVde2H6cIF69tcPVl5vs9TSQ/preview",
         "actions": ""
     },
     {
         "id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
-        "domain": "Windows/excel",
+        "domain": "Excel",
         "instruction": "Reorder the columns to be \"Date\", \"First Name\", \"Last Name\", \"Order ID\", \"Sales\"",
         "video": "https://drive.google.com/file/d/1dKuJXQz3_u0bNbsqBglrpnJF9NEy_3yy/preview",
         "actions": ""
     },
     {
         "id": "3aaa4e37-dc91-482e-99af-132a612d40f3",
-        "domain": "Windows/excel",
+        "domain": "Excel",
         "instruction": "Could you help me to export the current sheet to a csv file? Export the contents just as they are shown on the screen. Just keep the other options untouched. A default csv format is ok. The csv should share the file name with the original xlsx.",
         "video": "https://drive.google.com/file/d/1eklG9cxrPyJx-4VNFjgK7_4pnvRwn7cY/preview",
         "actions": ""
     },
     {
         "id": "b21acd93-60fd-4127-8a43-2f5178f4a830",
-        "domain": "Windows/word",
+        "domain": "Word",
         "instruction": "I have been practicing professional writing lately. Now I am writing essay which requires one paragraph each for introduction, body and conclusion with single-space for introduction, double-space for body then one-and-a-half-space for conclusion. Could you help me on this?",
         "video": "https://drive.google.com/file/d/1o9z2mmWaTsN1TA2OL4X6OoWOy_SxGPCj/preview",
         "actions": ""
     },
     {
         "id": "e528b65e-1107-4b8c-8988-490e4fece599",
-        "domain": "Windows/word",
+        "domain": "Word",
         "instruction": "Capitalize the first letter of all words.",
         "video": "https://drive.google.com/file/d/1BoFjrdulHGkGxTvtkV2TTiM3x133E5MQ/preview",
         "actions": ""
     },
     {
         "id": "ecc2413d-8a48-416e-a3a2-d30106ca36cb",
-        "domain": "Windows/word",
+        "domain": "Word",
         "instruction": "Hey, can you throw in a blank page right after this one?",
         "video": "https://drive.google.com/file/d/19QqJFDDefBVZN_mh-OLbOxblZHr1KMS9/preview",
         "actions": ""
     },
     {
         "id": "3b27600c-3668-4abd-8f84-7bcdebbccbdb",
-        "domain": "Windows/ppt",
+        "domain": "PowerPoint",
         "instruction": "Please make the background blue on all my slides. I was stuck by finding the entrance to do that for a while...",
         "video": "https://drive.google.com/file/d/1XhIvTdoLm11uNG6JndJ__dsLLsMia1SH/preview",
         "actions": ""
     },
     {
         "id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
-        "domain": "Windows/ppt",
+        "domain": "PowerPoint",
         "instruction": "I want to turn the rectangular image of Columbus on the first page into a cover page. Could you help me stretch this image to fill the entire page, keeping its proportion and centering the image?",
         "video": "https://drive.google.com/file/d/1r9IKUIf2Y57zi7sfbT_6QOejvkYxSqpA/preview",
         "actions": ""
     },
     {
         "id": "9ec204e4-f0a3-42f8-8458-b772a6797cab",
-        "domain": "Windows/ppt",
+        "domain": "PowerPoint",
         "instruction": "Make a duplicate of the last two slides for me, please.",
         "video": "https://drive.google.com/file/d/1B83dwLjjsLx042HuGLvtPwMRmUQJIAtD/preview",
         "actions": ""
     },
     {
         "id": "455d3c66-7dc6-4537-a39a-36d3e9119df7",
-        "domain": "Windows/ppt",
+        "domain": "PowerPoint",
         "instruction": "Could you help me export the PowerPoint file to a .png image file and save it as res.png at the same position as the file? ",
         "video": "https://drive.google.com/file/d/1Z5FGvN5gdMATrgn4HNwfOhLCAL9S9r0U/preview",
         "actions": ""
     },
     {
         "id": "ce88f674-ab7a-43da-9201-468d38539e4a",
-        "domain": "Windows/ppt",
+        "domain": "PowerPoint",
         "instruction": "Please set my slides upright instead of sideways.",
         "video": "https://drive.google.com/file/d/1zF2InRhUEM1ihLbRnneTScDICyAyoDNM/preview",
         "actions": ""
