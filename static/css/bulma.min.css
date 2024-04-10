@@ -3412,7 +3412,8 @@ a.tag:hover {
     color: #363636;
     font-size: 2rem;
     font-weight: 600;
-    line-height: 1.125
+    line-height: 1.125;
+    text-align: center
 }
 
 .title strong {
