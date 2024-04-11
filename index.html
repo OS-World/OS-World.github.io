@@ -344,8 +344,9 @@
       <!-- Data Statistics. -->
       <h2 class="title is-3">Data Statistics and Comparison</h2>
       <md-block>
-        Below we present an overview of the main statistics of **OSWorld**, and a comparison against other
-        existing benchmarks.</md-block>
+        Below we present an overview of the main statistics of **OSWorld**, showcasing the outline and a broad spectrum
+        of tasks. **OSWorld** contains a total of 369 tasks (and an additional 43 tasks on Windows for
+        analysis).</md-block>
       <div class="columns is-centered">
         <div class="column" style="margin-right: -5rem;">
           <div class="content has-text-centered">
@@ -375,6 +376,14 @@
           </div>
         </div>
       </div>
+      <md-block>We make a comparison of **OSWorld** against some other different benchmarks for digital agents as
+        presented below. <br>
+        **The columns
+        indicate:** whether they provide a controllable executable environment *(Control. Exec. Env.)*, the
+        ease of adding new tasks involving arbitrary applications in open domains *(Environment Scalability)*,
+        support for multimodal agent evaluation *(Multimodal Support)*, support for and inclusion of cross-app
+        tasks *(Cross-App)*, capability to start tasks from an intermediate initial state *(Intermediate Init. State)*,
+        and the number of execution-based evaluation functions *(# Exec.-based Eval. Func.)*.</md-block><br>
       <div class="column is-full-width interpolation-panel">
         <div class="columns">
           <div class="column is-one-third">
@@ -625,7 +634,11 @@
     <div class="container is-max-desktop">
 
       <h2 class="title is-3">Baselines</h2>
-
+      <md-block>We adopt state-of-the-art LLM and VLM from open-source representatives such as Mixtral and
+        CogAgent, and closed-source ones from GPT, Gemini, and Claude families on **OSWorld**, as LLM and VLM agent
+        baselines. We also explore methods such as the Set-of-Marks aided
+        approach, which has been demonstrated to improve spatial capabilities for visual
+        reasoning.</md-block>
     </div>
     <div class="cover" id="contentCover">
       <!-- Baseline. -->
