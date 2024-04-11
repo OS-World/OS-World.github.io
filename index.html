@@ -1059,36 +1059,51 @@
     <div class="container is-max-desktop">
       <!-- Analysis. -->
       <h2 class="title is-3">Analysis</h2>
-      <div class="content has-text-justified">
-        <h3 class="title is-4">Higher screenshot resolution typically leads to improved performance</h3>
+      <md-block>We conduct a
+        qualitative analysis in the aspect of models, methods, and human to find out factors influencing the
+        performance of VLMs in digital
+        agent tasks and their underlying behavioral logic. We investigate the impact of task attributes *(such as
+        difficulty, feasibility, visual requirement, and GUI complexity)*, input measurements *(such
+        as screenshot resolution, the influence of trajectory history, and the effect of UI layout)*, and explore
+        whether there are patterns in the agent's performance across different operating systems. Here is an overview of
+        our analysis outcome.</md-block>
+      <br>
+      <div class="content has-text-centered">
+
+
         <div class="has-text-centered">
           <img src="static/images/down_sampling_exp_fig.png" width="45%" alt="" class="responsive-image">
         </div>
+        <md-block>Higher screenshot resolution typically leads to improved performance.</md-block>
       </div>
-      <div class="content has-text-justified">
-        <h3 class="title is-4">Longer text-based trajectory history context improves performance, unlike screenshot-
-          only history, but poses efficiency challenges</h3>
+      <div class="content has-text-centered">
+
         <div class="has-text-centered">
           <img src="static/images/traj_length_effect_fig.png" width="45%" alt="" class="responsive-image">
-        </div>
+        </div><md-block>Longer text-based trajectory history context improves performance, unlike screenshot-only
+          history, but
+          poses efficiency challenges.</md-block>
       </div>
-      <div class="content has-text-justified">
-        <h3 class="title is-4">Current VLM agents are not robust to UI layout and noise.</h3>
+      <div class="content has-text-centered">
+
         <div class="has-text-centered">
           <img src="static/images/disturb_effect_fig.png" width="50%" alt="" class="responsive-image">
-        </div>
+        </div><md-block>Current VLM agents are not robust to UI layout and noise.</md-block>
       </div>
-      <div class="content has-text-justified">
-        <h3 class="title is-4">The performance of VLM agents across different OS is in strong correlation. </h3>
-        <img src="static/images/cross_os_effect_fig.png" width="50%" alt="" class="responsive-image">
-        <md block>
-          This implies that insights and methodologies developed within the OSWorld framework can be effectively
-          transferred to Windows environments with a high degree of reliability.
-        </md>
-      </div>
-      <div class="content has-text-justified">
-        <h3 class="title is-4">Success case of LLM/VLM agent baselines</h3>
-        <img src="static/images/success_case_fig.png" width="100%" alt="" class="responsive-image">
+      <div class="content has-text-centered">
+
+        <img src="static/images/cross_os_effect_fig.png" width="50%" style="display: block; margin: 0 auto;" alt=""
+          class="responsive-image">
+
+      </div> <md-block>The performance of VLM agents across different OS is in strong correlation.
+        This implies that insights and methodologies developed within the **OSWorld** framework can be effectively
+        transferred to Windows environments with a high degree of reliability.
+      </md-block>
+      <br>
+      <div class="content has-text-centered">
+
+        <img src="static/images/success_case_fig.png" width="100%" alt="" class="responsive-image"><md-block>A success
+          case of LLM/VLM agent baselines</md-block>
       </div>
       <!--/ Analysis. -->
 
