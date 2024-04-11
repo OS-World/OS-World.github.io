@@ -340,11 +340,14 @@
     <div class="container is-max-desktop">
       <!-- Data Statistics. -->
       <h2 class="title is-3">Data Statistics and Comparison</h2>
+      <md-block>
+        Below we present an overview of the main statistics of **OSWorld**, and a comparison against other
+        existing benchmarks.</md-block>
       <div class="columns is-centered">
         <div class="column" style="margin-right: -5rem;">
           <div class="content has-text-centered">
-            <p>
-              <br />
+
+            <p> <br />
               <br />
             <h5>
               Key statistics of
@@ -1048,159 +1051,156 @@
     </div>
   </section>
 
-  <<<<<<< HEAD <<<<<<< HEAD <section class="section">
-    =======
-    <section class="section">
-      >>>>>>> adf8c172313f91e002ad43f52a51d92bcb128b18
-      <div class="container is-max-desktop">
-        <!-- Analysis. -->
-        <h2 class="title is-3">Analysis</h2>
-        <div class="content has-text-justified">
-          <h3 class="title is-4">Higher screenshot resolution typically leads to improved performance</h3>
-          <img src="static/images/down_sampling_exp_fig.png" width="80%" alt="" class="responsive-image">
-        </div>
-        <div class="content has-text-justified">
-          <h3 class="title is-4">Longer text-based trajectory history context improves performance, unlike screenshot-
-            only history, but poses efficiency challenges</h3>
-          <img src="static/images/traj_length_effect_fig.png" width="80%" alt="" class="responsive-image">
-        </div>
-        <div class="content has-text-justified">
-          <h3 class="title is-4">The performance of VLM agents across different OS is in strong correlation. This
-            implies that insights and methodologies developed within the OSWorld framework can be effectively
-            transferred to Windows environments with a high degree of reliability.</h3>
-          <img src="static/images/cross_os_effect_fig.png" width="80%" alt="" class="responsive-image">
-        </div>
-        <div class="content has-text-justified">
-          <h3 class="title is-4">Current VLM agents are not robust to UI layout and noise.</h3>
-          <img src="static/images/disturb_effect_fig.png" width="80%" alt="" class="responsive-image">
-        </div>
-        <div class="content has-text-justified">
-          <h3 class="title is-4">Success case of LLM/VLM agent baselines</h3>
-          <img src="static/images/success_case_fig.png" width="80%" alt="" class="responsive-image">
-        </div>
+  <section class="section">
 
-        <!--/ Analysis. -->
+    <div class="container is-max-desktop">
+      <!-- Analysis. -->
+      <h2 class="title is-3">Analysis</h2>
+      <div class="content has-text-justified">
+        <h5>Higher screenshot resolution typically leads to improved performance</h5>
+        <img src="static/images/down_sampling_exp_fig.png" width="60%" style="display: block; margin: 0 auto;" alt=""
+          class="responsive-image">
       </div>
-    </section>
+      <div class="content has-text-justified">
+        <h5>Longer text-based trajectory history context improves performance, unlike screenshot-
+          only history, but poses efficiency challenges</h5>
+        <img src="static/images/traj_length_effect_fig.png" width="60%" alt="" class="responsive-image">
+      </div>
+      <div class="content has-text-justified">
+        <h5>The performance of VLM agents across different OS is in strong correlation. This
+          implies that insights and methodologies developed within the OSWorld framework can be effectively
+          transferred to Windows environments with a high degree of reliability.</h5>
+        <img src="static/images/cross_os_effect_fig.png" width="80%" alt="" class="responsive-image">
+      </div>
+      <div class="content has-text-justified">
+        <h3 class="title is-4">Current VLM agents are not robust to UI layout and noise.</h3>
+        <img src="static/images/disturb_effect_fig.png" width="80%" alt="" class="responsive-image">
+      </div>
+      <div class="content has-text-justified">
+        <h3 class="title is-4">Success case of LLM/VLM agent baselines</h3>
+        <img src="static/images/success_case_fig.png" width="80%" alt="" class="responsive-image">
+      </div>
+    </div>
+  </section>
 
 
-    <section class="section">
-      <!-- Acknowledgement. -->
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column is-full-width">
-            <h2 class="title is-3">Acknowledgement</h2>
+  <section class="section">
+    <!-- Acknowledgement. -->
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Acknowledgement</h2>
 
 
-            <div class="content has-text-justified">
-              <p>
-                We thank <a href="https://www.sidaw.xyz/">Sida Wang</a>, <a href="https://www.ptshaw.com/">Peter
-                  Shaw</a>, <a href="https://chenwu.io/">Chen Henry Wu</a>,
-                <a href="https://pengcheng.in/">Pengcheng Yin</a>, <a href="https://ysymyth.github.io/">Shunyu Yao</a>,
-                <a href="https://xinghanlu.com/">Xing Han Lu</a>, <a href="https://sivareddy.in/">Siva Reddy</a>, <a
-                  href="https://www.linkedin.com/in/ruoxi-sun-84a85457/">Ruoxi Sun</a>,
-                <a href="https://zhiyuan-zeng.github.io/"> Zhiyuan Zeng</a>, and <a
-                  href="https://lilei-nlp.github.io/">Lei Li</a> for their helpful feedback on this work
-              </p>
-            </div>
-          </div>
-          <!--/ Acknowledgement. -->
-
-        </div>
-    </section>
-
-    <section class="section">
-      <!-- FAQ. -->
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column is-full-width">
-            <h2 class="title is-3">FAQ</h2>
-
-            <div class="qa-item">
-              <h3>Q:</h3>
-              <p>What are the running times and costs under different settings?</p>
-              <h3>A:</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Setting</th>
-                    <th>Expected Time*</th>
-                    <th>Budget Cost (Full Test Set/Small Test Set)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>GPT-4V (screenshot)</td>
-                    <td>10h</td>
-                    <td>$100 ($10)</td>
-                  </tr>
-                  <tr>
-                    <td>Gemini-ProV (screenshot)</td>
-                    <td>15h</td>
-                    <td>0 (0)</td>
-                  </tr>
-                  <tr>
-                    <td>Claude-3 Opus (screenshot)</td>
-                    <td>15h</td>
-                    <td>$150 ($15)</td>
-                  </tr>
-                  <tr>
-                    <td>GPT-4V (a11y tree, SoM, etc.)</td>
-                    <td>30h</td>
-                    <td>$500 ($50)</td>
-                  </tr>
-                </tbody>
-              </table>
-              <p>*No environment parallelism. Calculated in April 2024.</p>
-            </div>
+          <div class="content has-text-justified">
+            <p>
+              We thank <a href="https://www.sidaw.xyz/">Sida Wang</a>, <a href="https://www.ptshaw.com/">Peter
+                Shaw</a>, <a href="https://chenwu.io/">Chen Henry Wu</a>,
+              <a href="https://pengcheng.in/">Pengcheng Yin</a>, <a href="https://ysymyth.github.io/">Shunyu Yao</a>,
+              <a href="https://xinghanlu.com/">Xing Han Lu</a>, <a href="https://sivareddy.in/">Siva Reddy</a>, <a
+                href="https://www.linkedin.com/in/ruoxi-sun-84a85457/">Ruoxi Sun</a>,
+              <a href="https://zhiyuan-zeng.github.io/"> Zhiyuan Zeng</a>, and <a
+                href="https://lilei-nlp.github.io/">Lei Li</a> for their helpful feedback on this work
+            </p>
           </div>
         </div>
-        <!--/ FAQ. -->
+        <!--/ Acknowledgement. -->
 
       </div>
-    </section>
+  </section>
+
+  <section class="section">
+    <!-- FAQ. -->
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">FAQ</h2>
+
+          <div class="qa-item">
+            <h3>Q:</h3>
+            <p>What are the running times and costs under different settings?</p>
+            <h3>A:</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Expected Time*</th>
+                  <th>Budget Cost (Full Test Set/Small Test Set)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>GPT-4V (screenshot)</td>
+                  <td>10h</td>
+                  <td>$100 ($10)</td>
+                </tr>
+                <tr>
+                  <td>Gemini-ProV (screenshot)</td>
+                  <td>15h</td>
+                  <td>0 (0)</td>
+                </tr>
+                <tr>
+                  <td>Claude-3 Opus (screenshot)</td>
+                  <td>15h</td>
+                  <td>$150 ($15)</td>
+                </tr>
+                <tr>
+                  <td>GPT-4V (a11y tree, SoM, etc.)</td>
+                  <td>30h</td>
+                  <td>$500 ($50)</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>*No environment parallelism. Calculated in April 2024.</p>
+          </div>
+        </div>
+      </div>
+      <!--/ FAQ. -->
+
+    </div>
+  </section>
 
 
-    <section class="section" id="BibTeX">
-      <div class="container is-max-desktop content">
-        <h2 class="title">BibTeX</h2>
-        <pre><code>
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>
         TBD
       </code></pre>
+    </div>
+  </section>
+
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <a class="icon-link" href="./static/videos/nerfies_paper.pdf">
+          <i class="fas fa-file-pdf"></i>
+        </a>
+        <a class="icon-link" href="https://github.com/xlang-ai/osworld" class="external-link" disabled>
+          <i class="fab fa-github"></i>
+        </a>
       </div>
-    </section>
-
-
-    <footer class="footer">
-      <div class="container">
-        <div class="content has-text-centered">
-          <a class="icon-link" href="./static/videos/nerfies_paper.pdf">
-            <i class="fas fa-file-pdf"></i>
-          </a>
-          <a class="icon-link" href="https://github.com/xlang-ai/osworld" class="external-link" disabled>
-            <i class="fab fa-github"></i>
-          </a>
-        </div>
-        <div class="columns is-centered">
-          <div class="column is-8">
-            <div class="content">
-              <p>
-                This website is licensed under a <a rel="license"
-                  href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-                  Commons Attribution-ShareAlike 4.0 International License</a>.
-              </p>
-              <p>
-                This means you are free to borrow the <a href="https://github.com/nerfies/nerfies.github.io">source
-                  code</a> of this website,
-                we just ask that you link back to this page in the footer.
-                Please remember to remove the analytics code included in the header of the website which
-                you do not want on your website.
-              </p>
-            </div>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This website is licensed under a <a rel="license"
+                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+                Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+            <p>
+              This means you are free to borrow the <a href="https://github.com/nerfies/nerfies.github.io">source
+                code</a> of this website,
+              we just ask that you link back to this page in the footer.
+              Please remember to remove the analytics code included in the header of the website which
+              you do not want on your website.
+            </p>
           </div>
         </div>
       </div>
-    </footer>
+    </div>
+  </footer>
 
 </body>
 
