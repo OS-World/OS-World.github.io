@@ -76,3 +76,36 @@ $(document).ready(function() {
     bulmaSlider.attach();
 
 })
+
+// Analysis Carousel Scrolling
+  function scrollLeft() {
+    const carousel = document.getElementById('findings-carousel');
+    carousel.scrollBy({
+      left: -300, // Adjust this value based on your design
+      behavior: 'smooth'
+    });
+  }
+
+  function scrollRight() {
+    const carousel = document.getElementById('findings-carousel');
+    carousel.scrollBy({
+      left: 300, // Adjust this value based on your design
+      behavior: 'smooth'
+    });
+  }
+
+  // Videos Carousel Scrolling
+  const carouselVideos = document.querySelector('.carousel-container-videos');
+  const trackVideos = document.querySelector('.carousel-track-videos');
+
+  // Duplicate items to create continuous scroll effect
+  trackVideos.innerHTML += trackVideos.innerHTML;
+
+  // Pause animation on mouse enter and resume on mouse leave
+  carouselVideos.addEventListener('mouseenter', () => {
+    trackVideos.style.animationPlayState = 'paused';
+  });
+
+  carouselVideos.addEventListener('mouseleave', () => {
+    trackVideos.style.animationPlayState = 'running';
+  });
