@@ -81,7 +81,7 @@ $(document).ready(function() {
   function scrollLeft() {
     const carousel = document.getElementById('findings-carousel');
     carousel.scrollBy({
-      left: -300, // Adjust this value based on your design
+      left: -300,
       behavior: 'smooth'
     });
   }
@@ -89,7 +89,7 @@ $(document).ready(function() {
   function scrollRight() {
     const carousel = document.getElementById('findings-carousel');
     carousel.scrollBy({
-      left: 300, // Adjust this value based on your design
+      left: 300,
       behavior: 'smooth'
     });
   }
