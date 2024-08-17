@@ -176,3 +176,136 @@ body {
 #interpolation-image-wrapper img {
   border-radius: 5px;
 }
+
+/* Analysis Carousel Styles */
+.carousel-container-analysis {
+  display: flex;
+  align-items: center;
+}
+
+.carousel-analysis {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  flex: 1;
+  gap: 1rem;
+  padding: 1rem 0;
+  margin: 0 1rem;
+}
+
+.carousel-item-analysis {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 300px; /* Adjust this value based on your design */
+}
+
+.carousel-button-analysis {
+  background-color: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+  user-select: none;
+  padding: 0 1rem;
+}
+
+.carousel-button-analysis:focus {
+  outline: none;
+}
+
+/* Videos Carousel Styles */
+.carousel-container-videos {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  margin-bottom: 2rem; /* Add some margin to avoid overlap */
+}
+
+.carousel-track-videos {
+  display: flex;
+  gap: 1rem;
+  animation: scroll-videos 15s linear infinite; /* Slower animation */
+}
+
+.carousel-item-videos {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 400px;
+}
+
+.faq-container {
+    padding: 2rem 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+.faq-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.faq-item {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.faq-item h3 {
+  margin: 0;
+  font-weight: bold;
+}
+
+.faq-item p {
+  margin: 0.5rem 0 0;
+  color: #555;
+}
+
+.faq-question::before {
+  content: "Q: ";
+  font-weight: bold;
+  color: #007bff;
+}
+
+.faq-answer::before {
+  content: "A: ";
+  font-weight: bold;
+  color: #28a745;
+}
+
+.faq-item table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.faq-item th, .faq-item td {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+}
+
+.faq-item th {
+  background-color: #f0f0f0;
+  text-align: left;
+}
+
+.faq-item td {
+  text-align: center;
+}
+
+.faq-note {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+@keyframes scroll-videos {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
