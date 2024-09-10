@@ -21,61 +21,114 @@ function setInterpolationImage(i) {
 
 
 $(document).ready(function() {
-    // Check for click events on the navbar burger icon
-    $(".navbar-burger").click(function() {
-      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-      $(".navbar-burger").toggleClass("is-active");
-      $(".navbar-menu").toggleClass("is-active");
+    const carousel = document.querySelector('.carousel-container-videos');
+    const track = document.querySelector('.carousel-track-videos');
+    let isScrolling = false;
+    let startX;
+    let scrollLeft;
+    let currentlyPlayingVideo = null;
+    let scrollInterval;
 
+    // 初始化：复制项目以创建无缝滚动效果
+    track.innerHTML += track.innerHTML;
+
+    // 自动滚动功能
+    function startAutoScroll() {
+        if (isScrolling) return;
+        isScrolling = true;
+        scrollInterval = setInterval(() => {
+            track.scrollLeft += 1;
+            if (track.scrollLeft >= (track.scrollWidth / 2)) {
+                track.scrollLeft = 0;
+            }
+        }, 30); // 调整这个值可以改变滚动速度
+    }
+
+    function stopAutoScroll() {
+        isScrolling = false;
+        clearInterval(scrollInterval);
+    }
+
+    // 视频控制功能
+    function pauseAllVideos() {
+        document.querySelectorAll('.publication-video iframe').forEach(iframe => {
+            iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        });
+    }
+
+    function playVideo(iframe) {
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+    }
+
+    // 事件监听器
+    carousel.addEventListener('mouseenter', () => {
+        stopAutoScroll();
+        track.style.animationPlayState = 'paused';
     });
 
-    var options = {
-			slidesToScroll: 1,
-			slidesToShow: 3,
-			loop: true,
-			infinite: true,
-			autoplay: false,
-			autoplaySpeed: 3000,
-    }
-
-		// Initialize all div with carousel class
-    var carousels = bulmaCarousel.attach('.carousel', options);
-
-    // Loop on each carousel initialized
-    for(var i = 0; i < carousels.length; i++) {
-    	// Add listener to  event
-    	carousels[i].on('before:show', state => {
-    		console.log(state);
-    	});
-    }
-
-    // Access to bulmaCarousel instance of an element
-    var element = document.querySelector('#my-element');
-    if (element && element.bulmaCarousel) {
-    	// bulmaCarousel instance is available as element.bulmaCarousel
-    	element.bulmaCarousel.on('before-show', function(state) {
-    		console.log(state);
-    	});
-    }
-
-    /*var player = document.getElementById('interpolation-video');
-    player.addEventListener('loadedmetadata', function() {
-      $('#interpolation-slider').on('input', function(event) {
-        console.log(this.value, player.duration);
-        player.currentTime = player.duration / 100 * this.value;
-      })
-    }, false);*/
-    preloadInterpolationImages();
-
-    $('#interpolation-slider').on('input', function(event) {
-      setInterpolationImage(this.value);
+    carousel.addEventListener('mouseleave', () => {
+        if (!currentlyPlayingVideo) {
+            startAutoScroll();
+            track.style.animationPlayState = 'running';
+        }
     });
-    setInterpolationImage(0);
-    $('#interpolation-slider').prop('max', NUM_INTERP_FRAMES - 1);
 
-    bulmaSlider.attach();
+    carousel.addEventListener('mousedown', (e) => {
+        stopAutoScroll();
+        startX = e.pageX - carousel.offsetLeft;
+        scrollLeft = carousel.scrollLeft;
+    });
 
-})
+    carousel.addEventListener('mousemove', (e) => {
+        if (!startX) return;
+        const x = e.pageX - carousel.offsetLeft;
+        const walk = (x - startX) * 2;
+        carousel.scrollLeft = scrollLeft - walk;
+    });
+
+    carousel.addEventListener('mouseup', () => {
+        startX = null;
+    });
+
+    document.querySelectorAll('.publication-video iframe').forEach(iframe => {
+        iframe.addEventListener('load', () => {
+            iframe.contentWindow.postMessage('{"event":"listening"}', '*');
+        });
+
+        iframe.parentElement.addEventListener('click', (e) => {
+            e.preventDefault();
+            pauseAllVideos();
+            playVideo(iframe);
+            currentlyPlayingVideo = iframe;
+            stopAutoScroll();
+        });
+    });
+
+    window.addEventListener('message', (event) => {
+        if (event.data && typeof event.data === 'string') {
+            const data = JSON.parse(event.data);
+            if (data.event === 'onStateChange') {
+                if (data.info === 1) { // video started playing
+                    stopAutoScroll();
+                    if (currentlyPlayingVideo && currentlyPlayingVideo !== event.source.frameElement) {
+                        pauseAllVideos();
+                        currentlyPlayingVideo = event.source.frameElement;
+                    }
+                } else if (data.info === 0 || data.info === 2) { // video ended or paused
+                    if (currentlyPlayingVideo === event.source.frameElement) {
+                        currentlyPlayingVideo = null;
+                        if (!carousel.matches(':hover')) {
+                            startAutoScroll();
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // 初始启动自动滚动
+    startAutoScroll();
+});
 
 // Analysis Carousel Scrolling
   function scrollLeft() {
@@ -103,8 +156,11 @@ $(document).ready(function() {
 
   // Pause animation on mouse enter and resume on mouse leave
   carouselVideos.addEventListener('mouseenter', () => {
-    trackVideos.style.animationPlayState = 'paused';
-  });
+        trackVideos.style.animationPlayState = 'paused';
+        if (currentlyPlayingVideo) {
+            pauseVideo(currentlyPlayingVideo);
+        }
+    });
 
   carouselVideos.addEventListener('mouseleave', () => {
     trackVideos.style.animationPlayState = 'running';
