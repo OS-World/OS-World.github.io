@@ -29,10 +29,8 @@ $(document).ready(function() {
     let currentlyPlayingVideo = null;
     let scrollInterval;
 
-    // 初始化：复制项目以创建无缝滚动效果
     track.innerHTML += track.innerHTML;
 
-    // 自动滚动功能
     function startAutoScroll() {
         if (isScrolling) return;
         isScrolling = true;
@@ -41,7 +39,7 @@ $(document).ready(function() {
             if (track.scrollLeft >= (track.scrollWidth / 2)) {
                 track.scrollLeft = 0;
             }
-        }, 30); // 调整这个值可以改变滚动速度
+        }, 50);
     }
 
     function stopAutoScroll() {
@@ -49,7 +47,6 @@ $(document).ready(function() {
         clearInterval(scrollInterval);
     }
 
-    // 视频控制功能
     function pauseAllVideos() {
         document.querySelectorAll('.publication-video iframe').forEach(iframe => {
             iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
@@ -60,7 +57,6 @@ $(document).ready(function() {
         iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
     }
 
-    // 事件监听器
     carousel.addEventListener('mouseenter', () => {
         stopAutoScroll();
         track.style.animationPlayState = 'paused';
@@ -126,7 +122,6 @@ $(document).ready(function() {
         }
     });
 
-    // 初始启动自动滚动
     startAutoScroll();
 });
 
