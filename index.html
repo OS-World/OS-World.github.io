@@ -384,7 +384,7 @@
               Key statistics of
               <b>OSWorld</b>.<br />
             </h5>
-            The “Supp. tasks” refers to the Windows-based tasks, that could
+            The "Supp. tasks" refers to the Windows-based tasks, that could
             only be used after
             activation due to copyright restrictions.<br />
             </p>
@@ -687,6 +687,193 @@
         reasoning.
         **We are actively updating the benchmark with new LLMs, VLMs and methods. Pull requests welcomed!**
       </md-block>
+      <!-- Progress Chart -->
+      <div class="content has-text-justified">
+        <div style="width: 100%; margin-top: 20px;">
+          <canvas id="progressChart"></canvas>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+        <script>
+          async function createProgressChart() {
+            try {
+              const response = await fetch('static/data/benchmark_data.xlsx');
+              const arrayBuffer = await response.arrayBuffer();
+              const data = new Uint8Array(arrayBuffer);
+              const workbook = XLSX.read(data, {type: 'array'});
+              
+              const worksheet = workbook.Sheets['Screenshot'];
+              const jsonData = XLSX.utils.sheet_to_json(worksheet);
+              
+              // 处理数据
+              const chartData = {
+                labels: [],
+                datasets: []
+              };
+              
+              // 创建模型分组
+              const modelGroups = {};
+              jsonData.forEach(row => {
+                const date = moment(row.Date).format('YYYY-MM-DD');
+                const model = row.Model;
+                const score = parseFloat(row.Score);
+                
+                if (!modelGroups[model]) {
+                  modelGroups[model] = {
+                    label: model,
+                    data: [],
+                    borderColor: getRandomColor(),
+                    fill: false,
+                    showLine: false,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointStyle: 'circle',
+                    pointBackgroundColor: function(context) {
+                      return context.dataset.borderColor;
+                    }
+                  };
+                }
+                
+                // Add data point
+                modelGroups[model].data.push({
+                  x: date,
+                  y: score
+                });
+              });
+              
+              // Add model data to datasets and sort by date
+              chartData.datasets = Object.values(modelGroups).map(dataset => {
+                dataset.data.sort((a, b) => moment(a.x).valueOf() - moment(b.x).valueOf());
+                return dataset;
+              });
+              
+              // Calculate trend line data
+              const allPoints = [];
+              jsonData.forEach(row => {
+                const date = moment(row.Date).valueOf();
+                const score = parseFloat(row.Score);
+                if (!isNaN(date) && !isNaN(score)) {
+                  allPoints.push({ x: date, y: score });
+                }
+              });
+              
+              // Sort by date
+              allPoints.sort((a, b) => a.x - b.x);
+              
+              // Use least squares method to calculate trend line
+              const n = allPoints.length;
+              const sumX = allPoints.reduce((sum, point) => sum + point.x, 0);
+              const sumY = allPoints.reduce((sum, point) => sum + point.y, 0);
+              const sumXY = allPoints.reduce((sum, point) => sum + point.x * point.y, 0);
+              const sumXX = allPoints.reduce((sum, point) => sum + point.x * point.x, 0);
+              
+              const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+              const intercept = (sumY - slope * sumX) / n;
+              
+              // Create trend line data points
+              const trendlineData = [
+                {
+                  x: allPoints[0].x,
+                  y: slope * allPoints[0].x + intercept
+                },
+                {
+                  x: allPoints[allPoints.length - 1].x,
+                  y: slope * allPoints[allPoints.length - 1].x + intercept
+                }
+              ];
+              
+              // Add trend line to datasets
+              chartData.datasets.push({
+                label: 'Trend Line',
+                data: trendlineData,
+                borderColor: '#FF0000',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                fill: false,
+                pointRadius: 0,
+                showLine: true,  // Ensure the line is displayed
+                tension: 0
+              });
+              
+              // Create chart
+              const ctx = document.getElementById('progressChart').getContext('2d');
+              new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                  responsive: true,
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: 'Progress History (Screenshot)',
+                      font: {
+                        size: 16
+                      }
+                    },
+                    legend: {
+                      position: 'right'
+                    },
+                    tooltip: {
+                      callbacks: {
+                        title: function(context) {
+                          return moment(context[0].raw.x).format('YYYY-MM-DD');
+                        }
+                      }
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      title: {
+                        display: true,
+                        text: 'OSWorld Success Rate (%)'
+                      },
+                      max: 50
+                    },
+                    x: {
+                      type: 'time',
+                      time: {
+                        unit: 'month',
+                        displayFormats: {
+                          month: 'yyyy-MM'
+                        }
+                      },
+                      title: {
+                        display: true,
+                        text: 'Date'
+                      }
+                    }
+                  }
+                }
+              });
+            } catch (error) {
+              console.error('Error creating progress chart:', error);
+            }
+          }
+
+          function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+              color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+          }
+
+          document.addEventListener('DOMContentLoaded', () => {
+            if (typeof XLSX === 'undefined') {
+              const script = document.createElement('script');
+              script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+              script.onload = createProgressChart;
+              document.head.appendChild(script);
+            } else {
+              createProgressChart();
+            }
+          });
+        </script>
+      </div>
+      <!-- End Progress Chart -->
     </div>
     <div class="cover" id="contentCover">
         <div class="container-t">
