@@ -811,13 +811,31 @@
                 }
               });
               
-              // 创建最高分线的数据点
+              // 创建最高分线的数据点，只保留历史最高值（不下降）
+              const timePoints = Object.keys(timePointsMap).sort((a, b) => moment(a).valueOf() - moment(b).valueOf());
               const highestScoreLineData = [];
-              Object.keys(timePointsMap).sort((a, b) => moment(a).valueOf() - moment(b).valueOf()).forEach(date => {
-                highestScoreLineData.push({
-                  x: date,
-                  y: timePointsMap[date]
-                });
+              let historicalHighest = 0;
+              
+              timePoints.forEach(date => {
+                const currentScore = timePointsMap[date];
+                
+                // 只有当前分数高于历史最高分时才更新历史最高分
+                if (currentScore > historicalHighest) {
+                  historicalHighest = currentScore;
+                  
+                  // 添加一个数据点到趋势线
+                  highestScoreLineData.push({
+                    x: date,
+                    y: historicalHighest
+                  });
+                } else if (highestScoreLineData.length > 0) {
+                  // 如果不是更高的分数，而且已经有数据点，则添加与历史最高分相同的值
+                  // 这样可以绘制水平线表示保持最高分
+                  highestScoreLineData.push({
+                    x: date,
+                    y: historicalHighest
+                  });
+                }
               });
               
               // 添加最高分线数据集
