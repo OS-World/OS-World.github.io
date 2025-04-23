@@ -782,7 +782,7 @@
                     borderColor: getRandomColor(),
                     fill: false,
                     showLine: false,
-                    pointRadius: 5, // 所有点使用标准尺寸
+                    pointRadius: 5,
                     pointHoverRadius: 7
                   };
                 }
@@ -800,12 +800,46 @@
                 return dataset;
               });
               
-              // Calculate trend line data
+              // 按时间收集每个时间点的最高分
+              const timePointsMap = {};
+              jsonData.forEach(row => {
+                const date = moment(row.Date).format('YYYY-MM-DD');
+                const score = parseFloat(row.Score);
+                
+                if (!timePointsMap[date] || timePointsMap[date] < score) {
+                  timePointsMap[date] = score;
+                }
+              });
+              
+              // 创建最高分线的数据点
+              const highestScoreLineData = [];
+              Object.keys(timePointsMap).sort((a, b) => moment(a).valueOf() - moment(b).valueOf()).forEach(date => {
+                highestScoreLineData.push({
+                  x: date,
+                  y: timePointsMap[date]
+                });
+              });
+              
+              // 添加最高分线数据集
+              chartData.datasets.push({
+                label: 'Highest Score Line',
+                data: highestScoreLineData,
+                borderColor: 'gold',
+                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                borderWidth: 2,
+                fill: false,
+                pointRadius: 0,
+                showLine: true,
+                tension: 0.1,
+                z: 10
+              });
+              
+              // Calculate exponential trend line data
               const allPoints = [];
               jsonData.forEach(row => {
                 const date = moment(row.Date).valueOf();
                 const score = parseFloat(row.Score);
-                if (!isNaN(date) && !isNaN(score)) {
+                if (!isNaN(date) && !isNaN(score) && score > 0) { // 避免取对数时出现问题
                   allPoints.push({ x: date, y: score });
                 }
               });
@@ -813,31 +847,47 @@
               // Sort by date
               allPoints.sort((a, b) => a.x - b.x);
               
-              // Use least squares method to calculate trend line
-              const n = allPoints.length;
-              const sumX = allPoints.reduce((sum, point) => sum + point.x, 0);
-              const sumY = allPoints.reduce((sum, point) => sum + point.y, 0);
-              const sumXY = allPoints.reduce((sum, point) => sum + point.x * point.y, 0);
-              const sumXX = allPoints.reduce((sum, point) => sum + point.x * point.x, 0);
+              // 为了便于计算，将日期归一化到更小的范围
+              const minX = allPoints[0].x;
+              const normalizedPoints = allPoints.map(p => ({
+                x: (p.x - minX) / (24 * 60 * 60 * 1000 * 30), // 转换为大约的月数
+                y: p.y
+              }));
               
-              const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-              const intercept = (sumY - slope * sumX) / n;
+              // 使用指数回归 y = a * e^(bx)
+              // 取对数转换 ln(y) = ln(a) + bx
+              const lnPoints = normalizedPoints.map(p => ({
+                x: p.x,
+                lny: Math.log(p.y)
+              }));
               
-              // Create trend line data points
-              const trendlineData = [
-                {
-                  x: allPoints[0].x,
-                  y: slope * allPoints[0].x + intercept
-                },
-                {
-                  x: allPoints[allPoints.length - 1].x,
-                  y: slope * allPoints[allPoints.length - 1].x + intercept
-                }
-              ];
+              // 计算线性回归 ln(y) = ln(a) + bx
+              const n = lnPoints.length;
+              const sumX = lnPoints.reduce((sum, point) => sum + point.x, 0);
+              const sumLnY = lnPoints.reduce((sum, point) => sum + point.lny, 0);
+              const sumXLnY = lnPoints.reduce((sum, point) => sum + point.x * point.lny, 0);
+              const sumXX = lnPoints.reduce((sum, point) => sum + point.x * point.x, 0);
               
-              // Add trend line to datasets
+              const b = (n * sumXLnY - sumX * sumLnY) / (n * sumXX - sumX * sumX);
+              const lnA = (sumLnY - b * sumX) / n;
+              const a = Math.exp(lnA);
+              
+              // 创建指数趋势线数据点
+              const trendlineData = [];
+              const steps = 30; // 使用更多点让曲线更平滑
+              
+              for (let i = 0; i <= steps; i++) {
+                const normalizedX = i * (normalizedPoints[normalizedPoints.length-1].x - normalizedPoints[0].x) / steps + normalizedPoints[0].x;
+                const realX = normalizedX * (24 * 60 * 60 * 1000 * 30) + minX; // 转回实际日期
+                trendlineData.push({
+                  x: moment(realX).format('YYYY-MM-DD'),
+                  y: a * Math.exp(b * normalizedX) // 使用指数函数计算
+                });
+              }
+              
+              // 添加指数趋势线到数据集
               chartData.datasets.push({
-                label: 'Trend Line',
+                label: 'Exponential Trend',
                 data: trendlineData,
                 borderColor: '#FF0000',
                 borderWidth: 2,
@@ -877,6 +927,7 @@
                   scales: {
                     y: {
                       beginAtZero: true,
+                      min: 0,
                       title: {
                         display: true,
                         text: 'OSWorld Success Rate (%)'
