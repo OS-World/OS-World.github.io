@@ -782,18 +782,10 @@
                     borderColor: getRandomColor(),
                     fill: false,
                     showLine: false,
-                    pointRadius: function(context) {
-                      const dataPoint = context.dataset.data[context.dataIndex];
-                      // 检查是否是最高分
-                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
-                        return 0; // 使原点不可见，因为我们会用自定义HTML元素替代
-                      }
-                      return 5;
-                    },
+                    pointRadius: 5,
                     pointHoverRadius: 7,
                     pointStyle: function(context) {
                       const dataPoint = context.dataset.data[context.dataIndex];
-                      // 检查是否是最高分
                       if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
                         return 'star';
                       }
@@ -862,7 +854,7 @@
                 borderDash: [5, 5],
                 fill: false,
                 pointRadius: 0,
-                showLine: true,  // Ensure the line is displayed
+                showLine: true,
                 tension: 0
               });
               
@@ -917,12 +909,9 @@
                   }
                 },
                 plugins: [{
-                  id: 'customCanvasBackgroundColor',
-                  afterDraw: (chart) => {
+                  id: 'customStarPoint',
+                  afterDatasetDraw: (chart) => {
                     const { ctx, scales } = chart;
-                    
-                    // 找到最高分数点的坐标
-                    let highestPoint = null;
                     
                     chart.data.datasets.forEach((dataset, datasetIndex) => {
                       if (dataset.label === highestScoreModel) {
@@ -930,60 +919,51 @@
                           if (dataPoint.y === highestScore) {
                             const x = scales.x.getPixelForValue(moment(dataPoint.x).valueOf());
                             const y = scales.y.getPixelForValue(dataPoint.y);
-                            highestPoint = { x, y, datasetIndex, pointIndex: index };
+                            
+                            const starSize = 25;
+                            
+                            ctx.save();
+                            
+                            ctx.translate(x, y);
+                            
+                            const time = new Date().getTime() % 1500 / 1500;
+                            const scale = 1 + 0.3 * Math.sin(time * Math.PI * 2);
+                            
+                            ctx.scale(scale, scale);
+                            
+                            ctx.beginPath();
+                            ctx.fillStyle = 'gold';
+                            
+                            for (let i = 0; i < 5; i++) {
+                              const radius = i % 2 === 0 ? starSize/2 : starSize/5;
+                              const angle = (i * 2 * Math.PI / 10) - Math.PI/2;
+                              
+                              if (i === 0) {
+                                ctx.moveTo(radius * Math.cos(angle), radius * Math.sin(angle));
+                              } else {
+                                ctx.lineTo(radius * Math.cos(angle), radius * Math.sin(angle));
+                              }
+                              
+                              const innerAngle = angle + Math.PI/10;
+                              ctx.lineTo(
+                                (starSize/5) * Math.cos(innerAngle),
+                                (starSize/5) * Math.sin(innerAngle)
+                              );
+                            }
+                            ctx.closePath();
+                            ctx.fill();
+                            
+                            ctx.restore();
                           }
                         });
                       }
                     });
-                    
-                    // 如果找到最高分点，绘制闪烁的星星
-                    if (highestPoint) {
-                      const starSize = 20;
-                      
-                      // 保存当前环境
-                      ctx.save();
-                      
-                      // 创建闪烁动画
-                      const time = new Date().getTime() % 1500 / 1500;
-                      const scale = 1 + 0.3 * Math.sin(time * Math.PI * 2);
-                      
-                      ctx.translate(highestPoint.x, highestPoint.y);
-                      ctx.scale(scale, scale);
-                      
-                      // 绘制星星
-                      ctx.beginPath();
-                      ctx.fillStyle = chart.data.datasets[highestPoint.datasetIndex].borderColor;
-                      
-                      // 绘制五角星
-                      for (let i = 0; i < 5; i++) {
-                        const radius = i % 2 === 0 ? starSize/2 : starSize/5;
-                        const angle = (i * 2 * Math.PI / 10) - Math.PI/2;
-                        
-                        if (i === 0) {
-                          ctx.moveTo(radius * Math.cos(angle), radius * Math.sin(angle));
-                        } else {
-                          ctx.lineTo(radius * Math.cos(angle), radius * Math.sin(angle));
-                        }
-                        
-                        const innerAngle = angle + Math.PI/10;
-                        ctx.lineTo(
-                          (starSize/5) * Math.cos(innerAngle),
-                          (starSize/5) * Math.sin(innerAngle)
-                        );
-                      }
-                      ctx.closePath();
-                      ctx.fill();
-                      
-                      // 恢复环境
-                      ctx.restore();
-                    }
                   }
                 }]
               });
               
-              // 设置动画循环来重绘图表以实现闪烁效果
               function animate() {
-                chart.render();
+                chart.update('none');
                 requestAnimationFrame(animate);
               }
               animate();
