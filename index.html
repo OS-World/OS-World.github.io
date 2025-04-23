@@ -782,42 +782,8 @@
                     borderColor: getRandomColor(),
                     fill: false,
                     showLine: false,
-                    pointRadius: function(context) {
-                      const dataPoint = context.dataset.data[context.dataIndex];
-                      // 检查是否是最高分，是的话增大星星尺寸
-                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
-                        return 10; // 增大内置星星的尺寸
-                      }
-                      return 5;
-                    },
-                    pointHoverRadius: function(context) {
-                      const dataPoint = context.dataset.data[context.dataIndex];
-                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
-                        return 12;
-                      }
-                      return 7;
-                    },
-                    pointStyle: function(context) {
-                      const dataPoint = context.dataset.data[context.dataIndex];
-                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
-                        return 'star'; // 使用内置的星星点样式
-                      }
-                      return 'circle';
-                    },
-                    pointBackgroundColor: function(context) {
-                      const dataPoint = context.dataset.data[context.dataIndex];
-                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
-                        return 'gold'; // 将内置星星颜色设为金色
-                      }
-                      return context.dataset.borderColor;
-                    },
-                    pointBorderColor: function(context) {
-                      const dataPoint = context.dataset.data[context.dataIndex];
-                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
-                        return 'gold'; // 星星边框也设为金色
-                      }
-                      return context.dataset.borderColor;
-                    }
+                    pointRadius: 5, // 所有点使用标准尺寸
+                    pointHoverRadius: 7
                   };
                 }
                 
