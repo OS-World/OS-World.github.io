@@ -40,6 +40,26 @@
   <link rel="stylesheet" href="./stylesheets/index.css">
   <link rel="stylesheet" href="./bowe_componets/css/bootstrap.table.min.css">
 
+  <style>
+    .first-rank-star {
+      color: gold;
+      font-size: 1.2em;
+      display: inline-block;
+      animation: pulse 1.5s infinite;
+      margin-left: 5px;
+    }
+    
+    .first-rank-row {
+      background-color: rgba(255, 215, 0, 0.1) !important;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+  </style>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/bulma-carousel.min.js"></script>
@@ -945,10 +965,12 @@
                       // Rank by order in the table
                       tableData.forEach((row, index) => {
                         const rank = index + 1;
+                        const isFirstRank = rank === 1;
+                        
                         tableHTML += `
-                          <tr>
+                          <tr ${isFirstRank ? 'class="first-rank-row"' : ''}>
                             <td>
-                              <p>${rank}</p>
+                              <p>${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
                               <span class="date label label-default">${row.Date || ''}</span>
                             </td>
                             <td style="word-break:break-word;">
