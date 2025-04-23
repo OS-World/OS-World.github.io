@@ -782,16 +782,40 @@
                     borderColor: getRandomColor(),
                     fill: false,
                     showLine: false,
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
+                    pointRadius: function(context) {
+                      const dataPoint = context.dataset.data[context.dataIndex];
+                      // 检查是否是最高分，是的话增大星星尺寸
+                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
+                        return 10; // 增大内置星星的尺寸
+                      }
+                      return 5;
+                    },
+                    pointHoverRadius: function(context) {
+                      const dataPoint = context.dataset.data[context.dataIndex];
+                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
+                        return 12;
+                      }
+                      return 7;
+                    },
                     pointStyle: function(context) {
                       const dataPoint = context.dataset.data[context.dataIndex];
                       if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
-                        return 'star';
+                        return 'star'; // 使用内置的星星点样式
                       }
                       return 'circle';
                     },
                     pointBackgroundColor: function(context) {
+                      const dataPoint = context.dataset.data[context.dataIndex];
+                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
+                        return 'gold'; // 将内置星星颜色设为金色
+                      }
+                      return context.dataset.borderColor;
+                    },
+                    pointBorderColor: function(context) {
+                      const dataPoint = context.dataset.data[context.dataIndex];
+                      if (dataPoint.y === highestScore && context.dataset.label === highestScoreModel) {
+                        return 'gold'; // 星星边框也设为金色
+                      }
                       return context.dataset.borderColor;
                     }
                   };
@@ -907,66 +931,8 @@
                       }
                     }
                   }
-                },
-                plugins: [{
-                  id: 'customStarPoint',
-                  afterDatasetDraw: (chart) => {
-                    const { ctx, scales } = chart;
-                    
-                    chart.data.datasets.forEach((dataset, datasetIndex) => {
-                      if (dataset.label === highestScoreModel) {
-                        dataset.data.forEach((dataPoint, index) => {
-                          if (dataPoint.y === highestScore) {
-                            const x = scales.x.getPixelForValue(moment(dataPoint.x).valueOf());
-                            const y = scales.y.getPixelForValue(dataPoint.y);
-                            
-                            const starSize = 25;
-                            
-                            ctx.save();
-                            
-                            ctx.translate(x, y);
-                            
-                            const time = new Date().getTime() % 1500 / 1500;
-                            const scale = 1 + 0.3 * Math.sin(time * Math.PI * 2);
-                            
-                            ctx.scale(scale, scale);
-                            
-                            ctx.beginPath();
-                            ctx.fillStyle = 'gold';
-                            
-                            for (let i = 0; i < 5; i++) {
-                              const radius = i % 2 === 0 ? starSize/2 : starSize/5;
-                              const angle = (i * 2 * Math.PI / 10) - Math.PI/2;
-                              
-                              if (i === 0) {
-                                ctx.moveTo(radius * Math.cos(angle), radius * Math.sin(angle));
-                              } else {
-                                ctx.lineTo(radius * Math.cos(angle), radius * Math.sin(angle));
-                              }
-                              
-                              const innerAngle = angle + Math.PI/10;
-                              ctx.lineTo(
-                                (starSize/5) * Math.cos(innerAngle),
-                                (starSize/5) * Math.sin(innerAngle)
-                              );
-                            }
-                            ctx.closePath();
-                            ctx.fill();
-                            
-                            ctx.restore();
-                          }
-                        });
-                      }
-                    });
-                  }
-                }]
+                }
               });
-              
-              function animate() {
-                chart.update('none');
-                requestAnimationFrame(animate);
-              }
-              animate();
               
             } catch (error) {
               console.error('Error creating progress chart:', error);
