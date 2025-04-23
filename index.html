@@ -1090,6 +1090,13 @@
                         const rank = index + 1;
                         const isFirstRank = rank === 1;
                         
+                        // 检查 TrajectoryLink 是否是有效的链接
+                        const isValidLink = row.TrajectoryLink && (
+                          row.TrajectoryLink.startsWith('http://') || 
+                          row.TrajectoryLink.startsWith('https://') ||
+                          row.TrajectoryLink.startsWith('www.')
+                        );
+                        
                         tableHTML += `
                           <tr ${isFirstRank ? 'class="first-rank-row"' : ''}>
                             <td>
@@ -1106,10 +1113,10 @@
                             </td>
                             <td>${row.Score || ''}</td>
                             <td>
-                              ${row.TrajectoryLink ? 
+                              ${isValidLink ? 
                                 `<a href="${row.TrajectoryLink}" target="_blank" class="trajectory-link">
                                    <span>Check here</span> 
-                                   <img src="static/images/hello-click-here.gif" class="hello-click-here" alt="Trajectory Preview">
+                                   <img src="static/images/hello-click-here.gif" class="trajectory-preview" alt="Trajectory Preview">
                                  </a>` : 
                                 '—'}
                             </td>
