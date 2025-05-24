@@ -1009,6 +1009,7 @@
                       <li><a title="A11y tree">A11y tree</a></li>
                       <li><a title="Screenshot + A11y tree">Screenshot + A11y tree</a></li>
                       <li><a title="Set-of-Mark">Set-of-Mark</a></li>
+                      <li><a title="Verified">Verified</a></li>
                     </ul>
                   </div>
                   
@@ -1027,7 +1028,8 @@
                           'Screenshot': 'BoardPanel2',
                           'A11y_tree': 'BoardPanel1',
                           'Screenshot_A11y_tree': 'BoardPanel3',
-                          'Set-of-Mark': 'BoardPanel4'
+                          'Set-of-Mark': 'BoardPanel4',
+                          'Verified': 'BoardPanel5'
                         };
                         
                         Object.entries(sheetMap).forEach(([sheetName, containerId]) => {
@@ -1060,9 +1062,7 @@
                           <tr>
                             <th>Rank</th>
                             <th>Model</th>
-                            <th>Details</th>
                             <th>Score</th>
-                            <th>Trajectories</th>
                           </tr>
                       `;
                       
@@ -1089,18 +1089,7 @@
                               <p class="institution">${row.Institution || ''}</p>
                               ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank">${row.PaperAuthors || 'Link'}</a>` : ''}
                             </td>
-                            <td style="word-break:break-word;">
-                              <p>${row.Details || '—'}</p>
-                            </td>
                             <td>${row.Score || ''}</td>
-                            <td>
-                              ${isValidLink ? 
-                                `<a href="${row.TrajectoryLink}" target="_blank" class="trajectory-link">
-                                   <span>Check here</span> 
-                                   <img src="static/images/hello-click-here.gif" class="trajectory-preview" alt="Trajectory Preview">
-                                 </a>` : 
-                                '—'}
-                            </td>
                           </tr>
                         `;
                       });
@@ -1134,6 +1123,9 @@
                   <div title="Screenshot" class="lib_examples" id="BoardPanel2" style="display: block;"></div>
                   <div title="Screenshot + A11y tree" class="lib_examples" id="BoardPanel3" style="display: none;"></div>
                   <div title="Set-of-Mark" class="lib_examples" id="BoardPanel4" style="display: none;"></div>
+                  <div title="Verified" class="lib_examples" id="BoardPanel5" style="display: none;">
+                    <md-block>We will run the current state-of-the-art models under a unified setting and environment, maintained by OSWorld evaluators, and specify the version used for the run (as some tasks may change over time).</md-block>
+                  </div>
                 </div>
               </div>
             </div>
