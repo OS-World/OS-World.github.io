@@ -1025,17 +1025,17 @@
                   
                   <div class="tabs is-centered example_lst" id="verifiedOnlyTabs">
                     <ul>
-                      <li class="is-active"><a title="Verified">🏆 Verified Results</a></li>
+                      <li class="is-active"><a title="Verified">Verified Results</a></li>
                     </ul>
                   </div>
                   
                   <div class="tabs is-centered example_lst" id="allTabsContainer" style="display: none;">
                     <ul>
-                      <li class="is-active"><a title="Verified">🏆 Verified Results</a></li>
-                      <li><a title="Screenshot">📷 Screenshot</a></li>
-                      <li><a title="A11y tree">🌳 A11y tree</a></li>
-                      <li><a title="Screenshot + A11y tree">📷🌳 Screenshot + A11y tree</a></li>
-                      <li><a title="Set-of-Mark">🔍 Set-of-Mark</a></li>
+                      <li class="is-active"><a title="Verified">Verified Results</a></li>
+                      <li><a title="Screenshot">Screenshot</a></li>
+                      <li><a title="A11y tree">A11y tree</a></li>
+                      <li><a title="Screenshot + A11y tree">Screenshot + A11y tree</a></li>
+                      <li><a title="Set-of-Mark">Set-of-Mark</a></li>
                     </ul>
                   </div>
                   
@@ -1182,7 +1182,7 @@
                       
                       // Filter out invalid data (🚧, -, null, undefined, empty)
                       const validData = tableData.filter(row => {
-                        const score = row['Avg@3'];
+                        const score = row['Score Avg@3'];
                         return score !== null && 
                                score !== undefined && 
                                score !== '' && 
@@ -1191,10 +1191,10 @@
                                !isNaN(parseFloat(score));
                       });
                       
-                      // Get unique values for filters
+                      // Get unique values for filters (convert to strings for consistent comparison)
                       const approachTypes = [...new Set(validData.map(row => row['Approach type']).filter(Boolean))];
                       const openSourceOptions = [...new Set(validData.map(row => row['Open-sourced?']).filter(Boolean))];
-                      const maxSteps = [...new Set(validData.map(row => row['Max steps']).filter(Boolean))];
+                      const maxSteps = [...new Set(validData.map(row => String(row['Max steps'])).filter(value => value !== '' && value !== 'null' && value !== 'undefined'))].sort((a, b) => Number(a) - Number(b));
                       
                       let tableHTML = `
                         <md-block>
@@ -1223,7 +1223,7 @@
                               <label for="maxStepsFilter" style="font-weight: bold; margin-right: 5px;">Max Steps:</label>
                               <select id="maxStepsFilter" onchange="filterVerifiedTable()">
                                 <option value="">All</option>
-                                ${maxSteps.map(steps => `<option value="${steps}">${steps}</option>`).join('')}
+                                ${maxSteps.map(steps => `<option value="${steps}" ${steps === '100' ? 'selected' : ''}>${steps}</option>`).join('')}
                               </select>
                             </div>
                             <div>
@@ -1249,8 +1249,9 @@
                       // Store data globally for filtering
                       window.verifiedTableData = validData;
                       
-                      // Initial render
-                      renderVerifiedTableRows(validData);
+                      // Apply default filter (100 steps) and render
+                      const filteredData = validData.filter(row => String(row['Max steps']) === '100');
+                      renderVerifiedTableRows(filteredData.length > 0 ? filteredData : validData);
                     }
 
                     function renderVerifiedTableRows(data) {
@@ -1319,7 +1320,7 @@
                       }
                       
                       if (maxStepsFilter) {
-                        filteredData = filteredData.filter(row => row['Max steps'] === maxStepsFilter);
+                        filteredData = filteredData.filter(row => String(row['Max steps']) === maxStepsFilter);
                       }
                       
                       renderVerifiedTableRows(filteredData);
@@ -1373,19 +1374,24 @@
                       document.getElementById('verifiedOnlyTabs').style.display = 'none';
                       document.getElementById('allTabsContainer').style.display = 'block';
                       
-                      // Show progress chart
-                      const chartContainer = document.querySelector('.content.has-text-justified');
-                      if (chartContainer) {
-                        chartContainer.style.display = 'block';
-                        // Initialize chart if not already done
-                        if (typeof XLSX !== 'undefined') {
-                          createProgressChart();
-                        } else {
-                          const script = document.createElement('script');
-                          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-                          script.onload = createProgressChart;
-                          document.head.appendChild(script);
-                        }
+                      // Show progress chart section
+                      const chartSection = document.querySelector('section .container.is-max-desktop .content.has-text-justified');
+                      if (chartSection) {
+                        chartSection.style.display = 'block';
+                        
+                        // Initialize chart
+                        setTimeout(() => {
+                          if (typeof XLSX !== 'undefined') {
+                            createProgressChart();
+                          } else {
+                            const script = document.createElement('script');
+                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+                            script.onload = () => {
+                              setTimeout(createProgressChart, 100);
+                            };
+                            document.head.appendChild(script);
+                          }
+                        }, 100);
                       }
                       
                       // Update the description text
@@ -1394,8 +1400,8 @@
                         descContainer.innerHTML = `
                           <h4 style="margin-bottom: 10px;">OSWorld Leaderboard</h4>
                           <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">
-                            <strong>🏆 Verified Results</strong>: Official results evaluated by our team under unified settings. 
-                            <strong>📊 Self-reported Results</strong>: Results submitted by the community across different modalities.
+                            <strong>Verified Results</strong>: Official results evaluated by our team under unified settings. 
+                            <strong>Self-reported Results</strong>: Results submitted by the community across different modalities.
                           </p>
                         `;
                       }
