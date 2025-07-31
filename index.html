@@ -1014,7 +1014,7 @@
               <div class="infoCard">
                 <div class="infoBody">
                   <div style="margin-bottom: 15px;">
-                    <h4 style="margin-bottom: 10px;">Official Verified Results</h4>
+                    <h4 style="margin-bottom: 10px;">Results</h4>
                     <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">
                       These are official results evaluated by our team under unified settings and environment. 
                       All models are tested with consistent evaluation protocols to ensure fair comparison.
@@ -1027,13 +1027,13 @@
                   
                   <div class="tabs is-centered example_lst" id="verifiedOnlyTabs">
                     <ul>
-                      <li class="is-active"><a title="Verified">Verified Results</a></li>
+                      <li class="is-active"><a title="Verified">OSWorld-Verified Results</a></li>
                     </ul>
                   </div>
                   
                   <div class="tabs is-centered example_lst" id="allTabsContainer" style="display: none;">
                     <ul>
-                      <li class="is-active"><a title="Verified">Verified Results</a></li>
+                      <li class="is-active"><a title="Verified">OSWorld-Verified Results</a></li>
                       <li><a title="Screenshot">Screenshot</a></li>
                       <li><a title="A11y tree">A11y tree</a></li>
                       <li><a title="Screenshot + A11y tree">Screenshot + A11y tree</a></li>
@@ -1203,11 +1203,45 @@
                           <h4 style="margin: 0 0 10px 0;">Filters:</h4>
                           <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                             <div>
-                              <label for="approachFilter" style="font-weight: bold; margin-right: 5px;">Approach Type:</label>
-                              <select id="approachFilter" onchange="filterVerifiedTable()">
-                                <option value="">All</option>
-                                ${approachTypes.map(type => `<option value="${type}">${type}</option>`).join('')}
-                              </select>
+                              <label style="font-weight: bold; margin-bottom: 8px; display: block;">Model Type:</label>
+                              <div style="
+                                display: flex; 
+                                flex-direction: column; 
+                                gap: 6px; 
+                                max-width: 220px; 
+                                padding: 8px; 
+                                border: 1px solid #ddd; 
+                                border-radius: 4px; 
+                                background: #fafafa;
+                                max-height: 150px;
+                                overflow-y: auto;
+                              ">
+                                <label style="
+                                  font-weight: bold; 
+                                  display: flex; 
+                                  align-items: center; 
+                                  gap: 6px; 
+                                  padding: 2px 0; 
+                                  border-bottom: 1px solid #ddd;
+                                  margin-bottom: 4px;
+                                ">
+                                  <input type="checkbox" id="approachFilterAll" onchange="handleApproachAllChange()" checked>
+                                  <span style="color: #333;">All</span>
+                                </label>
+                                ${approachTypes.map(type => `
+                                  <label style="
+                                    font-weight: normal; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    gap: 6px; 
+                                    padding: 2px 0;
+                                    cursor: pointer;
+                                  ">
+                                    <input type="checkbox" class="approachFilterItem" value="${type}" onchange="handleApproachItemChange()" checked disabled>
+                                    <span style="color: #999; font-size: 0.9em;">${type}</span>
+                                  </label>
+                                `).join('')}
+                              </div>
                             </div>
                             <div>
                               <label for="openSourceFilter" style="font-weight: bold; margin-right: 5px;">Open-sourced:</label>
@@ -1219,8 +1253,8 @@
                             <div>
                               <label for="maxStepsFilter" style="font-weight: bold; margin-right: 5px;">Max Steps:</label>
                               <select id="maxStepsFilter" onchange="filterVerifiedTable()">
-                                <option value="">All</option>
-                                ${maxSteps.map(steps => `<option value="${steps}" ${steps === '100' ? 'selected' : ''}>${steps}</option>`).join('')}
+                                <option value="" selected>All</option>
+                                ${maxSteps.map(steps => `<option value="${steps}">${steps}</option>`).join('')}
                               </select>
                             </div>
                             <div>
@@ -1263,9 +1297,8 @@
                         });
                       }
                       
-                      // Apply default filter (100 steps) and render
-                      const filteredData = validData.filter(row => String(row['Max steps']) === '100');
-                      renderVerifiedTableRows(filteredData.length > 0 ? filteredData : validData);
+                      // Apply default filter (All steps) and render
+                      renderVerifiedTableRows(validData);
                     }
 
                     function renderVerifiedTableRows(data) {
@@ -1461,17 +1494,75 @@
                       tbody.innerHTML = tableRowsHTML;
                     }
 
+                    function handleApproachAllChange() {
+                      const allCheckbox = document.getElementById('approachFilterAll');
+                      const itemCheckboxes = document.querySelectorAll('.approachFilterItem');
+                      
+                      if (allCheckbox.checked) {
+                        // Check all items and disable them
+                        itemCheckboxes.forEach(cb => {
+                          cb.checked = true;
+                          cb.disabled = true;
+                          // Update label style
+                          const label = cb.nextElementSibling;
+                          if (label) {
+                            label.style.color = '#999';
+                          }
+                        });
+                      } else {
+                        // Enable all items for individual selection
+                        itemCheckboxes.forEach(cb => {
+                          cb.disabled = false;
+                          // Update label style
+                          const label = cb.nextElementSibling;
+                          if (label) {
+                            label.style.color = '#333';
+                          }
+                        });
+                      }
+                      
+                      filterVerifiedTable();
+                    }
+
+                    function handleApproachItemChange() {
+                      const allCheckbox = document.getElementById('approachFilterAll');
+                      const itemCheckboxes = document.querySelectorAll('.approachFilterItem');
+                      
+                      // If all items are checked, check the "All" checkbox
+                      const allItemsChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+                      if (allItemsChecked && !allCheckbox.checked) {
+                        allCheckbox.checked = true;
+                        handleApproachAllChange();
+                        return;
+                      }
+                      
+                      filterVerifiedTable();
+                    }
+
                     function filterVerifiedTable() {
                       if (!window.verifiedTableData) return;
                       
-                      const approachFilter = document.getElementById('approachFilter').value;
+                      // Get selected approach types
+                      const allApproachChecked = document.getElementById('approachFilterAll').checked;
+                      let selectedApproaches = [];
+                      if (!allApproachChecked) {
+                        const itemCheckboxes = document.querySelectorAll('.approachFilterItem:checked');
+                        selectedApproaches = Array.from(itemCheckboxes).map(cb => cb.value);
+                      }
+                      
                       const openSourceFilter = document.getElementById('openSourceFilter').value;
                       const maxStepsFilter = document.getElementById('maxStepsFilter').value;
                       
                       let filteredData = window.verifiedTableData;
                       
-                      if (approachFilter) {
-                        filteredData = filteredData.filter(row => row['Approach type'] === approachFilter);
+                      // Filter by approach type (only if not "All" and has selections)
+                      if (!allApproachChecked) {
+                        if (selectedApproaches.length > 0) {
+                          filteredData = filteredData.filter(row => selectedApproaches.includes(row['Approach type']));
+                        } else {
+                          // If no approach types selected, show no results
+                          filteredData = [];
+                        }
                       }
                       
                       if (openSourceFilter) {
@@ -1490,15 +1581,17 @@
                     }
 
                     function clearVerifiedFilters() {
-                      document.getElementById('approachFilter').value = '';
+                      // Reset approach type to "All"
+                      document.getElementById('approachFilterAll').checked = true;
+                      handleApproachAllChange();
+                      
                       document.getElementById('openSourceFilter').value = '';
-                      document.getElementById('maxStepsFilter').value = '100';
+                      document.getElementById('maxStepsFilter').value = '';
                       document.getElementById('sortBy').value = 'score';
                       
                       if (window.verifiedTableData) {
-                        // Apply default filter (100 steps)
-                        const filteredData = window.verifiedTableData.filter(row => String(row['Max steps']) === '100');
-                        renderVerifiedTableRows(filteredData.length > 0 ? filteredData : window.verifiedTableData);
+                        // Apply default filter (All steps)
+                        renderVerifiedTableRows(window.verifiedTableData);
                       }
                     }
                     
