@@ -1199,11 +1199,6 @@
                       const maxSteps = [...new Set(validData.map(row => String(row['Max steps'])).filter(value => value !== '' && value !== 'null' && value !== 'undefined'))].sort((a, b) => Number(a) - Number(b));
                       
                       let tableHTML = `
-                        <md-block>
-                          We run the current state-of-the-art models under a unified setting and environment, maintained by OSWorld evaluators, and specify the version used for the run (as some tasks may change over time).
-                          These are the official verified results from our evaluation team.
-                        </md-block>
-                        
                         <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                           <h4 style="margin: 0 0 10px 0;">Filters:</h4>
                           <div style="display: flex; gap: 15px; flex-wrap: wrap;">
