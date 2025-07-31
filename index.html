@@ -990,17 +990,19 @@
             return color;
           }
 
-          // Progress chart is hidden by default, uncomment to enable
-          // document.addEventListener('DOMContentLoaded', () => {
-          //   if (typeof XLSX === 'undefined') {
-          //     const script = document.createElement('script');
-          //     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-          //     script.onload = createProgressChart;
-          //     document.head.appendChild(script);
-          //   } else {
-          //     createProgressChart();
-          //   }
-          // });
+          // Progress chart initialization for self-reported mode
+          function initProgressChart() {
+            if (typeof XLSX === 'undefined') {
+              const script = document.createElement('script');
+              script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+              script.onload = () => {
+                setTimeout(createProgressChart, 200);
+              };
+              document.head.appendChild(script);
+            } else {
+              setTimeout(createProgressChart, 200);
+            }
+          }
         </script>
       </div>
       <!-- End Progress Chart -->
@@ -1232,10 +1234,19 @@
                           </div>
                         </div>
                         
+                        <div style="margin-bottom: 10px;">
+                          <label for="sortBy" style="font-weight: bold; margin-right: 5px;">Sort by:</label>
+                          <select id="sortBy" onchange="sortVerifiedTable()">
+                            <option value="score">Score (Highest first)</option>
+                            <option value="date">Date (Newest first)</option>
+                            <option value="model">Model Name (A-Z)</option>
+                          </select>
+                        </div>
+                        
                         <table class="table performanceTable" id="verifiedResultsTable">
                           <tr>
                             <th>Rank</th>
-                            <th>Model</th>
+                            <th>Model & Date</th>
                             <th>Approach & Details</th>
                             <th>Score (Avg@3)</th>
                           </tr>
@@ -1258,45 +1269,71 @@
                       const tbody = document.getElementById('verifiedTableBody');
                       if (!tbody) return;
                       
-                      // Sort by Avg@3 score in descending order
-                      const sortedData = [...data].sort((a, b) => {
-                        const scoreA = parseFloat(a['Avg@3']) || 0;
-                        const scoreB = parseFloat(b['Avg@3']) || 0;
-                        return scoreB - scoreA;
-                      });
+                      // Get current sort preference
+                      const sortBy = document.getElementById('sortBy')?.value || 'score';
+                      
+                      // Sort data based on selection
+                      let sortedData = [...data];
+                      if (sortBy === 'score') {
+                        sortedData.sort((a, b) => {
+                          const scoreA = parseFloat(a['Score Avg@3']) || 0;
+                          const scoreB = parseFloat(b['Score Avg@3']) || 0;
+                          return scoreB - scoreA;
+                        });
+                      } else if (sortBy === 'date') {
+                        sortedData.sort((a, b) => {
+                          const dateA = new Date(a.Date || 0);
+                          const dateB = new Date(b.Date || 0);
+                          return dateB - dateA; // Newest first
+                        });
+                      } else if (sortBy === 'model') {
+                        sortedData.sort((a, b) => {
+                          const modelA = (a.Model || '').toLowerCase();
+                          const modelB = (b.Model || '').toLowerCase();
+                          return modelA.localeCompare(modelB);
+                        });
+                      }
                       
                       let tableRowsHTML = '';
                       
-                      sortedData.forEach((row, index) => {
-                        const rank = index + 1;
-                        const isFirstRank = rank === 1;
-                        const score = parseFloat(row['Avg@3']).toFixed(1);
+                                              sortedData.forEach((row, index) => {
+                          const rank = index + 1;
+                          const isFirstRank = rank === 1;
+                          const score = parseFloat(row['Score Avg@3']).toFixed(1);
+                          
+                          // Check if Score Std@3 exists and add it to score display
+                          let scoreDisplay = `${score}%`;
+                          if (row['Score Std@3'] && row['Score Std@3'] !== '' && row['Score Std@3'] !== null && !isNaN(parseFloat(row['Score Std@3']))) {
+                            const std = parseFloat(row['Score Std@3']).toFixed(1);
+                            scoreDisplay = `${score}±${std}%`;
+                          }
                         
-                        // Check if Std@3 exists and add it to score display
-                        let scoreDisplay = `${score}%`;
-                        if (row['Std@3'] && row['Std@3'] !== '' && row['Std@3'] !== null && !isNaN(parseFloat(row['Std@3']))) {
-                          const std = parseFloat(row['Std@3']).toFixed(1);
-                          scoreDisplay = `${score}±${std}%`;
-                        }
-                        
-                        tableRowsHTML += `
-                          <tr ${isFirstRank ? 'class="first-rank-row"' : ''}>
-                            <td>
-                              <p>${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
-                            </td>
-                            <td style="word-break:break-word;">
-                              <strong>${row.Model || ''}</strong>
-                              <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
-                              ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank" style="color: #3273dc; text-decoration: none;">${row.PaperAuthors || 'Paper Link'}</a>` : ''}
-                            </td>
-                            <td style="font-size: 0.9em;">
-                              <div><strong>Type:</strong> ${row['Approach type'] || 'N/A'}</div>
-                              <div><strong>Open-sourced:</strong> ${row['Open-sourced?'] || 'N/A'}</div>
-                              <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
-                            </td>
-                            <td><strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong></td>
-                          </tr>
-                        `;
+                                                  // Format date
+                          let dateDisplay = '';
+                          if (row.Date) {
+                            const date = new Date(row.Date);
+                            dateDisplay = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                          }
+                          
+                          tableRowsHTML += `
+                            <tr ${isFirstRank ? 'class="first-rank-row"' : ''}>
+                              <td>
+                                <p>${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
+                              </td>
+                              <td style="word-break:break-word;">
+                                <strong>${row.Model || ''}</strong>
+                                <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
+                                ${dateDisplay ? `<p class="eval-date" style="color: #999; font-size: 0.8em; margin: 2px 0;">📅 ${dateDisplay}</p>` : ''}
+                                ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank" style="color: #3273dc; text-decoration: none;">${row.PaperAuthors || 'Paper Link'}</a>` : ''}
+                              </td>
+                              <td style="font-size: 0.9em;">
+                                <div><strong>Type:</strong> ${row['Approach type'] || 'N/A'}</div>
+                                <div><strong>Open-sourced:</strong> ${row['Open-sourced?'] || 'N/A'}</div>
+                                <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
+                              </td>
+                              <td><strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong></td>
+                            </tr>
+                          `;
                       });
                       
                       tbody.innerHTML = tableRowsHTML;
@@ -1326,13 +1363,20 @@
                       renderVerifiedTableRows(filteredData);
                     }
 
+                    function sortVerifiedTable() {
+                      filterVerifiedTable(); // Re-apply current filters with new sort
+                    }
+
                     function clearVerifiedFilters() {
                       document.getElementById('approachFilter').value = '';
                       document.getElementById('openSourceFilter').value = '';
-                      document.getElementById('maxStepsFilter').value = '';
+                      document.getElementById('maxStepsFilter').value = '100';
+                      document.getElementById('sortBy').value = 'score';
                       
                       if (window.verifiedTableData) {
-                        renderVerifiedTableRows(window.verifiedTableData);
+                        // Apply default filter (100 steps)
+                        const filteredData = window.verifiedTableData.filter(row => String(row['Max steps']) === '100');
+                        renderVerifiedTableRows(filteredData.length > 0 ? filteredData : window.verifiedTableData);
                       }
                     }
                     
@@ -1374,24 +1418,30 @@
                       document.getElementById('verifiedOnlyTabs').style.display = 'none';
                       document.getElementById('allTabsContainer').style.display = 'block';
                       
-                      // Show progress chart section
-                      const chartSection = document.querySelector('section .container.is-max-desktop .content.has-text-justified');
+                      // Show progress chart section - try multiple selectors
+                      let chartSection = document.querySelector('section .container.is-max-desktop .content.has-text-justified');
+                      if (!chartSection) {
+                        chartSection = document.querySelector('.content.has-text-justified');
+                      }
+                      if (!chartSection) {
+                        // Find the chart container by the canvas element
+                        const canvas = document.getElementById('progressChart');
+                        if (canvas) {
+                          chartSection = canvas.closest('.content');
+                        }
+                      }
+                      
                       if (chartSection) {
                         chartSection.style.display = 'block';
+                        console.log('Chart section found and shown');
                         
-                        // Initialize chart
+                        // Initialize chart with delay to ensure DOM is ready
                         setTimeout(() => {
-                          if (typeof XLSX !== 'undefined') {
-                            createProgressChart();
-                          } else {
-                            const script = document.createElement('script');
-                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-                            script.onload = () => {
-                              setTimeout(createProgressChart, 100);
-                            };
-                            document.head.appendChild(script);
-                          }
-                        }, 100);
+                          console.log('Initializing chart...');
+                          initProgressChart();
+                        }, 300);
+                      } else {
+                        console.error('Chart section not found');
                       }
                       
                       // Update the description text
