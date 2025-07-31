@@ -1012,13 +1012,24 @@
               <div class="infoCard">
                 <div class="infoBody">
                   <div style="margin-bottom: 15px;">
-                    <h4 style="margin-bottom: 10px;">Leaderboard Results</h4>
-                    <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">
-                      <strong>Verified</strong>: Official results evaluated by our team under unified settings. 
-                      <strong>Self-reported</strong>: Results submitted by the community across different modalities.
+                    <h4 style="margin-bottom: 10px;">Official Verified Results</h4>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">
+                      These are official results evaluated by our team under unified settings and environment. 
+                      All models are tested with consistent evaluation protocols to ensure fair comparison.
+                    </p>
+                    <p style="font-size: 0.8em; color: #999;">
+                      For self-reported results and progress trends across different modalities, 
+                      <a href="#" id="showSelfReportedLink" style="color: #3273dc; text-decoration: underline; cursor: pointer;">click here</a>.
                     </p>
                   </div>
-                  <div class="tabs is-centered example_lst">
+                  
+                  <div class="tabs is-centered example_lst" id="verifiedOnlyTabs">
+                    <ul>
+                      <li class="is-active"><a title="Verified">🏆 Verified Results</a></li>
+                    </ul>
+                  </div>
+                  
+                  <div class="tabs is-centered example_lst" id="allTabsContainer" style="display: none;">
                     <ul>
                       <li class="is-active"><a title="Verified">🏆 Verified Results</a></li>
                       <li><a title="Screenshot">📷 Screenshot</a></li>
@@ -1033,6 +1044,26 @@
                   
                   <script>
                     async function loadAndRenderExcelData() {
+                      try {
+                        // Always load verified results first
+                        await loadVerifiedResults();
+                        
+                        // Preload self-reported results but don't display them yet
+                        window.selfReportedDataLoaded = false;
+                        
+                        initTabSwitching();
+                        
+                      } catch (error) {
+                        console.error('Error loading Excel data:', error);
+                        document.querySelectorAll('.lib_examples').forEach(container => {
+                          container.innerHTML = '<p>Error loading benchmark data. Please try again later.</p>';
+                        });
+                      }
+                    }
+
+                    async function loadSelfReportedData() {
+                      if (window.selfReportedDataLoaded) return;
+                      
                       try {
                         // Load self-reported results
                         const response = await fetch('static/data/self_reported_results.xlsx');
@@ -1055,16 +1086,14 @@
                           }
                         });
 
-                        // Load verified results for the Verified tab
-                        await loadVerifiedResults();
-                        
-                        initTabSwitching();
+                        window.selfReportedDataLoaded = true;
                         
                       } catch (error) {
-                        console.error('Error loading Excel data:', error);
-
+                        console.error('Error loading self-reported data:', error);
                         document.querySelectorAll('.lib_examples').forEach(container => {
-                          container.innerHTML = '<p>Error loading benchmark data. Please try again later.</p>';
+                          if (container.id !== 'BoardPanel5') {
+                            container.innerHTML = '<p>Error loading self-reported data. Please try again later.</p>';
+                          }
                         });
                       }
                     }
@@ -1242,6 +1271,13 @@
                         const isFirstRank = rank === 1;
                         const score = parseFloat(row['Avg@3']).toFixed(1);
                         
+                        // Check if Std@3 exists and add it to score display
+                        let scoreDisplay = `${score}%`;
+                        if (row['Std@3'] && row['Std@3'] !== '' && row['Std@3'] !== null && !isNaN(parseFloat(row['Std@3']))) {
+                          const std = parseFloat(row['Std@3']).toFixed(1);
+                          scoreDisplay = `${score}±${std}%`;
+                        }
+                        
                         tableRowsHTML += `
                           <tr ${isFirstRank ? 'class="first-rank-row"' : ''}>
                             <td>
@@ -1257,7 +1293,7 @@
                               <div><strong>Open-sourced:</strong> ${row['Open-sourced?'] || 'N/A'}</div>
                               <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
                             </td>
-                            <td><strong style="font-size: 1.1em; color: #28a745;">${score}%</strong></td>
+                            <td><strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong></td>
                           </tr>
                         `;
                       });
@@ -1300,19 +1336,25 @@
                     }
                     
                     function initTabSwitching() {
-                      document.querySelectorAll(".example_lst li").forEach(e => {
+                      // Add event listeners for both tab containers
+                      document.querySelectorAll("#verifiedOnlyTabs li, #allTabsContainer li").forEach(e => {
                         e.addEventListener("click", function(eve) {
                           const clickedElement = eve.target;
                           const tabTitle = clickedElement.getAttribute('title');
                           
-                          // Update active tab
-                          for (let v of document.querySelectorAll(".example_lst a")) {
-                            if (v.getAttribute('title') === tabTitle) {
-                              v.parentElement.className = "is-active";
+                          // Find the currently visible tab container
+                          const verifiedTabs = document.getElementById('verifiedOnlyTabs');
+                          const allTabs = document.getElementById('allTabsContainer');
+                          const activeContainer = verifiedTabs.style.display !== 'none' ? verifiedTabs : allTabs;
+                          
+                          // Update active tab only in the active container
+                          activeContainer.querySelectorAll('a').forEach(link => {
+                            if (link.getAttribute('title') === tabTitle) {
+                              link.parentElement.className = "is-active";
                             } else {
-                              v.parentElement.className = "";
+                              link.parentElement.className = "";
                             }
-                          }
+                          });
                           
                           // Show/hide corresponding content
                           for (let block of document.getElementsByClassName('lib_examples')) {
@@ -1322,7 +1364,55 @@
                       });
                     }
                     
-                    document.addEventListener('DOMContentLoaded', loadAndRenderExcelData);
+                    // Handle showing self-reported results
+                    async function showSelfReportedResults() {
+                      // First load self-reported data if not already loaded
+                      await loadSelfReportedData();
+                      
+                      // Hide verified-only tabs and show all tabs
+                      document.getElementById('verifiedOnlyTabs').style.display = 'none';
+                      document.getElementById('allTabsContainer').style.display = 'block';
+                      
+                      // Show progress chart
+                      const chartContainer = document.querySelector('.content.has-text-justified');
+                      if (chartContainer) {
+                        chartContainer.style.display = 'block';
+                        // Initialize chart if not already done
+                        if (typeof XLSX !== 'undefined') {
+                          createProgressChart();
+                        } else {
+                          const script = document.createElement('script');
+                          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+                          script.onload = createProgressChart;
+                          document.head.appendChild(script);
+                        }
+                      }
+                      
+                      // Update the description text
+                      const descContainer = document.querySelector('.infoBody > div:first-child');
+                      if (descContainer) {
+                        descContainer.innerHTML = `
+                          <h4 style="margin-bottom: 10px;">OSWorld Leaderboard</h4>
+                          <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">
+                            <strong>🏆 Verified Results</strong>: Official results evaluated by our team under unified settings. 
+                            <strong>📊 Self-reported Results</strong>: Results submitted by the community across different modalities.
+                          </p>
+                        `;
+                      }
+                    }
+                    
+                    document.addEventListener('DOMContentLoaded', () => {
+                      loadAndRenderExcelData();
+                      
+                      // Add click handler for showing self-reported results
+                      const showLink = document.getElementById('showSelfReportedLink');
+                      if (showLink) {
+                        showLink.addEventListener('click', function(e) {
+                          e.preventDefault();
+                          showSelfReportedResults();
+                        });
+                      }
+                    });
                   </script>
                   
                   <div title="A11y tree" class="lib_examples" id="BoardPanel1" style="display: none;"></div>
