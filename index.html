@@ -1291,39 +1291,40 @@
                       } else if (sortBy === 'date') {
                         sortedData.sort((a, b) => {
                           const parseExcelDateForSort = (dateVal) => {
-                            if (!dateVal) return new Date(0);
+                            if (!dateVal || dateVal === 'NaT') return new Date(0);
                             
                             try {
                               let date;
                               const dateStr = String(dateVal);
                               
-                              // Method 1: If it looks like YYYY-MM-DD format
-                              if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                                date = new Date(dateStr + 'T00:00:00');
+                              // Method 1: Check if it's already a valid Date object
+                              if (dateVal instanceof Date && !isNaN(dateVal.getTime())) {
+                                return dateVal;
                               }
-                              // Method 2: If it's a number (Excel serial date)
-                              else if (typeof dateVal === 'number' && dateVal > 1000) {
-                                // Excel serial date conversion
+                              
+                              // Method 2: Excel serial number
+                              if (typeof dateVal === 'number' && dateVal > 40000 && dateVal < 50000) {
                                 date = new Date((dateVal - 25569) * 86400 * 1000);
-                              }
-                              // Method 3: Try direct parsing
-                              else {
-                                date = new Date(dateVal);
-                              }
-                              
-                              // Validate the date
-                              if (!isNaN(date.getTime()) && date.getFullYear() >= 2020 && date.getFullYear() <= 2030) {
-                                return date;
-                              }
-                              
-                              // Fallback: Manual parsing for YYYY-MM-DD
-                              const match = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
-                              if (match) {
-                                const [_, year, month, day] = match;
-                                date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-                                if (!isNaN(date.getTime())) {
+                                if (!isNaN(date.getTime()) && date.getFullYear() >= 2020) {
                                   return date;
                                 }
+                              }
+                              
+                              // Method 3: ISO date string patterns
+                              if (dateStr.includes('T') || dateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+                                const isoMatch = dateStr.match(/(\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?)/);
+                                if (isoMatch) {
+                                  date = new Date(isoMatch[1]);
+                                  if (!isNaN(date.getTime()) && date.getFullYear() >= 2020) {
+                                    return date;
+                                  }
+                                }
+                              }
+                              
+                              // Method 4: Try direct parsing
+                              date = new Date(dateVal);
+                              if (!isNaN(date.getTime()) && date.getFullYear() >= 2020 && date.getFullYear() <= 2030) {
+                                return date;
                               }
                               
                               return new Date(0);
@@ -1358,9 +1359,9 @@
                             scoreDisplay = `${score}±${std}%`;
                           }
                         
-                                                  // Parse date with robust fallback
+                                                  // Parse date with robust fallback for XLSX.js data
                           const parseExcelDate = (dateVal) => {
-                            if (!dateVal) return null;
+                            if (!dateVal || dateVal === 'NaT') return null;
                             
                             // Log for debugging
                             console.log('Parsing date:', dateVal, 'type:', typeof dateVal);
@@ -1369,38 +1370,64 @@
                               let date;
                               const dateStr = String(dateVal);
                               
-                              // Method 1: If it looks like YYYY-MM-DD format
-                              if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                                date = new Date(dateStr + 'T00:00:00');
-                              }
-                              // Method 2: If it's a number (Excel serial date)
-                              else if (typeof dateVal === 'number' && dateVal > 1000) {
-                                // Excel serial date conversion
-                                date = new Date((dateVal - 25569) * 86400 * 1000);
-                              }
-                              // Method 3: Try direct parsing
-                              else {
-                                date = new Date(dateVal);
+                              // Method 1: Check if it's already a valid Date object
+                              if (dateVal instanceof Date && !isNaN(dateVal.getTime())) {
+                                return dateVal;
                               }
                               
-                              // Validate the date
+                              // Method 2: Excel serial number (XLSX.js sometimes returns this)
+                              if (typeof dateVal === 'number' && dateVal > 40000 && dateVal < 50000) {
+                                // Excel serial date: days since 1900-01-01
+                                date = new Date((dateVal - 25569) * 86400 * 1000);
+                                if (!isNaN(date.getTime()) && date.getFullYear() >= 2020) {
+                                  return date;
+                                }
+                              }
+                              
+                              // Method 3: ISO date string patterns (from pandas Timestamp)
+                              if (dateStr.includes('T') || dateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+                                // Remove any extra text like "Timestamp('2025-07-28 00:00:00')"
+                                const isoMatch = dateStr.match(/(\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?)/);
+                                if (isoMatch) {
+                                  date = new Date(isoMatch[1]);
+                                  if (!isNaN(date.getTime()) && date.getFullYear() >= 2020) {
+                                    return date;
+                                  }
+                                }
+                              }
+                              
+                              // Method 4: Try direct parsing
+                              date = new Date(dateVal);
                               if (!isNaN(date.getTime()) && date.getFullYear() >= 2020 && date.getFullYear() <= 2030) {
                                 return date;
                               }
                               
-                              // Fallback: Manual parsing for YYYY-MM-DD
-                              const match = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
-                              if (match) {
-                                const [_, year, month, day] = match;
-                                date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-                                if (!isNaN(date.getTime())) {
-                                  return date;
+                              // Method 5: Manual regex parsing for various formats
+                              const patterns = [
+                                /(\d{4})-(\d{2})-(\d{2})/,  // YYYY-MM-DD
+                                /(\d{2})\/(\d{2})\/(\d{4})/, // MM/DD/YYYY
+                                /(\d{4})\/(\d{2})\/(\d{2})/  // YYYY/MM/DD
+                              ];
+                              
+                              for (const pattern of patterns) {
+                                const match = dateStr.match(pattern);
+                                if (match) {
+                                  let year, month, day;
+                                  if (pattern.source.startsWith('(\\d{4})')) {
+                                    [_, year, month, day] = match;
+                                  } else {
+                                    [_, month, day, year] = match;
+                                  }
+                                  date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                                  if (!isNaN(date.getTime()) && date.getFullYear() >= 2020) {
+                                    return date;
+                                  }
                                 }
                               }
                               
                               return null;
                             } catch (e) {
-                              console.warn('Date parsing error:', e);
+                              console.warn('Date parsing error for:', dateVal, e);
                               return null;
                             }
                           };
