@@ -1260,6 +1260,14 @@
                       // Store data globally for filtering
                       window.verifiedTableData = validData;
                       
+                      // Debug: Check date formats in the data
+                      if (validData.length > 0) {
+                        console.log('Date debugging - first few rows:');
+                        validData.slice(0, 3).forEach((row, i) => {
+                          console.log(`Row ${i}: Date = ${row.Date} (type: ${typeof row.Date})`);
+                        });
+                      }
+                      
                       // Apply default filter (100 steps) and render
                       const filteredData = validData.filter(row => String(row['Max steps']) === '100');
                       renderVerifiedTableRows(filteredData.length > 0 ? filteredData : validData);
@@ -1282,8 +1290,50 @@
                         });
                       } else if (sortBy === 'date') {
                         sortedData.sort((a, b) => {
-                          const dateA = new Date(a.Date || 0);
-                          const dateB = new Date(b.Date || 0);
+                          const parseExcelDateForSort = (dateVal) => {
+                            if (!dateVal) return new Date(0);
+                            
+                            try {
+                              let date;
+                              const dateStr = String(dateVal);
+                              
+                              // Method 1: If it looks like YYYY-MM-DD format
+                              if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                date = new Date(dateStr + 'T00:00:00');
+                              }
+                              // Method 2: If it's a number (Excel serial date)
+                              else if (typeof dateVal === 'number' && dateVal > 1000) {
+                                // Excel serial date conversion
+                                date = new Date((dateVal - 25569) * 86400 * 1000);
+                              }
+                              // Method 3: Try direct parsing
+                              else {
+                                date = new Date(dateVal);
+                              }
+                              
+                              // Validate the date
+                              if (!isNaN(date.getTime()) && date.getFullYear() >= 2020 && date.getFullYear() <= 2030) {
+                                return date;
+                              }
+                              
+                              // Fallback: Manual parsing for YYYY-MM-DD
+                              const match = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+                              if (match) {
+                                const [_, year, month, day] = match;
+                                date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                                if (!isNaN(date.getTime())) {
+                                  return date;
+                                }
+                              }
+                              
+                              return new Date(0);
+                            } catch (e) {
+                              return new Date(0);
+                            }
+                          };
+                          
+                          const dateA = parseExcelDateForSort(a.Date);
+                          const dateB = parseExcelDateForSort(b.Date);
                           return dateB - dateA; // Newest first
                         });
                       } else if (sortBy === 'model') {
@@ -1308,11 +1358,61 @@
                             scoreDisplay = `${score}±${std}%`;
                           }
                         
-                                                  // Format date
+                                                  // Parse date with robust fallback
+                          const parseExcelDate = (dateVal) => {
+                            if (!dateVal) return null;
+                            
+                            // Log for debugging
+                            console.log('Parsing date:', dateVal, 'type:', typeof dateVal);
+                            
+                            try {
+                              let date;
+                              const dateStr = String(dateVal);
+                              
+                              // Method 1: If it looks like YYYY-MM-DD format
+                              if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                date = new Date(dateStr + 'T00:00:00');
+                              }
+                              // Method 2: If it's a number (Excel serial date)
+                              else if (typeof dateVal === 'number' && dateVal > 1000) {
+                                // Excel serial date conversion
+                                date = new Date((dateVal - 25569) * 86400 * 1000);
+                              }
+                              // Method 3: Try direct parsing
+                              else {
+                                date = new Date(dateVal);
+                              }
+                              
+                              // Validate the date
+                              if (!isNaN(date.getTime()) && date.getFullYear() >= 2020 && date.getFullYear() <= 2030) {
+                                return date;
+                              }
+                              
+                              // Fallback: Manual parsing for YYYY-MM-DD
+                              const match = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+                              if (match) {
+                                const [_, year, month, day] = match;
+                                date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                                if (!isNaN(date.getTime())) {
+                                  return date;
+                                }
+                              }
+                              
+                              return null;
+                            } catch (e) {
+                              console.warn('Date parsing error:', e);
+                              return null;
+                            }
+                          };
+                          
+                          // Format date
                           let dateDisplay = '';
-                          if (row.Date) {
-                            const date = new Date(row.Date);
-                            dateDisplay = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                          const parsedDate = parseExcelDate(row.Date);
+                          if (parsedDate) {
+                            dateDisplay = parsedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                          } else if (row.Date) {
+                            // Show raw value if parsing failed
+                            dateDisplay = String(row.Date);
                           }
                           
                           tableRowsHTML += `
