@@ -1202,45 +1202,62 @@
                         <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                           <h4 style="margin: 0 0 10px 0;">Filters:</h4>
                           <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <div>
-                              <label style="font-weight: bold; margin-bottom: 8px; display: block;">Model Type:</label>
-                              <div style="
-                                display: flex; 
-                                flex-direction: column; 
-                                gap: 6px; 
-                                max-width: 220px; 
-                                padding: 8px; 
-                                border: 1px solid #ddd; 
-                                border-radius: 4px; 
-                                background: #fafafa;
-                                max-height: 150px;
-                                overflow-y: auto;
-                              ">
-                                <label style="
-                                  font-weight: bold; 
-                                  display: flex; 
-                                  align-items: center; 
-                                  gap: 6px; 
-                                  padding: 2px 0; 
-                                  border-bottom: 1px solid #ddd;
-                                  margin-bottom: 4px;
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                              <label style="font-weight: bold; margin: 0;">Model Type:</label>
+                              <div style="position: relative; display: inline-block;">
+                                <button id="modelTypeDropdown" onclick="toggleModelTypeDropdown()" style="
+                                  padding: 6px 12px; 
+                                  border: 1px solid #ddd; 
+                                  border-radius: 4px; 
+                                  background: white; 
+                                  cursor: pointer;
+                                  font-size: 0.9em;
+                                  min-width: 120px;
+                                  text-align: left;
                                 ">
-                                  <input type="checkbox" id="approachFilterAll" onchange="handleApproachAllChange()" checked>
-                                  <span style="color: #333;">All</span>
-                                </label>
-                                ${approachTypes.map(type => `
+                                  <span id="modelTypeSelected">All</span>
+                                  <span style="float: right;">▼</span>
+                                </button>
+                                <div id="modelTypeDropdownMenu" style="
+                                  display: none;
+                                  position: absolute;
+                                  top: 100%;
+                                  left: 0;
+                                  z-index: 1000;
+                                  background: white;
+                                  border: 1px solid #ddd;
+                                  border-radius: 4px;
+                                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                  min-width: 180px;
+                                  max-height: 200px;
+                                  overflow-y: auto;
+                                ">
                                   <label style="
-                                    font-weight: normal; 
                                     display: flex; 
                                     align-items: center; 
-                                    gap: 6px; 
-                                    padding: 2px 0;
+                                    gap: 8px; 
+                                    padding: 8px 12px;
                                     cursor: pointer;
+                                    border-bottom: 1px solid #eee;
+                                    font-weight: bold;
                                   ">
-                                    <input type="checkbox" class="approachFilterItem" value="${type}" onchange="handleApproachItemChange()" checked disabled>
-                                    <span style="color: #999; font-size: 0.9em;">${type}</span>
+                                    <input type="checkbox" id="approachFilterAll" onchange="handleApproachAllChange()" checked>
+                                    <span>All</span>
                                   </label>
-                                `).join('')}
+                                  ${approachTypes.map(type => `
+                                    <label style="
+                                      display: flex; 
+                                      align-items: center; 
+                                      gap: 8px; 
+                                      padding: 6px 12px;
+                                      cursor: pointer;
+                                      font-size: 0.9em;
+                                    " onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor=''">
+                                      <input type="checkbox" class="approachFilterItem" value="${type}" onchange="handleApproachItemChange()" checked disabled>
+                                      <span style="color: #999;">${type}</span>
+                                    </label>
+                                  `).join('')}
+                                </div>
                               </div>
                             </div>
                             <div>
@@ -1494,6 +1511,28 @@
                       tbody.innerHTML = tableRowsHTML;
                     }
 
+                    function toggleModelTypeDropdown() {
+                      const dropdown = document.getElementById('modelTypeDropdownMenu');
+                      const isVisible = dropdown.style.display === 'block';
+                      dropdown.style.display = isVisible ? 'none' : 'block';
+                    }
+
+                    function updateModelTypeDisplay() {
+                      const allCheckbox = document.getElementById('approachFilterAll');
+                      const itemCheckboxes = document.querySelectorAll('.approachFilterItem:checked:not(:disabled)');
+                      const displaySpan = document.getElementById('modelTypeSelected');
+                      
+                      if (allCheckbox.checked) {
+                        displaySpan.textContent = 'All';
+                      } else if (itemCheckboxes.length === 0) {
+                        displaySpan.textContent = 'None selected';
+                      } else if (itemCheckboxes.length === 1) {
+                        displaySpan.textContent = itemCheckboxes[0].value;
+                      } else {
+                        displaySpan.textContent = `${itemCheckboxes.length} selected`;
+                      }
+                    }
+
                     function handleApproachAllChange() {
                       const allCheckbox = document.getElementById('approachFilterAll');
                       const itemCheckboxes = document.querySelectorAll('.approachFilterItem');
@@ -1521,6 +1560,7 @@
                         });
                       }
                       
+                      updateModelTypeDisplay();
                       filterVerifiedTable();
                     }
 
@@ -1536,6 +1576,7 @@
                         return;
                       }
                       
+                      updateModelTypeDisplay();
                       filterVerifiedTable();
                     }
 
@@ -1584,6 +1625,9 @@
                       // Reset approach type to "All"
                       document.getElementById('approachFilterAll').checked = true;
                       handleApproachAllChange();
+                      
+                      // Close dropdown
+                      document.getElementById('modelTypeDropdownMenu').style.display = 'none';
                       
                       document.getElementById('openSourceFilter').value = '';
                       document.getElementById('maxStepsFilter').value = '';
@@ -1683,6 +1727,15 @@
                           showSelfReportedResults();
                         });
                       }
+                      
+                      // Close dropdown when clicking outside
+                      document.addEventListener('click', function(e) {
+                        const dropdown = document.getElementById('modelTypeDropdownMenu');
+                        const button = document.getElementById('modelTypeDropdown');
+                        if (dropdown && button && !dropdown.contains(e.target) && !button.contains(e.target)) {
+                          dropdown.style.display = 'none';
+                        }
+                      });
                     });
                   </script>
                   
