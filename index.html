@@ -736,8 +736,8 @@
         reasoning.
         **We are actively updating the benchmark with new LLMs, VLMs and methods. Pull requests welcomed!**
       </md-block>
-      <!-- Progress Chart -->
-      <div class="content has-text-justified">
+      <!-- Progress Chart (Hidden by default) -->
+      <div class="content has-text-justified" style="display: none;">
         <div style="width: 100%; margin-top: 20px;">
           <canvas id="progressChart"></canvas>
         </div>
@@ -990,16 +990,17 @@
             return color;
           }
 
-          document.addEventListener('DOMContentLoaded', () => {
-            if (typeof XLSX === 'undefined') {
-              const script = document.createElement('script');
-              script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-              script.onload = createProgressChart;
-              document.head.appendChild(script);
-            } else {
-              createProgressChart();
-            }
-          });
+          // Progress chart is hidden by default, uncomment to enable
+          // document.addEventListener('DOMContentLoaded', () => {
+          //   if (typeof XLSX === 'undefined') {
+          //     const script = document.createElement('script');
+          //     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+          //     script.onload = createProgressChart;
+          //     document.head.appendChild(script);
+          //   } else {
+          //     createProgressChart();
+          //   }
+          // });
         </script>
       </div>
       <!-- End Progress Chart -->
@@ -1010,13 +1011,20 @@
             <div class="col-md-12">
               <div class="infoCard">
                 <div class="infoBody">
+                  <div style="margin-bottom: 15px;">
+                    <h4 style="margin-bottom: 10px;">Leaderboard Results</h4>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">
+                      <strong>Verified</strong>: Official results evaluated by our team under unified settings. 
+                      <strong>Self-reported</strong>: Results submitted by the community across different modalities.
+                    </p>
+                  </div>
                   <div class="tabs is-centered example_lst">
                     <ul>
-                      <li class="is-active"><a title="Screenshot">Screenshot</a></li>
-                      <li><a title="A11y tree">A11y tree</a></li>
-                      <li><a title="Screenshot + A11y tree">Screenshot + A11y tree</a></li>
-                      <li><a title="Set-of-Mark">Set-of-Mark</a></li>
-                      <li><a title="Verified">Verified</a></li>
+                      <li class="is-active"><a title="Verified">🏆 Verified Results</a></li>
+                      <li><a title="Screenshot">📷 Screenshot</a></li>
+                      <li><a title="A11y tree">🌳 A11y tree</a></li>
+                      <li><a title="Screenshot + A11y tree">📷🌳 Screenshot + A11y tree</a></li>
+                      <li><a title="Set-of-Mark">🔍 Set-of-Mark</a></li>
                     </ul>
                   </div>
                   
@@ -1026,6 +1034,7 @@
                   <script>
                     async function loadAndRenderExcelData() {
                       try {
+                        // Load self-reported results
                         const response = await fetch('static/data/self_reported_results.xlsx');
                         const arrayBuffer = await response.arrayBuffer();
                         const data = new Uint8Array(arrayBuffer);
@@ -1035,8 +1044,7 @@
                           'Screenshot': 'BoardPanel2',
                           'A11y_tree': 'BoardPanel1',
                           'Screenshot_A11y_tree': 'BoardPanel3',
-                          'Set-of-Mark': 'BoardPanel4',
-                          'Verified': 'BoardPanel5'
+                          'Set-of-Mark': 'BoardPanel4'
                         };
                         
                         Object.entries(sheetMap).forEach(([sheetName, containerId]) => {
@@ -1046,6 +1054,9 @@
                             renderTable(sheetName, jsonData, containerId);
                           }
                         });
+
+                        // Load verified results for the Verified tab
+                        await loadVerifiedResults();
                         
                         initTabSwitching();
                         
@@ -1055,6 +1066,35 @@
                         document.querySelectorAll('.lib_examples').forEach(container => {
                           container.innerHTML = '<p>Error loading benchmark data. Please try again later.</p>';
                         });
+                      }
+                    }
+
+                    async function loadVerifiedResults() {
+                      try {
+                        const response = await fetch('static/data/osworld_verified_results.xlsx');
+                        const arrayBuffer = await response.arrayBuffer();
+                        const data = new Uint8Array(arrayBuffer);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        
+                        // Get the first sheet name from the verified results
+                        const sheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[sheetName];
+                        
+                        if (worksheet) {
+                          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                          renderVerifiedTable(jsonData, 'BoardPanel5');
+                        }
+                      } catch (error) {
+                        console.error('Error loading verified results:', error);
+                        const container = document.getElementById('BoardPanel5');
+                        if (container) {
+                          container.innerHTML = `
+                            <md-block>
+                              We will run the current state-of-the-art models under a unified setting and environment, maintained by OSWorld evaluators, and specify the version used for the run (as some tasks may change over time).
+                            </md-block>
+                            <p>Error loading verified benchmark data. Please try again later.</p>
+                          `;
+                        }
                       }
                     }
 
@@ -1106,20 +1146,177 @@
                       tableHTML += `</table>`;
                       container.innerHTML = tableHTML;
                     }
+
+                    function renderVerifiedTable(tableData, containerId) {
+                      const container = document.getElementById(containerId);
+                      if (!container) return;
+                      
+                      // Filter out invalid data (🚧, -, null, undefined, empty)
+                      const validData = tableData.filter(row => {
+                        const score = row['Avg@3'];
+                        return score !== null && 
+                               score !== undefined && 
+                               score !== '' && 
+                               score !== '🚧' && 
+                               score !== '-' && 
+                               !isNaN(parseFloat(score));
+                      });
+                      
+                      // Get unique values for filters
+                      const approachTypes = [...new Set(validData.map(row => row['Approach type']).filter(Boolean))];
+                      const openSourceOptions = [...new Set(validData.map(row => row['Open-sourced?']).filter(Boolean))];
+                      const maxSteps = [...new Set(validData.map(row => row['Max steps']).filter(Boolean))];
+                      
+                      let tableHTML = `
+                        <md-block>
+                          We run the current state-of-the-art models under a unified setting and environment, maintained by OSWorld evaluators, and specify the version used for the run (as some tasks may change over time).
+                          These are the official verified results from our evaluation team.
+                        </md-block>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                          <h4 style="margin: 0 0 10px 0;">Filters:</h4>
+                          <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <div>
+                              <label for="approachFilter" style="font-weight: bold; margin-right: 5px;">Approach Type:</label>
+                              <select id="approachFilter" onchange="filterVerifiedTable()">
+                                <option value="">All</option>
+                                ${approachTypes.map(type => `<option value="${type}">${type}</option>`).join('')}
+                              </select>
+                            </div>
+                            <div>
+                              <label for="openSourceFilter" style="font-weight: bold; margin-right: 5px;">Open-sourced:</label>
+                              <select id="openSourceFilter" onchange="filterVerifiedTable()">
+                                <option value="">All</option>
+                                ${openSourceOptions.map(option => `<option value="${option}">${option}</option>`).join('')}
+                              </select>
+                            </div>
+                            <div>
+                              <label for="maxStepsFilter" style="font-weight: bold; margin-right: 5px;">Max Steps:</label>
+                              <select id="maxStepsFilter" onchange="filterVerifiedTable()">
+                                <option value="">All</option>
+                                ${maxSteps.map(steps => `<option value="${steps}">${steps}</option>`).join('')}
+                              </select>
+                            </div>
+                            <div>
+                              <button onclick="clearVerifiedFilters()" style="padding: 5px 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Filters</button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <table class="table performanceTable" id="verifiedResultsTable">
+                          <tr>
+                            <th>Rank</th>
+                            <th>Model</th>
+                            <th>Approach & Details</th>
+                            <th>Score (Avg@3)</th>
+                          </tr>
+                          <tbody id="verifiedTableBody">
+                          </tbody>
+                        </table>
+                      `;
+                      
+                      container.innerHTML = tableHTML;
+                      
+                      // Store data globally for filtering
+                      window.verifiedTableData = validData;
+                      
+                      // Initial render
+                      renderVerifiedTableRows(validData);
+                    }
+
+                    function renderVerifiedTableRows(data) {
+                      const tbody = document.getElementById('verifiedTableBody');
+                      if (!tbody) return;
+                      
+                      // Sort by Avg@3 score in descending order
+                      const sortedData = [...data].sort((a, b) => {
+                        const scoreA = parseFloat(a['Avg@3']) || 0;
+                        const scoreB = parseFloat(b['Avg@3']) || 0;
+                        return scoreB - scoreA;
+                      });
+                      
+                      let tableRowsHTML = '';
+                      
+                      sortedData.forEach((row, index) => {
+                        const rank = index + 1;
+                        const isFirstRank = rank === 1;
+                        const score = parseFloat(row['Avg@3']).toFixed(1);
+                        
+                        tableRowsHTML += `
+                          <tr ${isFirstRank ? 'class="first-rank-row"' : ''}>
+                            <td>
+                              <p>${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
+                            </td>
+                            <td style="word-break:break-word;">
+                              <strong>${row.Model || ''}</strong>
+                              <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
+                              ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank" style="color: #3273dc; text-decoration: none;">${row.PaperAuthors || 'Paper Link'}</a>` : ''}
+                            </td>
+                            <td style="font-size: 0.9em;">
+                              <div><strong>Type:</strong> ${row['Approach type'] || 'N/A'}</div>
+                              <div><strong>Open-sourced:</strong> ${row['Open-sourced?'] || 'N/A'}</div>
+                              <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
+                            </td>
+                            <td><strong style="font-size: 1.1em; color: #28a745;">${score}%</strong></td>
+                          </tr>
+                        `;
+                      });
+                      
+                      tbody.innerHTML = tableRowsHTML;
+                    }
+
+                    function filterVerifiedTable() {
+                      if (!window.verifiedTableData) return;
+                      
+                      const approachFilter = document.getElementById('approachFilter').value;
+                      const openSourceFilter = document.getElementById('openSourceFilter').value;
+                      const maxStepsFilter = document.getElementById('maxStepsFilter').value;
+                      
+                      let filteredData = window.verifiedTableData;
+                      
+                      if (approachFilter) {
+                        filteredData = filteredData.filter(row => row['Approach type'] === approachFilter);
+                      }
+                      
+                      if (openSourceFilter) {
+                        filteredData = filteredData.filter(row => row['Open-sourced?'] === openSourceFilter);
+                      }
+                      
+                      if (maxStepsFilter) {
+                        filteredData = filteredData.filter(row => row['Max steps'] === maxStepsFilter);
+                      }
+                      
+                      renderVerifiedTableRows(filteredData);
+                    }
+
+                    function clearVerifiedFilters() {
+                      document.getElementById('approachFilter').value = '';
+                      document.getElementById('openSourceFilter').value = '';
+                      document.getElementById('maxStepsFilter').value = '';
+                      
+                      if (window.verifiedTableData) {
+                        renderVerifiedTableRows(window.verifiedTableData);
+                      }
+                    }
                     
                     function initTabSwitching() {
                       document.querySelectorAll(".example_lst li").forEach(e => {
                         e.addEventListener("click", function(eve) {
-                          const iTxt = eve.srcElement.innerText;
+                          const clickedElement = eve.target;
+                          const tabTitle = clickedElement.getAttribute('title');
+                          
+                          // Update active tab
                           for (let v of document.querySelectorAll(".example_lst a")) {
-                            if (iTxt === v.innerText) {
+                            if (v.getAttribute('title') === tabTitle) {
                               v.parentElement.className = "is-active";
                             } else {
                               v.parentElement.className = "";
                             }
                           }
+                          
+                          // Show/hide corresponding content
                           for (let block of document.getElementsByClassName('lib_examples')) {
-                            block.style.display = (block.title === iTxt) ? 'block' : 'none';
+                            block.style.display = (block.title === tabTitle) ? 'block' : 'none';
                           }
                         });
                       });
@@ -1129,11 +1326,11 @@
                   </script>
                   
                   <div title="A11y tree" class="lib_examples" id="BoardPanel1" style="display: none;"></div>
-                  <div title="Screenshot" class="lib_examples" id="BoardPanel2" style="display: block;"></div>
+                  <div title="Screenshot" class="lib_examples" id="BoardPanel2" style="display: none;"></div>
                   <div title="Screenshot + A11y tree" class="lib_examples" id="BoardPanel3" style="display: none;"></div>
                   <div title="Set-of-Mark" class="lib_examples" id="BoardPanel4" style="display: none;"></div>
-                  <div title="Verified" class="lib_examples" id="BoardPanel5" style="display: none;">
-                    <md-block>We will run the current state-of-the-art models under a unified setting and environment, maintained by OSWorld evaluators, and specify the version used for the run (as some tasks may change over time).</md-block>
+                  <div title="Verified" class="lib_examples" id="BoardPanel5" style="display: block;">
+                    <p>Loading verified benchmark data...</p>
                   </div>
                 </div>
               </div>
