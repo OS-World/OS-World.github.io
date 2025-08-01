@@ -1195,7 +1195,6 @@
                       
                       // Get unique values for filters (convert to strings for consistent comparison)
                       const approachTypes = [...new Set(validData.map(row => row['Approach type']).filter(Boolean))];
-                      const openSourceOptions = [...new Set(validData.map(row => row['Open-sourced?']).filter(Boolean))];
                       const maxSteps = [...new Set(validData.map(row => String(row['Max steps'])).filter(value => value !== '' && value !== 'null' && value !== 'undefined'))].sort((a, b) => Number(a) - Number(b));
                       
                       let tableHTML = `
@@ -1259,13 +1258,6 @@
                                   `).join('')}
                                 </div>
                               </div>
-                            </div>
-                            <div>
-                              <label for="openSourceFilter" style="font-weight: bold; margin-right: 5px;">Open-sourced:</label>
-                              <select id="openSourceFilter" onchange="filterVerifiedTable()">
-                                <option value="">All</option>
-                                ${openSourceOptions.map(option => `<option value="${option}">${option}</option>`).join('')}
-                              </select>
                             </div>
                             <div>
                               <label for="maxStepsFilter" style="font-weight: bold; margin-right: 5px;">Max Steps:</label>
@@ -1500,7 +1492,6 @@
                               </td>
                               <td style="font-size: 0.9em;">
                                 <div><strong>Type:</strong> ${row['Approach type'] || 'N/A'}</div>
-                                <div><strong>Open-sourced:</strong> ${row['Open-sourced?'] || 'N/A'}</div>
                                 <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
                               </td>
                               <td><strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong></td>
@@ -1591,7 +1582,6 @@
                         selectedApproaches = Array.from(itemCheckboxes).map(cb => cb.value);
                       }
                       
-                      const openSourceFilter = document.getElementById('openSourceFilter').value;
                       const maxStepsFilter = document.getElementById('maxStepsFilter').value;
                       
                       let filteredData = window.verifiedTableData;
@@ -1604,10 +1594,6 @@
                           // If no approach types selected, show no results
                           filteredData = [];
                         }
-                      }
-                      
-                      if (openSourceFilter) {
-                        filteredData = filteredData.filter(row => row['Open-sourced?'] === openSourceFilter);
                       }
                       
                       if (maxStepsFilter) {
@@ -1629,7 +1615,6 @@
                       // Close dropdown
                       document.getElementById('modelTypeDropdownMenu').style.display = 'none';
                       
-                      document.getElementById('openSourceFilter').value = '';
                       document.getElementById('maxStepsFilter').value = '';
                       document.getElementById('sortBy').value = 'score';
                       
