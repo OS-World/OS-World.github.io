@@ -1312,8 +1312,8 @@
                     }
 
                     function setDefaultModelTypeFilters() {
-                      // Set default selections: Specialized model and general model
-                      const defaultSelections = ['Specialized model', 'general model'];
+                      // Set default selections: Specialized model and General model
+                      const defaultSelections = ['Specialized model', 'General model'];
                       
                       // Uncheck "All" first
                       const allCheckbox = document.getElementById('approachFilterAll');
@@ -1568,7 +1568,7 @@
                         });
                       } else {
                         // Enable all items for individual selection and set default selections
-                        const defaultSelections = ['Specialized model', 'general model'];
+                        const defaultSelections = ['Specialized model', 'General model'];
                         itemCheckboxes.forEach(cb => {
                           cb.disabled = false;
                           cb.checked = defaultSelections.includes(cb.value);
