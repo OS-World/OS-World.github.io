@@ -1178,13 +1178,66 @@
                       container.innerHTML = tableHTML;
                     }
 
+                    function aggregateByModelAndSteps(data) {
+                      // Group data by Model and Max steps
+                      const groups = {};
+                      
+                      data.forEach(row => {
+                        const key = `${row.Model || 'Unknown'}_${row['Max steps'] || 'Unknown'}`;
+                        
+                        if (!groups[key]) {
+                          groups[key] = {
+                            Model: row.Model,
+                            'Approach type': row['Approach type'],
+                            'Max steps': row['Max steps'],
+                            Institution: row.Institution,
+                            Date: row.Date, // Will be updated to the latest date
+                            PaperLink: row.PaperLink,
+                            PaperAuthors: row.PaperAuthors,
+                            runs: [],
+                            successRates: []
+                          };
+                        }
+                        
+                        // Update to the latest date
+                        if (row.Date && (!groups[key].Date || new Date(row.Date) > new Date(groups[key].Date))) {
+                          groups[key].Date = row.Date;
+                        }
+                        
+                        groups[key].runs.push(row);
+                        const successRate = parseFloat(row['Success rate']);
+                        if (!isNaN(successRate)) {
+                          groups[key].successRates.push(successRate);
+                        }
+                      });
+                      
+                      // Calculate statistics for each group
+                      return Object.values(groups).map(group => {
+                        const rates = group.successRates;
+                        const mean = rates.reduce((sum, rate) => sum + rate, 0) / rates.length;
+                        
+                        let std = 0;
+                        if (rates.length > 1) {
+                          const variance = rates.reduce((sum, rate) => sum + Math.pow(rate - mean, 2), 0) / rates.length;
+                          std = Math.sqrt(variance);
+                        }
+                        
+                        return {
+                          ...group,
+                          'Success rate avg': mean,
+                          'Success rate std': std,
+                          runCount: rates.length
+                        };
+                      });
+                    }
+
                     function renderVerifiedTable(tableData, containerId) {
                       const container = document.getElementById(containerId);
                       if (!container) return;
                       
                       // Filter out invalid data (🚧, -, null, undefined, empty)
                       const validData = tableData.filter(row => {
-                        const score = row['Score Avg@3'];
+                        const score = row['Success rate'];
                         return score !== null && 
                                score !== undefined && 
                                score !== '' && 
@@ -1193,9 +1246,12 @@
                                !isNaN(parseFloat(score));
                       });
                       
-                      // Get unique values for filters (convert to strings for consistent comparison)
-                      const approachTypes = [...new Set(validData.map(row => row['Approach type']).filter(Boolean))];
-                      const maxSteps = [...new Set(validData.map(row => String(row['Max steps'])).filter(value => value !== '' && value !== 'null' && value !== 'undefined'))].sort((a, b) => Number(a) - Number(b));
+                      // Aggregate data by Model and Max steps
+                      const aggregatedData = aggregateByModelAndSteps(validData);
+                      
+                      // Get unique values for filters (convert to strings for consistent comparison) 
+                      const approachTypes = [...new Set(aggregatedData.map(row => row['Approach type']).filter(Boolean))];
+                      const maxSteps = [...new Set(aggregatedData.map(row => String(row['Max steps'])).filter(value => value !== '' && value !== 'null' && value !== 'undefined'))].sort((a, b) => Number(a) - Number(b));
                       
                       let tableHTML = `
                         <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
@@ -1286,7 +1342,7 @@
                             <th>Rank</th>
                             <th>Model & Date</th>
                             <th>Approach & Details</th>
-                            <th>Score (Avg@3)</th>
+                            <th>Success Rate (Avg±Std)</th>
                           </tr>
                           <tbody id="verifiedTableBody">
                           </tbody>
@@ -1296,7 +1352,7 @@
                       container.innerHTML = tableHTML;
                       
                       // Store data globally for filtering
-                      window.verifiedTableData = validData;
+                      window.verifiedTableData = aggregatedData;
                       
                       // Debug: Check date formats in the data
                       if (validData.length > 0) {
@@ -1348,8 +1404,8 @@
                       let sortedData = [...data];
                       if (sortBy === 'score') {
                         sortedData.sort((a, b) => {
-                          const scoreA = parseFloat(a['Score Avg@3']) || 0;
-                          const scoreB = parseFloat(b['Score Avg@3']) || 0;
+                          const scoreA = parseFloat(a['Success rate avg']) || 0;
+                          const scoreB = parseFloat(b['Success rate avg']) || 0;
                           return scoreB - scoreA;
                         });
                       } else if (sortBy === 'date') {
@@ -1414,13 +1470,34 @@
                                               sortedData.forEach((row, index) => {
                           const rank = index + 1;
                           const isFirstRank = rank === 1;
-                          const score = parseFloat(row['Score Avg@3']).toFixed(1);
+                          const score = parseFloat(row['Success rate avg']).toFixed(1);
                           
-                          // Check if Score Std@3 exists and add it to score display
+                          // Check if Success rate std exists and add it to score display
                           let scoreDisplay = `${score}%`;
-                          if (row['Score Std@3'] && row['Score Std@3'] !== '' && row['Score Std@3'] !== null && !isNaN(parseFloat(row['Score Std@3']))) {
-                            const std = parseFloat(row['Score Std@3']).toFixed(1);
+                          if (row['Success rate std'] && row['Success rate std'] > 0) {
+                            const std = parseFloat(row['Success rate std']).toFixed(1);
                             scoreDisplay = `${score}±${std}%`;
+                          }
+                          
+                          // Generate detailed scores for collapse/expand
+                          let detailedScores = '';
+                          if (row.runs && row.runs.length > 0) {
+                            const detailRows = row.runs.map((run, runIndex) => {
+                              const runScore = parseFloat(run['Success rate']).toFixed(1);
+                              // Check if we have detailed breakdown data
+                              let breakdown = '';
+                              if (run['Success num'] && run['Total num']) {
+                                breakdown = ` (${run['Success num']}/${run['Total num']})`;
+                              }
+                              return `<div style="padding: 2px 0; font-size: 0.8em;">Run ${runIndex + 1}: ${runScore}%${breakdown}</div>`;
+                            }).join('');
+                            
+                            detailedScores = `
+                              <div class="detailed-scores" id="details-${rank}" style="display: none; margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #007bff;">
+                                <div style="font-weight: bold; margin-bottom: 4px; font-size: 0.9em;">Individual Runs (${row.runs.length} total):</div>
+                                ${detailRows}
+                              </div>
+                            `;
                           }
                         
                                                   // Parse date with robust fallback for XLSX.js data
@@ -1516,17 +1593,56 @@
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
                                 ${dateDisplay ? `<p class="eval-date" style="color: #999; font-size: 0.8em; margin: 2px 0;">📅 ${dateDisplay}</p>` : ''}
                                 ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank" style="color: #3273dc; text-decoration: none;">${row.PaperAuthors || 'Paper Link'}</a>` : ''}
+                                ${detailedScores}
                               </td>
                               <td style="font-size: 0.9em;">
                                 <div><strong>Type:</strong> ${row['Approach type'] || 'N/A'}</div>
                                 <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
+                                ${row.runCount ? `<div style="color: #666;"><strong>Runs:</strong> ${row.runCount}</div>` : ''}
                               </td>
-                              <td><strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong></td>
+                              <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                  <strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong>
+                                  ${row.runs && row.runs.length > 1 ? `
+                                    <button onclick="toggleDetails(${rank})" 
+                                            id="toggle-${rank}"
+                                            style="
+                                              background: #007bff; 
+                                              color: white; 
+                                              border: none; 
+                                              border-radius: 3px; 
+                                              padding: 4px 8px; 
+                                              font-size: 0.7em; 
+                                              cursor: pointer;
+                                              transition: background 0.2s;
+                                            "
+                                            onmouseover="this.style.background='#0056b3'"
+                                            onmouseout="this.style.background='#007bff'">
+                                      Show Details
+                                    </button>
+                                  ` : ''}
+                                </div>
+                              </td>
                             </tr>
                           `;
                       });
                       
                       tbody.innerHTML = tableRowsHTML;
+                    }
+
+                    function toggleDetails(rank) {
+                      const detailsDiv = document.getElementById(`details-${rank}`);
+                      const toggleButton = document.getElementById(`toggle-${rank}`);
+                      
+                      if (detailsDiv && toggleButton) {
+                        if (detailsDiv.style.display === 'none') {
+                          detailsDiv.style.display = 'block';
+                          toggleButton.textContent = 'Hide Details';
+                        } else {
+                          detailsDiv.style.display = 'none';
+                          toggleButton.textContent = 'Show Details';
+                        }
+                      }
                     }
 
                     function toggleModelTypeDropdown() {
