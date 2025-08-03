@@ -1546,21 +1546,7 @@
                             // If multiple runs, show detailed breakdown for each run
                             let tableRows = '';
                             if (row.runCount > 1) {
-                              // Show aggregated total first
-                              const totalValues = Object.entries(row.categoryStats).map(([category, stats]) => `
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-size: 0.8em; background: #f0f8ff; font-weight: bold;">
-                                  ${stats.successNum}/${stats.totalNum}
-                                </td>
-                              `).join('');
-                              
-                              tableRows += `
-                                <tr style="background: #f0f8ff;">
-                                  <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; font-size: 0.8em; background: #e6f3ff;">Total</td>
-                                  ${totalValues}
-                                </tr>
-                              `;
-                              
-                              // Show individual runs
+                              // Show individual runs only
                               row.runs.forEach((run, runIndex) => {
                                 const runValues = Object.keys(row.categoryStats).map(category => {
                                   const runValue = run[category] || '';
