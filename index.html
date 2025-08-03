@@ -726,7 +726,7 @@
   </section>
 
   <section id="benchmark">
-    <div class="container" style="max-width: none; width: 95%; margin: 0 auto; transition: all 0.3s ease; overflow-x: visible;">
+    <div class="container" style="max-width: none; width: 95%; margin: 0 auto; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: visible;">
 
       <div style="max-width: 1344px; margin: 0 auto; padding: 0 1.5rem;">
         <h2 class="title is-3">Benchmark</h2>
@@ -1552,7 +1552,7 @@
                               });
                               
                               categoryBreakdown = `
-                                <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: visible; width: max-content; max-width: none;">
+                                <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: visible; width: max-content; max-width: none; transform: translateX(0); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
                                   <tr>
                                     <th style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa; font-size: 0.8em; text-align: center; min-width: 60px;">Run</th>
                                     ${categoryHeaders}
@@ -1572,7 +1572,7 @@
                               }).join('');
                               
                               categoryBreakdown = `
-                                <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: visible; width: max-content; max-width: none;">
+                                <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: visible; width: max-content; max-width: none; transform: translateX(0); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
                                   <tr>
                                     ${categoryHeaders}
                                   </tr>
@@ -1685,34 +1685,44 @@
                               </td>
                               <td style="text-align: center; vertical-align: middle; position: relative;">
                                 <strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong>
-                                                                  ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
+                                                                                                    ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
                                     <button onclick="toggleCategories('${uniqueId}')" 
                                             id="toggle-${uniqueId}"
-                                          style="
-                                            background: transparent; 
-                                            color: #666; 
-                                            border: 1px solid #ddd; 
-                                            border-radius: 3px; 
-                                            padding: 2px 4px; 
-                                            font-size: 0.8em; 
-                                            cursor: pointer;
-                                            transition: all 0.2s;
-                                            display: inline-flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            width: 20px;
-                                            height: 20px;
-                                            margin-left: 8px;
-                                            vertical-align: middle;
-                                          "
-                                          onmouseover="this.style.borderColor='#999'; this.style.color='#333'"
-                                          onmouseout="this.style.borderColor='#ddd'; this.style.color='#666'">
-                                    ▶
-                                  </button>
-                                ` : ''}
+                                            title="Show domain breakdown"
+                                            style="
+                                              background: transparent; 
+                                              color: #666; 
+                                              border: 1px solid #ddd; 
+                                              border-radius: 3px; 
+                                              padding: 2px 4px; 
+                                              font-size: 0.8em; 
+                                              cursor: pointer;
+                                              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                              display: inline-flex;
+                                              align-items: center;
+                                              justify-content: center;
+                                              width: 20px;
+                                              height: 20px;
+                                              margin-left: 8px;
+                                              vertical-align: middle;
+                                            "
+                                            onmouseover="this.style.borderColor='#999'; this.style.color='#333'"
+                                            onmouseout="this.style.borderColor='#ddd'; this.style.color='#666'">
+                                      ▶
+                                    </button>
+                                  ` : ''}
                               </td>
-                              <td class="category-cell" id="category-cell-${uniqueId}" style="display: none; padding: 8px; vertical-align: top; transition: all 0.3s ease; max-width: 0; overflow: hidden; white-space: normal;">
-                                <div style="min-width: 600px; max-width: none;">
+                              <td class="category-cell" id="category-cell-${uniqueId}" style="
+                                width: 0; 
+                                max-width: 0; 
+                                padding: 0; 
+                                vertical-align: top; 
+                                transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+                                overflow: hidden; 
+                                white-space: nowrap;
+                                opacity: 0;
+                              ">
+                                <div style="min-width: 600px; max-width: none; white-space: normal; transform: scale(0.95); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);" id="content-${uniqueId}">
                                   ${categoryBreakdown}
                                 </div>
                               </td>
@@ -1729,11 +1739,23 @@
                       const benchmarkContainer = document.querySelector('#benchmark .container');
                       
                       if (categoryCell && toggleButton) {
-                        if (categoryCell.style.display === 'none') {
-                          categoryCell.style.display = 'table-cell';
-                          categoryCell.style.maxWidth = 'none';
+                        const isExpanded = categoryCell.style.width !== '0px' && categoryCell.style.width !== '0' && categoryCell.style.width !== '';
+                        
+                        if (!isExpanded) {
+                          // Expand this row
                           categoryCell.style.width = 'auto';
+                          categoryCell.style.maxWidth = 'none';
+                          categoryCell.style.padding = '8px';
+                          categoryCell.style.opacity = '1';
+                          categoryCell.style.whiteSpace = 'normal';
                           toggleButton.textContent = '▼';
+                          toggleButton.title = 'Hide domain breakdown';
+                          
+                          // Scale up content
+                          const contentDiv = document.getElementById(`content-${uniqueId}`);
+                          if (contentDiv) {
+                            contentDiv.style.transform = 'scale(1)';
+                          }
                           
                           // Expand container when showing categories
                           if (benchmarkContainer) {
@@ -1744,30 +1766,48 @@
                           
                           // Close other expanded rows
                           document.querySelectorAll('.category-cell').forEach(cell => {
-                            if (cell.id !== `category-cell-${uniqueId}` && cell.style.display === 'table-cell') {
-                              cell.style.maxWidth = '0';
-                              setTimeout(() => {
-                                cell.style.display = 'none';
-                              }, 300);
-                              const otherId = cell.id.replace('category-cell-', '');
-                              const otherButton = document.getElementById(`toggle-${otherId}`);
-                              if (otherButton) {
-                                otherButton.textContent = '▶';
+                            if (cell.id !== `category-cell-${uniqueId}`) {
+                              const otherCellExpanded = cell.style.width !== '0px' && cell.style.width !== '0' && cell.style.width !== '';
+                              if (otherCellExpanded) {
+                                const otherId = cell.id.replace('category-cell-', '');
+                                const otherContentDiv = document.getElementById(`content-${otherId}`);
+                                if (otherContentDiv) {
+                                  otherContentDiv.style.transform = 'scale(0.95)';
+                                }
+                                
+                                cell.style.width = '0';
+                                cell.style.maxWidth = '0';
+                                cell.style.padding = '0';
+                                cell.style.opacity = '0';
+                                cell.style.whiteSpace = 'nowrap';
+                                const otherButton = document.getElementById(`toggle-${otherId}`);
+                                if (otherButton) {
+                                  otherButton.textContent = '▶';
+                                  otherButton.title = 'Show domain breakdown';
+                                }
                               }
                             }
                           });
                           
                         } else {
+                          // Collapse this row
+                          const contentDiv = document.getElementById(`content-${uniqueId}`);
+                          if (contentDiv) {
+                            contentDiv.style.transform = 'scale(0.95)';
+                          }
+                          
+                          categoryCell.style.width = '0';
                           categoryCell.style.maxWidth = '0';
-                          setTimeout(() => {
-                            categoryCell.style.display = 'none';
-                          }, 300);
+                          categoryCell.style.padding = '0';
+                          categoryCell.style.opacity = '0';
+                          categoryCell.style.whiteSpace = 'nowrap';
                           toggleButton.textContent = '▶';
+                          toggleButton.title = 'Show domain breakdown';
                           
                           // Check if any other rows are expanded
-                          const hasExpanded = Array.from(document.querySelectorAll('.category-cell')).some(cell => 
-                            cell.style.display === 'table-cell'
-                          );
+                          const hasExpanded = Array.from(document.querySelectorAll('.category-cell')).some(cell => {
+                            return cell.style.width !== '0px' && cell.style.width !== '0' && cell.style.width !== '';
+                          });
                           
                           // If no rows are expanded, restore container size
                           if (!hasExpanded && benchmarkContainer) {
