@@ -728,14 +728,16 @@
   <section id="benchmark">
     <div class="container" style="max-width: none; width: 95%; margin: 0 auto; transition: all 0.3s ease; overflow-x: visible;">
 
-      <h2 class="title is-3">Benchmark</h2>
-      <md-block>We adopt state-of-the-art LLM and VLM from open-source representatives such as UI-TARS, Agent-S, Qwen, Mixtral and
-        CogAgent, and closed-source ones from Operator, GPT, Gemini, and Claude families on **OSWorld**, as LLM and VLM agent
-        baselines. We also explore methods such as the Set-of-Marks aided
-        approach, which has been demonstrated to improve spatial capabilities for visual
-        reasoning.
-        **We are actively updating the benchmark with new LLMs, VLMs and methods. Pull requests welcomed!**
-      </md-block>
+      <div style="max-width: 1344px; margin: 0 auto; padding: 0 1.5rem;">
+        <h2 class="title is-3">Benchmark</h2>
+        <md-block>We adopt state-of-the-art LLM and VLM from open-source representatives such as UI-TARS, Agent-S, Qwen, Mixtral and
+          CogAgent, and closed-source ones from Operator, GPT, Gemini, and Claude families on **OSWorld**, as LLM and VLM agent
+          baselines. We also explore methods such as the Set-of-Marks aided
+          approach, which has been demonstrated to improve spatial capabilities for visual
+          reasoning.
+          **We are actively updating the benchmark with new LLMs, VLMs and methods. Pull requests welcomed!**
+        </md-block>
+      </div>
       <!-- Progress Chart (Hidden by default) -->
       <div class="content has-text-justified" style="display: none;">
         <div style="width: 100%; margin-top: 20px;">
@@ -1223,9 +1225,9 @@
                           groups[key].successRates.push(successRate);
                         }
                         
-                        // Collect category data
+                        // Collect category data (keep original format)
                         categoryColumns.forEach(col => {
-                          const value = row[col]; // Keep original string format for "Success Num/Total Num"
+                          const value = row[col];
                           if (value !== null && value !== undefined && value !== '') {
                             groups[key].categoryData[col].push(value);
                           }
@@ -1243,32 +1245,14 @@
                           std = Math.sqrt(variance);
                         }
                         
-                        // Calculate category statistics
+                        // Store original category data (no calculation needed)
                         const categoryStats = {};
                         categoryColumns.forEach(col => {
                           const categoryValues = group.categoryData[col];
                           if (categoryValues.length > 0) {
-                            // Parse "Success Num/Total Num" format and aggregate
-                            let totalSuccess = 0;
-                            let totalTotal = 0;
-                            let validEntries = 0;
-                            
-                            categoryValues.forEach(value => {
-                              const match = String(value).match(/(\d+)\/(\d+)/);
-                              if (match) {
-                                totalSuccess += parseInt(match[1]);
-                                totalTotal += parseInt(match[2]);
-                                validEntries++;
-                              }
-                            });
-                            
-                            if (validEntries > 0) {
-                              categoryStats[col] = {
-                                successNum: totalSuccess,
-                                totalNum: totalTotal,
-                                count: validEntries
-                              };
-                            }
+                            categoryStats[col] = {
+                              originalValues: categoryValues
+                            };
                           }
                         });
                         
@@ -1525,6 +1509,8 @@
                                               sortedData.forEach((row, index) => {
                           const rank = index + 1;
                           const isFirstRank = rank === 1;
+                          // Create unique identifier for this row
+                          const uniqueId = `${row.Model || 'unknown'}-${row['Max steps'] || 'unknown'}`.replace(/[^a-zA-Z0-9-]/g, '-');
                           const score = parseFloat(row['Success rate avg']).toFixed(1);
                           
                           // Check if Success rate std exists and add it to score display
@@ -1543,10 +1529,10 @@
                               </th>
                             `).join('');
                             
-                            // If multiple runs, show detailed breakdown for each run
-                            let tableRows = '';
+                            // Show original data for each run
                             if (row.runCount > 1) {
-                              // Show individual runs only
+                              // Multiple runs - show each run separately
+                              let tableRows = '';
                               row.runs.forEach((run, runIndex) => {
                                 const runValues = Object.keys(row.categoryStats).map(category => {
                                   const runValue = run[category] || '';
@@ -1575,12 +1561,15 @@
                                 </table>
                               `;
                             } else {
-                              // Single run, show simple format
-                              const categoryValues = Object.entries(row.categoryStats).map(([category, stats]) => `
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-size: 0.8em;">
-                                  ${stats.successNum}/${stats.totalNum}
-                                </td>
-                              `).join('');
+                              // Single run - show original data directly
+                              const categoryValues = Object.keys(row.categoryStats).map(category => {
+                                const originalValue = row.categoryStats[category].originalValues[0] || '';
+                                return `
+                                  <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-size: 0.8em;">
+                                    ${originalValue}
+                                  </td>
+                                `;
+                              }).join('');
                               
                               categoryBreakdown = `
                                 <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: visible; width: max-content; max-width: none;">
@@ -1696,9 +1685,9 @@
                               </td>
                               <td style="text-align: center; vertical-align: middle; position: relative;">
                                 <strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong>
-                                ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
-                                  <button onclick="toggleCategories(${rank})" 
-                                          id="toggle-${rank}"
+                                                                  ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
+                                    <button onclick="toggleCategories('${uniqueId}')" 
+                                            id="toggle-${uniqueId}"
                                           style="
                                             background: transparent; 
                                             color: #666; 
@@ -1722,7 +1711,7 @@
                                   </button>
                                 ` : ''}
                               </td>
-                              <td class="category-cell" id="category-cell-${rank}" style="display: none; padding: 8px; vertical-align: top; transition: all 0.3s ease; max-width: 0; overflow: hidden; white-space: normal;">
+                              <td class="category-cell" id="category-cell-${uniqueId}" style="display: none; padding: 8px; vertical-align: top; transition: all 0.3s ease; max-width: 0; overflow: hidden; white-space: normal;">
                                 <div style="min-width: 600px; max-width: none;">
                                   ${categoryBreakdown}
                                 </div>
@@ -1734,9 +1723,9 @@
                       tbody.innerHTML = tableRowsHTML;
                     }
 
-                    function toggleCategories(rank) {
-                      const categoryCell = document.getElementById(`category-cell-${rank}`);
-                      const toggleButton = document.getElementById(`toggle-${rank}`);
+                    function toggleCategories(uniqueId) {
+                      const categoryCell = document.getElementById(`category-cell-${uniqueId}`);
+                      const toggleButton = document.getElementById(`toggle-${uniqueId}`);
                       const benchmarkContainer = document.querySelector('#benchmark .container');
                       
                       if (categoryCell && toggleButton) {
@@ -1755,13 +1744,13 @@
                           
                           // Close other expanded rows
                           document.querySelectorAll('.category-cell').forEach(cell => {
-                            if (cell.id !== `category-cell-${rank}` && cell.style.display === 'table-cell') {
+                            if (cell.id !== `category-cell-${uniqueId}` && cell.style.display === 'table-cell') {
                               cell.style.maxWidth = '0';
                               setTimeout(() => {
                                 cell.style.display = 'none';
                               }, 300);
-                              const otherRank = cell.id.replace('category-cell-', '');
-                              const otherButton = document.getElementById(`toggle-${otherRank}`);
+                              const otherId = cell.id.replace('category-cell-', '');
+                              const otherButton = document.getElementById(`toggle-${otherId}`);
                               if (otherButton) {
                                 otherButton.textContent = '▶';
                               }
