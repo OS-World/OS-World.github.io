@@ -726,7 +726,7 @@
   </section>
 
   <section id="benchmark">
-    <div class="container is-max-desktop">
+    <div class="container" style="max-width: none; width: 95%; margin: 0 auto; transition: all 0.3s ease;">
 
       <h2 class="title is-3">Benchmark</h2>
       <md-block>We adopt state-of-the-art LLM and VLM from open-source representatives such as UI-TARS, Agent-S, Qwen, Mixtral and
@@ -1389,17 +1389,19 @@
                           </select>
                         </div>
                         
-                        <table class="table performanceTable" id="verifiedResultsTable">
-                          <tr>
-                            <th>Rank</th>
-                            <th>Model & Date</th>
-                            <th>Approach & Details</th>
-                            <th>Success Rate (Avg±Std)</th>
-                            <th style="width: 0px; padding: 0; border: none;"></th>
-                          </tr>
-                          <tbody id="verifiedTableBody">
-                          </tbody>
-                        </table>
+                        <div style="overflow-x: auto; width: 100%;">
+                          <table class="table performanceTable" id="verifiedResultsTable" style="min-width: 100%; table-layout: auto;">
+                            <tr>
+                              <th>Rank</th>
+                              <th>Model & Date</th>
+                              <th>Approach & Details</th>
+                              <th>Success Rate (Avg±Std)</th>
+                              <th style="width: 0px; padding: 0; border: none;"></th>
+                            </tr>
+                            <tbody id="verifiedTableBody">
+                            </tbody>
+                          </table>
+                        </div>
                       `;
                       
                       container.innerHTML = tableHTML;
@@ -1548,7 +1550,7 @@
                             `).join('');
                             
                             categoryBreakdown = `
-                              <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; min-width: 400px;">
+                              <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; min-width: 500px; width: max-content;">
                                 <tr>
                                   ${categoryHeaders}
                                 </tr>
@@ -1658,35 +1660,35 @@
                                 <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
                                 ${row.runCount ? `<div style="color: #666;"><strong>Runs:</strong> ${row.runCount}</div>` : ''}
                               </td>
-                              <td>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                  <strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong>
-                                  ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
-                                    <button onclick="toggleCategories(${rank})" 
-                                            id="toggle-${rank}"
-                                            style="
-                                              background: transparent; 
-                                              color: #666; 
-                                              border: 1px solid #ddd; 
-                                              border-radius: 3px; 
-                                              padding: 4px 6px; 
-                                              font-size: 0.9em; 
-                                              cursor: pointer;
-                                              transition: all 0.2s;
-                                              display: flex;
-                                              align-items: center;
-                                              justify-content: center;
-                                              width: 24px;
-                                              height: 24px;
-                                            "
-                                            onmouseover="this.style.borderColor='#999'; this.style.color='#333'"
-                                            onmouseout="this.style.borderColor='#ddd'; this.style.color='#666'">
-                                      ▶
-                                    </button>
-                                  ` : ''}
-                                </div>
+                              <td style="text-align: center; vertical-align: middle; position: relative;">
+                                <strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong>
+                                ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
+                                  <button onclick="toggleCategories(${rank})" 
+                                          id="toggle-${rank}"
+                                          style="
+                                            background: transparent; 
+                                            color: #666; 
+                                            border: 1px solid #ddd; 
+                                            border-radius: 3px; 
+                                            padding: 2px 4px; 
+                                            font-size: 0.8em; 
+                                            cursor: pointer;
+                                            transition: all 0.2s;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            width: 20px;
+                                            height: 20px;
+                                            margin-left: 8px;
+                                            vertical-align: middle;
+                                          "
+                                          onmouseover="this.style.borderColor='#999'; this.style.color='#333'"
+                                          onmouseout="this.style.borderColor='#ddd'; this.style.color='#666'">
+                                    ▶
+                                  </button>
+                                ` : ''}
                               </td>
-                              <td class="category-cell" id="category-cell-${rank}" style="display: none; padding: 8px; vertical-align: top;">
+                              <td class="category-cell" id="category-cell-${rank}" style="display: none; padding: 8px; vertical-align: top; transition: all 0.3s ease; max-width: 0; overflow: hidden;">
                                 ${categoryBreakdown}
                               </td>
                             </tr>
@@ -1699,14 +1701,51 @@
                     function toggleCategories(rank) {
                       const categoryCell = document.getElementById(`category-cell-${rank}`);
                       const toggleButton = document.getElementById(`toggle-${rank}`);
+                      const benchmarkContainer = document.querySelector('#benchmark .container');
                       
                       if (categoryCell && toggleButton) {
                         if (categoryCell.style.display === 'none') {
                           categoryCell.style.display = 'table-cell';
+                          categoryCell.style.maxWidth = '800px';
                           toggleButton.textContent = '▼';
+                          
+                          // Expand container when showing categories
+                          if (benchmarkContainer) {
+                            benchmarkContainer.style.width = '98%';
+                            benchmarkContainer.style.maxWidth = 'none';
+                          }
+                          
+                          // Close other expanded rows
+                          document.querySelectorAll('.category-cell').forEach(cell => {
+                            if (cell.id !== `category-cell-${rank}` && cell.style.display === 'table-cell') {
+                              cell.style.maxWidth = '0';
+                              setTimeout(() => {
+                                cell.style.display = 'none';
+                              }, 300);
+                              const otherRank = cell.id.replace('category-cell-', '');
+                              const otherButton = document.getElementById(`toggle-${otherRank}`);
+                              if (otherButton) {
+                                otherButton.textContent = '▶';
+                              }
+                            }
+                          });
+                          
                         } else {
-                          categoryCell.style.display = 'none';
+                          categoryCell.style.maxWidth = '0';
+                          setTimeout(() => {
+                            categoryCell.style.display = 'none';
+                          }, 300);
                           toggleButton.textContent = '▶';
+                          
+                          // Check if any other rows are expanded
+                          const hasExpanded = Array.from(document.querySelectorAll('.category-cell')).some(cell => 
+                            cell.style.display === 'table-cell'
+                          );
+                          
+                          // If no rows are expanded, restore container size
+                          if (!hasExpanded && benchmarkContainer) {
+                            benchmarkContainer.style.width = '95%';
+                          }
                         }
                       }
                     }
