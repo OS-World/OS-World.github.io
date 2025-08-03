@@ -726,7 +726,7 @@
   </section>
 
   <section id="benchmark">
-    <div class="container" style="max-width: none; width: 95%; margin: 0 auto; transition: all 0.3s ease;">
+    <div class="container" style="max-width: none; width: 95%; margin: 0 auto; transition: all 0.3s ease; overflow-x: visible;">
 
       <h2 class="title is-3">Benchmark</h2>
       <md-block>We adopt state-of-the-art LLM and VLM from open-source representatives such as UI-TARS, Agent-S, Qwen, Mixtral and
@@ -1389,14 +1389,14 @@
                           </select>
                         </div>
                         
-                        <div style="overflow-x: auto; width: 100%;">
-                          <table class="table performanceTable" id="verifiedResultsTable" style="min-width: 100%; table-layout: auto;">
+                        <div style="overflow-x: auto; width: 100%; max-width: calc(100vw - 40px); position: relative;">
+                          <table class="table performanceTable" id="verifiedResultsTable" style="table-layout: auto; width: auto; min-width: 100%;">
                             <tr>
-                              <th>Rank</th>
-                              <th>Model & Date</th>
-                              <th>Approach & Details</th>
-                              <th>Success Rate (Avg±Std)</th>
-                              <th style="width: 0px; padding: 0; border: none;"></th>
+                              <th style="min-width: 60px;">Rank</th>
+                              <th style="min-width: 200px;">Model & Date</th>
+                              <th style="min-width: 150px;">Approach & Details</th>
+                              <th style="min-width: 140px;">Success Rate (Avg±Std)</th>
+                              <th style="width: auto; padding: 0; border: none;"></th>
                             </tr>
                             <tbody id="verifiedTableBody">
                             </tbody>
@@ -1543,22 +1543,70 @@
                               </th>
                             `).join('');
                             
-                            const categoryValues = Object.entries(row.categoryStats).map(([category, stats]) => `
-                              <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-size: 0.8em;">
-                                ${stats.successNum}/${stats.totalNum}
-                              </td>
-                            `).join('');
-                            
-                            categoryBreakdown = `
-                              <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; min-width: 500px; width: max-content;">
-                                <tr>
-                                  ${categoryHeaders}
+                            // If multiple runs, show detailed breakdown for each run
+                            let tableRows = '';
+                            if (row.runCount > 1) {
+                              // Show aggregated total first
+                              const totalValues = Object.entries(row.categoryStats).map(([category, stats]) => `
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-size: 0.8em; background: #f0f8ff; font-weight: bold;">
+                                  ${stats.successNum}/${stats.totalNum}
+                                </td>
+                              `).join('');
+                              
+                              tableRows += `
+                                <tr style="background: #f0f8ff;">
+                                  <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; font-size: 0.8em; background: #e6f3ff;">Total</td>
+                                  ${totalValues}
                                 </tr>
-                                <tr>
-                                  ${categoryValues}
-                                </tr>
-                              </table>
-                            `;
+                              `;
+                              
+                              // Show individual runs
+                              row.runs.forEach((run, runIndex) => {
+                                const runValues = Object.keys(row.categoryStats).map(category => {
+                                  const runValue = run[category] || '';
+                                  return `
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-size: 0.8em;">
+                                      ${runValue}
+                                    </td>
+                                  `;
+                                }).join('');
+                                
+                                tableRows += `
+                                  <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; font-size: 0.8em; background: #f8f9fa;">Run ${runIndex + 1}</td>
+                                    ${runValues}
+                                  </tr>
+                                `;
+                              });
+                              
+                              categoryBreakdown = `
+                                <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: visible; width: max-content; max-width: none;">
+                                  <tr>
+                                    <th style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa; font-size: 0.8em; text-align: center; min-width: 60px;">Run</th>
+                                    ${categoryHeaders}
+                                  </tr>
+                                  ${tableRows}
+                                </table>
+                              `;
+                            } else {
+                              // Single run, show simple format
+                              const categoryValues = Object.entries(row.categoryStats).map(([category, stats]) => `
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-size: 0.8em;">
+                                  ${stats.successNum}/${stats.totalNum}
+                                </td>
+                              `).join('');
+                              
+                              categoryBreakdown = `
+                                <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; overflow: visible; width: max-content; max-width: none;">
+                                  <tr>
+                                    ${categoryHeaders}
+                                  </tr>
+                                  <tr>
+                                    ${categoryValues}
+                                  </tr>
+                                </table>
+                              `;
+                            }
                           }
                         
                                                   // Parse date with robust fallback for XLSX.js data
@@ -1649,13 +1697,13 @@
                               <td>
                                 <p>${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
                               </td>
-                              <td style="word-break:break-word;">
+                              <td style="word-break:break-word; white-space: normal;">
                                 <strong>${row.Model || ''}</strong>
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
                                 ${dateDisplay ? `<p class="eval-date" style="color: #999; font-size: 0.8em; margin: 2px 0;">📅 ${dateDisplay}</p>` : ''}
                                 ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank" style="color: #3273dc; text-decoration: none;">${row.PaperAuthors || 'Paper Link'}</a>` : ''}
                               </td>
-                              <td style="font-size: 0.9em;">
+                              <td style="font-size: 0.9em; white-space: normal;">
                                 <div><strong>Type:</strong> ${row['Approach type'] || 'N/A'}</div>
                                 <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
                                 ${row.runCount ? `<div style="color: #666;"><strong>Runs:</strong> ${row.runCount}</div>` : ''}
@@ -1688,8 +1736,10 @@
                                   </button>
                                 ` : ''}
                               </td>
-                              <td class="category-cell" id="category-cell-${rank}" style="display: none; padding: 8px; vertical-align: top; transition: all 0.3s ease; max-width: 0; overflow: hidden;">
-                                ${categoryBreakdown}
+                              <td class="category-cell" id="category-cell-${rank}" style="display: none; padding: 8px; vertical-align: top; transition: all 0.3s ease; max-width: 0; overflow: hidden; white-space: normal;">
+                                <div style="min-width: 600px; max-width: none;">
+                                  ${categoryBreakdown}
+                                </div>
                               </td>
                             </tr>
                           `;
@@ -1706,13 +1756,15 @@
                       if (categoryCell && toggleButton) {
                         if (categoryCell.style.display === 'none') {
                           categoryCell.style.display = 'table-cell';
-                          categoryCell.style.maxWidth = '800px';
+                          categoryCell.style.maxWidth = 'none';
+                          categoryCell.style.width = 'auto';
                           toggleButton.textContent = '▼';
                           
                           // Expand container when showing categories
                           if (benchmarkContainer) {
-                            benchmarkContainer.style.width = '98%';
+                            benchmarkContainer.style.width = '100%';
                             benchmarkContainer.style.maxWidth = 'none';
+                            benchmarkContainer.style.overflowX = 'auto';
                           }
                           
                           // Close other expanded rows
