@@ -1182,6 +1182,11 @@
                       // Group data by Model and Max steps
                       const groups = {};
                       
+                      // Identify detailed category columns (exclude main metadata columns)
+                      const excludeColumns = ['Model', 'Approach type', 'Max steps', 'Institution', 'Date', 'PaperLink', 'PaperAuthors', 'Success rate'];
+                      const allColumns = data.length > 0 ? Object.keys(data[0]) : [];
+                      const categoryColumns = allColumns.filter(col => !excludeColumns.includes(col));
+                      
                       data.forEach(row => {
                         const key = `${row.Model || 'Unknown'}_${row['Max steps'] || 'Unknown'}`;
                         
@@ -1195,8 +1200,14 @@
                             PaperLink: row.PaperLink,
                             PaperAuthors: row.PaperAuthors,
                             runs: [],
-                            successRates: []
+                            successRates: [],
+                            categoryData: {} // Store data for each category
                           };
+                          
+                          // Initialize category data storage
+                          categoryColumns.forEach(col => {
+                            groups[key].categoryData[col] = [];
+                          });
                         }
                         
                         // Update to the latest date
@@ -1205,10 +1216,20 @@
                         }
                         
                         groups[key].runs.push(row);
+                        
+                        // Collect main success rate
                         const successRate = parseFloat(row['Success rate']);
                         if (!isNaN(successRate)) {
                           groups[key].successRates.push(successRate);
                         }
+                        
+                        // Collect category data
+                        categoryColumns.forEach(col => {
+                          const value = parseFloat(row[col]);
+                          if (!isNaN(value)) {
+                            groups[key].categoryData[col].push(value);
+                          }
+                        });
                       });
                       
                       // Calculate statistics for each group
@@ -1222,11 +1243,32 @@
                           std = Math.sqrt(variance);
                         }
                         
+                        // Calculate category statistics
+                        const categoryStats = {};
+                        categoryColumns.forEach(col => {
+                          const categoryValues = group.categoryData[col];
+                          if (categoryValues.length > 0) {
+                            const categoryMean = categoryValues.reduce((sum, val) => sum + val, 0) / categoryValues.length;
+                            let categoryStd = 0;
+                            if (categoryValues.length > 1) {
+                              const categoryVariance = categoryValues.reduce((sum, val) => sum + Math.pow(val - categoryMean, 2), 0) / categoryValues.length;
+                              categoryStd = Math.sqrt(categoryVariance);
+                            }
+                            categoryStats[col] = {
+                              mean: categoryMean,
+                              std: categoryStd,
+                              count: categoryValues.length
+                            };
+                          }
+                        });
+                        
                         return {
                           ...group,
                           'Success rate avg': mean,
                           'Success rate std': std,
-                          runCount: rates.length
+                          runCount: rates.length,
+                          categoryStats: categoryStats,
+                          categoryColumns: categoryColumns
                         };
                       });
                     }
@@ -1479,23 +1521,27 @@
                             scoreDisplay = `${score}±${std}%`;
                           }
                           
-                          // Generate detailed scores for collapse/expand
-                          let detailedScores = '';
-                          if (row.runs && row.runs.length > 0) {
-                            const detailRows = row.runs.map((run, runIndex) => {
-                              const runScore = parseFloat(run['Success rate']).toFixed(1);
-                              // Check if we have detailed breakdown data
-                              let breakdown = '';
-                              if (run['Success num'] && run['Total num']) {
-                                breakdown = ` (${run['Success num']}/${run['Total num']})`;
+                          // Generate category breakdown for horizontal expansion
+                          let categoryBreakdown = '';
+                          if (row.categoryStats && Object.keys(row.categoryStats).length > 0) {
+                            const categoryItems = Object.entries(row.categoryStats).map(([category, stats]) => {
+                              let displayValue = stats.mean.toFixed(1);
+                              if (stats.std > 0) {
+                                displayValue += `±${stats.std.toFixed(1)}`;
                               }
-                              return `<div style="padding: 2px 0; font-size: 0.8em;">Run ${runIndex + 1}: ${runScore}%${breakdown}</div>`;
+                              return `
+                                <div style="display: inline-block; margin: 2px 8px; padding: 4px 8px; background: #e8f4f8; border-radius: 4px; font-size: 0.8em;">
+                                  <strong>${category}:</strong> ${displayValue}%
+                                </div>
+                              `;
                             }).join('');
                             
-                            detailedScores = `
-                              <div class="detailed-scores" id="details-${rank}" style="display: none; margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #007bff;">
-                                <div style="font-weight: bold; margin-bottom: 4px; font-size: 0.9em;">Individual Runs (${row.runs.length} total):</div>
-                                ${detailRows}
+                            categoryBreakdown = `
+                              <div class="category-breakdown" id="categories-${rank}" style="display: none; margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #28a745;">
+                                <div style="font-weight: bold; margin-bottom: 6px; font-size: 0.9em;">Category Breakdown:</div>
+                                <div style="line-height: 1.4;">
+                                  ${categoryItems}
+                                </div>
                               </div>
                             `;
                           }
@@ -1593,7 +1639,7 @@
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
                                 ${dateDisplay ? `<p class="eval-date" style="color: #999; font-size: 0.8em; margin: 2px 0;">📅 ${dateDisplay}</p>` : ''}
                                 ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank" style="color: #3273dc; text-decoration: none;">${row.PaperAuthors || 'Paper Link'}</a>` : ''}
-                                ${detailedScores}
+                                ${categoryBreakdown}
                               </td>
                               <td style="font-size: 0.9em;">
                                 <div><strong>Type:</strong> ${row['Approach type'] || 'N/A'}</div>
@@ -1603,11 +1649,11 @@
                               <td>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                   <strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong>
-                                  ${row.runs && row.runs.length > 1 ? `
-                                    <button onclick="toggleDetails(${rank})" 
+                                  ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
+                                    <button onclick="toggleCategories(${rank})" 
                                             id="toggle-${rank}"
                                             style="
-                                              background: #007bff; 
+                                              background: #28a745; 
                                               color: white; 
                                               border: none; 
                                               border-radius: 3px; 
@@ -1616,9 +1662,9 @@
                                               cursor: pointer;
                                               transition: background 0.2s;
                                             "
-                                            onmouseover="this.style.background='#0056b3'"
-                                            onmouseout="this.style.background='#007bff'">
-                                      Show Details
+                                            onmouseover="this.style.background='#1e7e34'"
+                                            onmouseout="this.style.background='#28a745'">
+                                      Show Categories
                                     </button>
                                   ` : ''}
                                 </div>
@@ -1630,17 +1676,17 @@
                       tbody.innerHTML = tableRowsHTML;
                     }
 
-                    function toggleDetails(rank) {
-                      const detailsDiv = document.getElementById(`details-${rank}`);
+                    function toggleCategories(rank) {
+                      const categoriesDiv = document.getElementById(`categories-${rank}`);
                       const toggleButton = document.getElementById(`toggle-${rank}`);
                       
-                      if (detailsDiv && toggleButton) {
-                        if (detailsDiv.style.display === 'none') {
-                          detailsDiv.style.display = 'block';
-                          toggleButton.textContent = 'Hide Details';
+                      if (categoriesDiv && toggleButton) {
+                        if (categoriesDiv.style.display === 'none') {
+                          categoriesDiv.style.display = 'block';
+                          toggleButton.textContent = 'Hide Categories';
                         } else {
-                          detailsDiv.style.display = 'none';
-                          toggleButton.textContent = 'Show Details';
+                          categoriesDiv.style.display = 'none';
+                          toggleButton.textContent = 'Show Categories';
                         }
                       }
                     }
