@@ -1685,23 +1685,24 @@
                           
                           tableRowsHTML += `
                             <tr ${isFirstRank ? 'class="first-rank-row"' : ''}>
-                              <td>
-                                <p>${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
+                              <td style="vertical-align: middle; text-align: center;">
+                                <p style="margin: 0;">${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
                               </td>
-                              <td style="word-break:break-word; white-space: normal;">
+                              <td style="word-break:break-word; white-space: normal; vertical-align: middle;">
                                 <strong>${row.Model || ''}</strong>
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
                                 ${dateDisplay ? `<p class="eval-date" style="color: #999; font-size: 0.8em; margin: 2px 0;">📅 ${dateDisplay}</p>` : ''}
                                 ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank" style="color: #3273dc; text-decoration: none;">${row.PaperAuthors || 'Paper Link'}</a>` : ''}
                               </td>
-                              <td style="font-size: 0.9em; white-space: normal;">
+                              <td style="font-size: 0.9em; white-space: normal; vertical-align: middle;">
                                 <div><strong>Type:</strong> ${row['Approach type'] || 'N/A'}</div>
                                 <div><strong>Max Steps:</strong> ${row['Max steps'] || 'N/A'}</div>
                                 ${row.runCount ? `<div style="color: #666;"><strong>Runs:</strong> ${row.runCount}</div>` : ''}
                               </td>
-                              <td style="text-align: center; vertical-align: middle; position: relative;">
-                                <strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong>
-                                                                                                    ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
+                                                            <td style="text-align: center; vertical-align: middle; position: relative;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                  <strong style="font-size: 1.1em; color: #28a745;">${scoreDisplay}</strong>
+                                  ${row.categoryStats && Object.keys(row.categoryStats).length > 0 ? `
                                     <button onclick="toggleCategories('${uniqueId}')" 
                                             id="toggle-${uniqueId}"
                                             title="Show domain breakdown"
@@ -1719,7 +1720,6 @@
                                               justify-content: center;
                                               width: 20px;
                                               height: 20px;
-                                              margin-left: 8px;
                                               vertical-align: middle;
                                             "
                                             onmouseover="this.style.borderColor='#999'; this.style.color='#333'"
@@ -1727,12 +1727,13 @@
                                       ▶
                                     </button>
                                   ` : ''}
+                                </div>
                               </td>
                               <td class="category-cell" id="category-cell-${uniqueId}" style="
                                 width: 0; 
                                 max-width: 0; 
                                 padding: 0; 
-                                vertical-align: top; 
+                                vertical-align: middle; 
                                 transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
                                 overflow: hidden; 
                                 white-space: nowrap;
