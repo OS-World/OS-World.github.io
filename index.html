@@ -40,6 +40,22 @@
   <link rel="stylesheet" href="./stylesheets/index.css">
   <link rel="stylesheet" href="./bowe_componets/css/bootstrap.table.min.css">
 
+  <!-- Visitor Counter Styles -->
+  <style>
+    @media (max-width: 768px) {
+      .visitor-counter-container {
+        padding: 8px 15px !important;
+        gap: 8px !important;
+      }
+      .visitor-counter-container span {
+        font-size: 0.8em !important;
+      }
+      .visitor-counter-container #visitor-count {
+        font-size: 1em !important;
+      }
+    }
+  </style>
+
   <style>
     .first-rank-star {
       color: gold;
@@ -2354,6 +2370,35 @@
           <i class="fab fa-github"></i>
         </a>
       </div>
+      <!-- Visitor Counter -->
+      <div class="has-text-centered" style="margin-bottom: 20px;">
+        <div class="visitor-counter-container" style="
+          display: inline-flex; 
+          align-items: center; 
+          gap: 10px; 
+          padding: 10px 20px; 
+          background: rgba(245, 245, 245, 0.8); 
+          border-radius: 20px; 
+          border: 1px solid #e0e0e0;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          transition: all 0.3s ease;
+          flex-wrap: wrap;
+          justify-content: center;
+        " 
+        onmouseover="this.style.background='rgba(235, 235, 235, 0.9)'; this.style.transform='translateY(-1px)'"
+        onmouseout="this.style.background='rgba(245, 245, 245, 0.8)'; this.style.transform='translateY(0)'">
+          <i class="fas fa-eye" style="color: #666; font-size: 1.1em;"></i>
+          <span style="color: #666; font-size: 0.9em; white-space: nowrap;">Total Visitors:</span>
+          <span id="visitor-count" style="
+            color: #2e7d32; 
+            font-weight: bold; 
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+          ">Loading...</span>
+        </div>
+      </div>
+
       <div class="columns is-centered">
         <div class="column is-8">
           <div class="content">
@@ -2374,6 +2419,73 @@
       </div>
     </div>
   </footer>
+
+  <!-- Visitor Counter Script -->
+  <script>
+    // Initialize visitor counter
+    document.addEventListener('DOMContentLoaded', function() {
+      const visitorCountElement = document.getElementById('visitor-count');
+      const apiUrl = 'https://api.countapi.xyz/hit/os-world.github.io/visits';
+      
+      // Function to update visitor count
+      function updateVisitorCount() {
+        // Set timeout for API request
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        fetch(apiUrl, { signal: controller.signal })
+          .then(response => {
+            clearTimeout(timeoutId);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data && typeof data.value === 'number') {
+              // Format number with commas
+              const formattedCount = data.value.toLocaleString();
+              visitorCountElement.textContent = formattedCount;
+              visitorCountElement.style.color = '#2e7d32';
+              
+              // Add subtle animation
+              visitorCountElement.style.transform = 'scale(1.15)';
+              setTimeout(() => {
+                visitorCountElement.style.transform = 'scale(1)';
+              }, 300);
+              
+              // Store count in localStorage as backup
+              localStorage.setItem('osworld-visitor-count', data.value);
+            } else {
+              throw new Error('Invalid data received');
+            }
+          })
+          .catch(error => {
+            clearTimeout(timeoutId);
+            console.log('Visitor counter error:', error.message);
+            
+            // Try to use cached count
+            const cachedCount = localStorage.getItem('osworld-visitor-count');
+            if (cachedCount) {
+              visitorCountElement.textContent = parseInt(cachedCount).toLocaleString() + '+';
+              visitorCountElement.style.color = '#666';
+            } else {
+              visitorCountElement.textContent = '1000+';
+              visitorCountElement.style.color = '#666';
+            }
+          });
+      }
+      
+      // Add transition effects
+      visitorCountElement.style.transition = 'all 0.3s ease';
+      
+      // Update count immediately
+      updateVisitorCount();
+      
+      // Optional: Update count periodically (every 5 minutes)
+      setInterval(updateVisitorCount, 300000);
+    });
+  </script>
 
 </body>
 
