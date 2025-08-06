@@ -367,7 +367,7 @@
           supporting task setup, execution-based evaluation, and interactive learning across operating systems.
           It can serve as a unified environment for evaluating open-ended computer tasks that involve arbitrary
           apps (e.g., task examples in the above Fig). We also create a benchmark of 369 real-world computer
-          tasks in **OSWorld** with reliable, reproducible setup and evaluation scripts.
+          tasks in **OSWorld** with reliable, reproducible setup and evaluation scripts. *Note: 8 Google Drive tasks may require manual configuration or can be excluded (361 tasks) due to network dependencies.*
         </md-block>
       </div>
       <!--/ Main Figure. -->
@@ -395,7 +395,7 @@
               integrated computer environment for assessing open-ended computer tasks that
               involve arbitrary applications. Building upon **OSWorld**, we create a benchmark
               of 369 computer tasks involving real web and desktop apps in open domains, OS
-              file I/O, and workflows spanning multiple applications. Each task example is
+              file I/O, and workflows spanning multiple applications (note: 8 Google Drive tasks may require manual setup or can be excluded for a 361-task evaluation). Each task example is
               derived from real-world computer use cases and includes a detailed initial state
               setup configuration and a custom execution-based evaluation script for reliable,
               reproducible evaluation. Extensive evaluation of state-of-the-art LLM/VLM-based
@@ -753,6 +753,23 @@
           reasoning.
           **We are actively updating the benchmark with new LLMs, VLMs and methods. Pull requests welcomed!**
         </md-block>
+        
+        <!-- Important Notice about Google Drive Tasks -->
+        <div style="margin: 20px 0; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; border-left: 4px solid #fdcb6e;">
+          <h4 style="margin: 0 0 10px 0; color: #856404; display: flex; align-items: center;">
+            <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+            Important Notice: Google Drive Tasks
+          </h4>
+          <md-block style="color: #856404; margin: 0;">
+            **OSWorld contains 8 Google Drive-related tasks** that may encounter setup issues during task initialization due to IP changes or other network-related factors, even when following our configuration guidelines correctly. 
+            
+            **Two acceptable approaches for evaluation:**
+            1. **Manual Adjustment**: You can manually configure these 8 tasks to complete the full **369 tasks** evaluation
+            2. **Exclude Tasks**: You can exclude these 8 tasks and run **361 tasks** instead - **this is officially permitted and acceptable**
+            
+            Both approaches are valid for benchmark comparison and leaderboard submission.
+          </md-block>
+        </div>
       </div>
       <!-- Progress Chart (Hidden by default) -->
       <div class="content has-text-justified" style="display: none;">
@@ -2304,12 +2321,24 @@
           Afterward, you can execute a command similar to the one in the previous section to run the benchmark on your agent.
         </md-block>
         
+        <h4 class="title is-5">Task Count Considerations</h4>
+        <md-block>
+          **OSWorld benchmark contains 369 tasks in total.** However, due to potential setup challenges with **8 Google Drive-related tasks** (caused by IP changes, network restrictions, or authentication issues), you have two valid evaluation options:
+          
+          - **Full Evaluation (369 tasks)**: Complete all tasks including Google Drive tasks (requires manual configuration)
+          - **Standard Evaluation (361 tasks)**: Exclude the 8 Google Drive tasks - **this is officially acceptable**
+          
+          **Both evaluation approaches are valid for research and comparison purposes.** Please specify which approach you used when reporting results.
+        </md-block>
+        
         <h3 class="title is-4">Public Evaluation</h3>
         <md-block>
           If you want your results to be verified and displayed on the verified leaderboard, you need to schedule a meeting with us (current maintainer: tianbaoxiexxx@gmail.com, yuanmengqi732@gmail.com) to run your agent code on our side and have us report the results. 
           You need to upload and allow us to disclose your agent implementation under the OSWorld framework (you may choose not to expose your model API to the public), along with a report that allows the public to understand what's happening behind the scenes.
           Alternatively, if you are from a trusted institution, you can share your monitoring data and trajectories with us. 
           Please carefully follow the [Public Evaluation Guideline](https://github.com/xlang-ai/OSWorld/blob/main/PUBLIC_EVALUATION_GUIDELINE.md) to get results.
+          
+          **When submitting results, please clearly indicate whether you evaluated on 369 tasks (full) or 361 tasks (excluding Google Drive tasks).**
         </md-block>
       </div>
     </div>
@@ -2333,6 +2362,27 @@
         <p class="faq-answer">See <a
             href="https://github.com/xlang-ai/OSWorld/blob/main/ACCOUNT_GUIDELINE.md">Account
             Guideline</a>.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3 class="faq-question">What should I do if Google Drive tasks fail to initialize properly?</h3>
+        <p class="faq-answer">
+          <strong>OSWorld contains 8 Google Drive-related tasks</strong> that may encounter setup issues during initialization due to various factors:<br><br>
+          
+          <strong>Common Issues:</strong>
+          <ul>
+            <li>IP address changes causing authentication problems</li>
+            <li>Network restrictions or firewalls</li>
+            <li>Google API rate limiting or access restrictions</li>
+            <li>Regional availability limitations</li>
+          </ul>
+          
+          <strong>Solutions:</strong><br>
+          <strong>Option 1 - Manual Configuration:</strong> Manually troubleshoot and configure these 8 tasks to complete the full 369-task evaluation.<br>
+          <strong>Option 2 - Task Exclusion:</strong> Exclude these 8 tasks and run the remaining <strong>361 tasks</strong> - this is <strong>officially permitted and acceptable</strong> for benchmark evaluation.<br><br>
+          
+          <strong>Both approaches are valid for research comparison and leaderboard submission.</strong> Please specify which approach you used when reporting your results.
+        </p>
       </div>
 
       <div class="faq-item">
