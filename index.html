@@ -1223,7 +1223,18 @@
                       // Identify detailed category columns (exclude main metadata columns)
                       const excludeColumns = ['Model', 'Approach type', 'Max steps', 'Institution', 'Date', 'PaperLink', 'PaperAuthors', 'Success rate'];
                       const allColumns = data.length > 0 ? Object.keys(data[0]) : [];
+                      // Detect the column for Additional a11y tree usage (case-insensitive)
+                      const additionalA11yColName = allColumns.find(col => String(col).trim().toLowerCase() === 'additional a11y tree used');
+                      if (additionalA11yColName) {
+                        // Do not show this column in the right-side category breakdown table
+                        excludeColumns.push(additionalA11yColName);
+                      }
                       const categoryColumns = allColumns.filter(col => !excludeColumns.includes(col));
+                      const isYesLike = (val) => {
+                        if (val === null || val === undefined) return false;
+                        const s = String(val).trim().toLowerCase();
+                        return s === 'yes' || s === 'true' || s === '1' || s === 'y';
+                      };
                       
                       data.forEach(row => {
                         const key = `${row.Model || 'Unknown'}_${row['Max steps'] || 'Unknown'}`;
@@ -1239,7 +1250,8 @@
                             PaperAuthors: row.PaperAuthors,
                             runs: [],
                             successRates: [],
-                            categoryData: {} // Store data for each category
+                            categoryData: {}, // Store data for each category
+                            hasAdditionalA11yTree: false
                           };
                           
                           // Initialize category data storage
@@ -1254,6 +1266,10 @@
                         }
                         
                         groups[key].runs.push(row);
+                        // Update additional a11y tree flag
+                        if (additionalA11yColName && isYesLike(row[additionalA11yColName])) {
+                          groups[key].hasAdditionalA11yTree = true;
+                        }
                         
                         // Collect main success rate
                         const successRate = parseFloat(row['Success rate']);
@@ -1409,6 +1425,10 @@
                           </select>
                         </div>
                         
+                        <div style="margin: 8px 0 14px 0; color: #666; font-size: 0.9em; display: flex; align-items: center; gap: 6px;">
+                          <i class="fas fa-tree" style="color: #2e7d32;"></i>
+                          <span>Indicates the result used additional a11y tree.</span>
+                        </div>
                         <div style="overflow-x: auto; width: 100%; max-width: calc(100vw - 40px); position: relative;">
                           <table class="table performanceTable" id="verifiedResultsTable" style="table-layout: auto; width: auto; min-width: 100%;">
                             <tr>
@@ -1709,7 +1729,12 @@
                                 <p style="margin: 0;">${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
                               </td>
                               <td style="word-break:break-word; white-space: normal; vertical-align: middle;">
-                                <strong>${row.Model || ''}</strong>
+                                <div style="position: relative; display: inline-block;">
+                                  <strong>${row.Model || ''}</strong>
+                                  ${row.hasAdditionalA11yTree ? `
+                                    <i class=\"fas fa-tree\" title=\"Uses additional a11y tree\" aria-label=\"Uses additional a11y tree\" style=\"position: absolute; top: -6px; right: -14px; color: #2e7d32; font-size: 0.9em;\"></i>
+                                  ` : ''}
+                                </div>
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
                                 ${dateDisplay ? `<p class="eval-date" style="color: #999; font-size: 0.8em; margin: 2px 0;">📅 ${dateDisplay}</p>` : ''}
                                 ${row.PaperLink ? `<a class="link" href="${row.PaperLink}" target="_blank" style="color: #3273dc; text-decoration: none;">${row.PaperAuthors || 'Paper Link'}</a>` : ''}
