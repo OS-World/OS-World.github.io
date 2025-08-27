@@ -2011,13 +2011,17 @@
                       if (maxStepsFilter) {
                         filteredData = filteredData.filter(row => String(row['Max steps']) === maxStepsFilter);
                       }
-                      // Apply additional filters (intersection when both are checked)
+                      // Apply additional filters
                       if (filterA11y || filterTool) {
+                        // Intersection when both are checked; single flag when only one is checked
                         filteredData = filteredData.filter(row => {
                           const a11yOk = filterA11y ? !!row.hasAdditionalA11yTree : true;
                           const toolOk = filterTool ? !!row.hasAdditionalTool : true;
                           return a11yOk && toolOk;
                         });
+                      } else {
+                        // Default (both unchecked): hide any entries that used a11y tree or tool
+                        filteredData = filteredData.filter(row => !((row.hasAdditionalA11yTree ?? false) || (row.hasAdditionalTool ?? false)));
                       }
                       
                       renderVerifiedTableRows(filteredData);
