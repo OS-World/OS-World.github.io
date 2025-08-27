@@ -1231,9 +1231,14 @@
                       const allColumns = data.length > 0 ? Object.keys(data[0]) : [];
                       // Detect the column for Additional a11y tree usage (case-insensitive)
                       const additionalA11yColName = allColumns.find(col => String(col).trim().toLowerCase() === 'additional a11y tree used');
+                      // Detect the column for Additional tool usage (case-insensitive)
+                      const additionalToolColName = allColumns.find(col => String(col).trim().toLowerCase() === 'additional tool used');
                       if (additionalA11yColName) {
                         // Do not show this column in the right-side category breakdown table
                         excludeColumns.push(additionalA11yColName);
+                      }
+                      if (additionalToolColName) {
+                        excludeColumns.push(additionalToolColName);
                       }
                       const categoryColumns = allColumns.filter(col => !excludeColumns.includes(col));
                       const isYesLike = (val) => {
@@ -1257,7 +1262,8 @@
                             runs: [],
                             successRates: [],
                             categoryData: {}, // Store data for each category
-                            hasAdditionalA11yTree: false
+                            hasAdditionalA11yTree: false,
+                            hasAdditionalTool: false
                           };
                           
                           // Initialize category data storage
@@ -1275,6 +1281,10 @@
                         // Update additional a11y tree flag
                         if (additionalA11yColName && isYesLike(row[additionalA11yColName])) {
                           groups[key].hasAdditionalA11yTree = true;
+                        }
+                        // Update additional tool flag
+                        if (additionalToolColName && isYesLike(row[additionalToolColName])) {
+                          groups[key].hasAdditionalTool = true;
                         }
                         
                         // Collect main success rate
@@ -1409,6 +1419,17 @@
                                 </div>
                               </div>
                             </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                              <label style="font-weight: bold; margin: 0;">Additional:</label>
+                              <label style="display: inline-flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" id="filterA11y" onchange="filterVerifiedTable()">
+                                <span>A11y tree</span>
+                              </label>
+                              <label style="display: inline-flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" id="filterTool" onchange="filterVerifiedTable()">
+                                <span>Tool</span>
+                              </label>
+                            </div>
                             <div>
                               <label for="maxStepsFilter" style="font-weight: bold; margin-right: 5px;">Max Steps:</label>
                               <select id="maxStepsFilter" onchange="filterVerifiedTable()">
@@ -1431,9 +1452,9 @@
                           </select>
                         </div>
                         
-                        <div style="margin: 8px 0 14px 0; color: #666; font-size: 0.9em; display: flex; align-items: center; gap: 6px;">
-                          <i class="fas fa-tree" style="color: #2e7d32;"></i>
-                          <span>Indicates the result used additional a11y tree.</span>
+                        <div style="margin: 8px 0 14px 0; color: #666; font-size: 0.9em; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                          <span style="display:flex; align-items:center; gap:6px;"><i class="fas fa-tree" style="color: #2e7d32;"></i><span>Used additional a11y tree</span></span>
+                          <span style="display:flex; align-items:center; gap:6px;"><i class="fas fa-wrench" style="color: #1976d2;"></i><span>Used additional tool</span></span>
                         </div>
                         <div style="overflow-x: auto; width: 100%; max-width: calc(100vw - 40px); position: relative;">
                           <table class="table performanceTable" id="verifiedResultsTable" style="table-layout: auto; width: auto; min-width: 100%;">
@@ -1735,10 +1756,13 @@
                                 <p style="margin: 0;">${isFirstRank ? `${rank} <span class="first-rank-star">*</span>` : rank}</p>
                               </td>
                               <td style="word-break:break-word; white-space: normal; vertical-align: middle;">
-                                <div style="position: relative; display: inline-block;">
+                                <div style="position: relative; display: inline-block; padding-right: 18px;">
                                   <strong>${row.Model || ''}</strong>
                                   ${row.hasAdditionalA11yTree ? `
-                                    <i class=\"fas fa-tree\" title=\"Uses additional a11y tree\" aria-label=\"Uses additional a11y tree\" style=\"position: absolute; top: -6px; right: -14px; color: #2e7d32; font-size: 0.9em;\"></i>
+                                    <i class=\"fas fa-tree\" title=\"Uses additional a11y tree\" aria-label=\"Uses additional a11y tree\" style=\"position: absolute; top: -6px; right: -4px; color: #2e7d32; font-size: 0.9em;\"></i>
+                                  ` : ''}
+                                  ${row.hasAdditionalTool ? `
+                                    <i class=\"fas fa-wrench\" title=\"Uses additional tool\" aria-label=\"Uses additional tool\" style=\"position: absolute; top: 10px; right: -4px; color: #1976d2; font-size: 0.85em;\"></i>
                                   ` : ''}
                                 </div>
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
@@ -1968,6 +1992,9 @@
                       }
                       
                       const maxStepsFilter = document.getElementById('maxStepsFilter').value;
+                      // Additional filters
+                      const filterA11y = document.getElementById('filterA11y')?.checked;
+                      const filterTool = document.getElementById('filterTool')?.checked;
                       
                       let filteredData = window.verifiedTableData;
                       
@@ -1983,6 +2010,14 @@
                       
                       if (maxStepsFilter) {
                         filteredData = filteredData.filter(row => String(row['Max steps']) === maxStepsFilter);
+                      }
+                      // Apply additional filters (intersection when both are checked)
+                      if (filterA11y || filterTool) {
+                        filteredData = filteredData.filter(row => {
+                          const a11yOk = filterA11y ? !!row.hasAdditionalA11yTree : true;
+                          const toolOk = filterTool ? !!row.hasAdditionalTool : true;
+                          return a11yOk && toolOk;
+                        });
                       }
                       
                       renderVerifiedTableRows(filteredData);
@@ -2001,6 +2036,10 @@
                       
                       document.getElementById('maxStepsFilter').value = '';
                       document.getElementById('sortBy').value = 'score';
+                      const a11yCb = document.getElementById('filterA11y');
+                      const toolCb = document.getElementById('filterTool');
+                      if (a11yCb) a11yCb.checked = false;
+                      if (toolCb) toolCb.checked = false;
                       
                       if (window.verifiedTableData) {
                         // Apply default filter
