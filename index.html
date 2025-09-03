@@ -1317,7 +1317,7 @@
                         }
                         
                         // Tag: Foundation model End-to-End GUI
-                        const isFoundationE2E = (group['Approach type'] === 'General model') 
+                        const isFoundationE2E = (group['Approach type'] === 'General model' || group['Approach type'] === 'Specialized model')
                                                 && !group.hasAdditionalA11yTree 
                                                 && !group.hasAdditionalTool;
                         
@@ -1385,8 +1385,8 @@
                       const subTabsHTML = `
                         <div class="tabs is-centered example_lst" id="verifiedScopeTabs" style="margin-bottom: 10px;">
                           <ul>
-                            <li ${isFoundationMode ? '' : 'class="is-active"'}><a title="All">All</a></li>
                             <li ${isFoundationMode ? 'class="is-active"' : ''}><a title="Foundation E2E GUI">Foundation E2E GUI</a></li>
+                            <li ${isFoundationMode ? '' : 'class="is-active"'}><a title="All">All</a></li>
                           </ul>
                         </div>
                       `;
@@ -1456,6 +1456,10 @@
                             ${isFoundationMode ? '' : `
                             <div style="display: flex; align-items: center; gap: 10px;">
                               <label style="font-weight: bold; margin: 0;">Tags:</label>
+                              <label style=\"display: inline-flex; align-items: center; gap: 6px;\">
+                                <input type=\"checkbox\" id=\"filterFoundation\" onchange=\"filterVerifiedTable()\" checked>
+                                <span>Foundation E2E GUI</span>
+                              </label>
                               <label style="display: inline-flex; align-items: center; gap: 6px;">
                                 <input type="checkbox" id="filterA11y" onchange="filterVerifiedTable()" checked>
                                 <span>A11y tree</span>
@@ -2042,7 +2046,8 @@
                       const maxStepsFilter = document.getElementById('maxStepsFilter').value;
                       // Additional filters
                       const filterA11y = document.getElementById('filterA11y')?.checked;
-                      const filterTool = document.getElementById('filterTool')?.checked;
+                      const filterTool = document.getElementById('filterTool')?.checked || document.getElementById('filterCoding')?.checked;
+                      const filterFoundation = document.getElementById('filterFoundation')?.checked;
                       
                       let filteredData = window.verifiedTableData;
                       
@@ -2062,13 +2067,17 @@
                       // Apply additional filters (only in All tab)
                       const isFoundationModeLocal = (window.verifiedSubTab === 'foundation');
                       if (!isFoundationModeLocal) {
-                        if (filterA11y || filterTool) {
-                          // Intersection when both are checked; single flag when only one is checked
-                          filteredData = filteredData.filter(row => {
-                            const a11yOk = filterA11y ? !!row.hasAdditionalA11yTree : true;
-                            const toolOk = filterTool ? !!row.hasAdditionalTool : true;
-                            return a11yOk && toolOk;
-                          });
+                        // Foundation tag (when unchecked, hide foundation E2E rows)
+                        if (filterFoundation === false) {
+                          filteredData = filteredData.filter(row => !(row.isFoundationE2E));
+                        }
+                        // A11y tree tag: checked => include both Yes and No; unchecked => only No
+                        if (filterA11y === false) {
+                          filteredData = filteredData.filter(row => !row.hasAdditionalA11yTree);
+                        }
+                        // Coding-based action tag: checked => include both Yes and No; unchecked => only No
+                        if (filterTool === false) {
+                          filteredData = filteredData.filter(row => !row.hasAdditionalTool);
                         }
                       }
                       
