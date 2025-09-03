@@ -1987,27 +1987,20 @@
                       const itemCheckboxes = document.querySelectorAll('.approachFilterItem');
                       
                       if (allCheckbox.checked) {
-                        // Check all items and disable them
+                        // Check all items (do not disable; allow user to uncheck later)
                         itemCheckboxes.forEach(cb => {
                           cb.checked = true;
-                          cb.disabled = true;
-                          // Update label style
+                          cb.disabled = false;
                           const label = cb.nextElementSibling;
-                          if (label) {
-                            label.style.color = '#999';
-                          }
+                          if (label) label.style.color = '#333';
                         });
                       } else {
-                        // Enable all items for individual selection and set default selections
-                        const defaultSelections = ['Specialized model', 'General model'];
+                        // Uncheck all items
                         itemCheckboxes.forEach(cb => {
                           cb.disabled = false;
-                          cb.checked = defaultSelections.includes(cb.value);
-                          // Update label style
+                          cb.checked = false;
                           const label = cb.nextElementSibling;
-                          if (label) {
-                            label.style.color = '#333';
-                          }
+                          if (label) label.style.color = '#333';
                         });
                       }
                       
