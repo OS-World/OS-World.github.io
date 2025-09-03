@@ -1231,8 +1231,11 @@
                       const allColumns = data.length > 0 ? Object.keys(data[0]) : [];
                       // Detect the column for Additional a11y tree usage (case-insensitive)
                       const additionalA11yColName = allColumns.find(col => String(col).trim().toLowerCase() === 'additional a11y tree used');
-                      // Detect the column for Additional tool usage (case-insensitive)
-                      const additionalToolColName = allColumns.find(col => String(col).trim().toLowerCase() === 'additional tool used');
+                      // Detect the column for Additional coding-based action usage (case-insensitive)
+                      const additionalToolColName = allColumns.find(col => {
+                        const v = String(col).trim().toLowerCase();
+                        return v === 'additional coding-based action' || v === 'additional tool used';
+                      });
                       if (additionalA11yColName) {
                         // Do not show this column in the right-side category breakdown table
                         excludeColumns.push(additionalA11yColName);
@@ -1313,6 +1316,11 @@
                           std = Math.sqrt(variance);
                         }
                         
+                        // Tag: Foundation model End-to-End GUI
+                        const isFoundationE2E = (group['Approach type'] === 'General model') 
+                                                && !group.hasAdditionalA11yTree 
+                                                && !group.hasAdditionalTool;
+                        
                         // Store original category data (no calculation needed)
                         const categoryStats = {};
                         categoryColumns.forEach(col => {
@@ -1330,7 +1338,8 @@
                           'Success rate std': std,
                           runCount: rates.length,
                           categoryStats: categoryStats,
-                          categoryColumns: categoryColumns
+                          categoryColumns: categoryColumns,
+                          isFoundationE2E: isFoundationE2E
                         };
                       });
                     }
@@ -1338,6 +1347,8 @@
                     function renderVerifiedTable(tableData, containerId) {
                       const container = document.getElementById(containerId);
                       if (!container) return;
+                      // Store raw data globally for re-rendering on sub-tab switch
+                      window.verifiedRawData = tableData;
                       
                       // Filter out invalid data (🚧, -, null, undefined, empty)
                       const validData = tableData.filter(row => {
@@ -1351,13 +1362,36 @@
                       });
                       
                       // Aggregate data by Model and Max steps
-                      const aggregatedData = aggregateByModelAndSteps(validData);
+                      let aggregatedData = aggregateByModelAndSteps(validData);
+                      // Sub-scope filter
+                      if (!window.verifiedSubTab) window.verifiedSubTab = 'all';
+                      const isFoundationMode = window.verifiedSubTab === 'foundation';
+                      if (isFoundationMode) {
+                        aggregatedData = aggregatedData.filter(r => r.isFoundationE2E);
+                      }
                       
                       // Get unique values for filters (convert to strings for consistent comparison) 
-                      const approachTypes = [...new Set(aggregatedData.map(row => row['Approach type']).filter(Boolean))];
+                      let approachTypes = [...new Set(aggregatedData.map(row => row['Approach type']).filter(Boolean))];
+                      if (isFoundationMode) {
+                        const allow = new Set(['Specialized model', 'General model']);
+                        approachTypes = approachTypes.filter(t => allow.has(t));
+                      } else {
+                        // Ensure All tab shows the three types in a stable order if present
+                        const order = ['General model','Specialized model','Agentic framework'];
+                        approachTypes.sort((a,b)=> order.indexOf(a) - order.indexOf(b));
+                      }
                       const maxSteps = [...new Set(aggregatedData.map(row => String(row['Max steps'])).filter(value => value !== '' && value !== 'null' && value !== 'undefined'))].sort((a, b) => Number(a) - Number(b));
                       
-                      let tableHTML = `
+                      const subTabsHTML = `
+                        <div class="tabs is-centered example_lst" id="verifiedScopeTabs" style="margin-bottom: 10px;">
+                          <ul>
+                            <li ${isFoundationMode ? '' : 'class="is-active"'}><a title="All">All</a></li>
+                            <li ${isFoundationMode ? 'class="is-active"' : ''}><a title="Foundation E2E GUI">Foundation E2E GUI</a></li>
+                          </ul>
+                        </div>
+                      `;
+                      
+                      let tableHTML = subTabsHTML + `
                         <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                           <h4 style="margin: 0 0 10px 0;">Filters:</h4>
                           <div style="display: flex; gap: 15px; flex-wrap: wrap;">
@@ -1419,17 +1453,19 @@
                                 </div>
                               </div>
                             </div>
+                            ${isFoundationMode ? '' : `
                             <div style="display: flex; align-items: center; gap: 10px;">
-                              <label style="font-weight: bold; margin: 0;">Additional:</label>
+                              <label style="font-weight: bold; margin: 0;">Tags:</label>
                               <label style="display: inline-flex; align-items: center; gap: 6px;">
-                                <input type="checkbox" id="filterA11y" onchange="filterVerifiedTable()">
+                                <input type="checkbox" id="filterA11y" onchange="filterVerifiedTable()" checked>
                                 <span>A11y tree</span>
                               </label>
                               <label style="display: inline-flex; align-items: center; gap: 6px;">
-                                <input type="checkbox" id="filterTool" onchange="filterVerifiedTable()">
-                                <span>Tool</span>
+                                <input type="checkbox" id="filterCoding" onchange="filterVerifiedTable()" checked>
+                                <span>Coding-based action</span>
                               </label>
                             </div>
+                            `}
                             <div>
                               <label for="maxStepsFilter" style="font-weight: bold; margin-right: 5px;">Max Steps:</label>
                               <select id="maxStepsFilter" onchange="filterVerifiedTable()">
@@ -1452,10 +1488,12 @@
                           </select>
                         </div>
                         
+                        ${isFoundationMode ? '' : `
                         <div style="margin: 8px 0 14px 0; color: #666; font-size: 0.9em; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
                           <span style="display:flex; align-items:center; gap:6px;"><i class="fas fa-tree" style="color: #2e7d32;"></i><span>Used additional a11y tree</span></span>
-                          <span style="display:flex; align-items:center; gap:6px;"><i class="fas fa-wrench" style="color: #1976d2;"></i><span>Used additional tool</span></span>
+                          <span style="display:flex; align-items:center; gap:6px;"><i class="fas fa-code" style="color: #1976d2;"></i><span>Used coding-based action</span></span>
                         </div>
+                        `}
                         <div style="overflow-x: auto; width: 100%; max-width: calc(100vw - 40px); position: relative;">
                           <table class="table performanceTable" id="verifiedResultsTable" style="table-layout: auto; width: auto; min-width: 100%;">
                             <tr>
@@ -1475,6 +1513,16 @@
                       
                       // Store data globally for filtering
                       window.verifiedTableData = aggregatedData;
+                      // Attach sub-tab switching
+                      const scopeTabs = document.querySelectorAll('#verifiedScopeTabs a');
+                      scopeTabs.forEach(a => {
+                        a.addEventListener('click', (e) => {
+                          const title = a.getAttribute('title');
+                          window.verifiedSubTab = (title === 'Foundation E2E GUI') ? 'foundation' : 'all';
+                          // Re-render with the selected scope
+                          renderVerifiedTable(window.verifiedRawData, 'BoardPanel5');
+                        });
+                      });
                       
                       // Debug: Check date formats in the data
                       if (validData.length > 0) {
@@ -1761,8 +1809,8 @@
                                   ${row.hasAdditionalA11yTree ? `
                                     <i class=\"fas fa-tree\" title=\"Uses additional a11y tree\" aria-label=\"Uses additional a11y tree\" style=\"position: absolute; top: -6px; right: -4px; color: #2e7d32; font-size: 0.9em;\"></i>
                                   ` : ''}
-                                  ${row.hasAdditionalTool ? `
-                                    <i class=\"fas fa-wrench\" title=\"Uses additional tool\" aria-label=\"Uses additional tool\" style=\"position: absolute; top: 10px; right: -4px; color: #1976d2; font-size: 0.85em;\"></i>
+                                  ${(!window.verifiedSubTab || window.verifiedSubTab === 'all') && row.hasAdditionalTool ? `
+                                    <i class=\"fas fa-code\" title=\"Uses coding-based action\" aria-label=\"Uses coding-based action\" style=\"position: absolute; top: 10px; right: -4px; color: #1976d2; font-size: 0.85em;\"></i>
                                   ` : ''}
                                 </div>
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
@@ -2011,17 +2059,17 @@
                       if (maxStepsFilter) {
                         filteredData = filteredData.filter(row => String(row['Max steps']) === maxStepsFilter);
                       }
-                      // Apply additional filters
-                      if (filterA11y || filterTool) {
-                        // Intersection when both are checked; single flag when only one is checked
-                        filteredData = filteredData.filter(row => {
-                          const a11yOk = filterA11y ? !!row.hasAdditionalA11yTree : true;
-                          const toolOk = filterTool ? !!row.hasAdditionalTool : true;
-                          return a11yOk && toolOk;
-                        });
-                      } else {
-                        // Default (both unchecked): hide any entries that used a11y tree or tool
-                        filteredData = filteredData.filter(row => !((row.hasAdditionalA11yTree ?? false) || (row.hasAdditionalTool ?? false)));
+                      // Apply additional filters (only in All tab)
+                      const isFoundationModeLocal = (window.verifiedSubTab === 'foundation');
+                      if (!isFoundationModeLocal) {
+                        if (filterA11y || filterTool) {
+                          // Intersection when both are checked; single flag when only one is checked
+                          filteredData = filteredData.filter(row => {
+                            const a11yOk = filterA11y ? !!row.hasAdditionalA11yTree : true;
+                            const toolOk = filterTool ? !!row.hasAdditionalTool : true;
+                            return a11yOk && toolOk;
+                          });
+                        }
                       }
                       
                       renderVerifiedTableRows(filteredData);
@@ -2042,8 +2090,10 @@
                       document.getElementById('sortBy').value = 'score';
                       const a11yCb = document.getElementById('filterA11y');
                       const toolCb = document.getElementById('filterTool');
-                      if (a11yCb) a11yCb.checked = false;
-                      if (toolCb) toolCb.checked = false;
+                      const codingCb = document.getElementById('filterCoding');
+                      if (a11yCb) a11yCb.checked = true;
+                      if (toolCb) toolCb.checked = true;
+                      if (codingCb) codingCb.checked = true;
                       
                       if (window.verifiedTableData) {
                         // Apply default filter
