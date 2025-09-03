@@ -1544,24 +1544,24 @@
                         defaultSelections = ['Specialized model', 'General model', 'Agentic framework'];
                       }
                       
-                      // Uncheck "All" first
                       const allCheckbox = document.getElementById('approachFilterAll');
-                      if (allCheckbox) {
-                        allCheckbox.checked = false;
-                      }
                       
-                      // Enable all item checkboxes and select only default ones
+                      // Enable all item checkboxes and select default ones
                       const itemCheckboxes = document.querySelectorAll('.approachFilterItem');
                       itemCheckboxes.forEach(cb => {
                         cb.disabled = false;
                         cb.checked = defaultSelections.includes(cb.value);
-                        
-                        // Update label style
                         const label = cb.nextElementSibling;
                         if (label) {
                           label.style.color = '#333';
                         }
                       });
+                      
+                      // If all visible items are selected by default, mark "All" as checked (do not trigger disabling)
+                      if (allCheckbox) {
+                        const allSelected = Array.from(itemCheckboxes).every(cb => cb.checked || cb.disabled);
+                        allCheckbox.checked = allSelected;
+                      }
                       
                       updateModelTypeDisplay();
                     }
