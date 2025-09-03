@@ -1364,7 +1364,7 @@
                       // Aggregate data by Model and Max steps
                       let aggregatedData = aggregateByModelAndSteps(validData);
                       // Sub-scope filter
-                      if (!window.verifiedSubTab) window.verifiedSubTab = 'all';
+                      if (!window.verifiedSubTab) window.verifiedSubTab = 'foundation';
                       const isFoundationMode = window.verifiedSubTab === 'foundation';
                       if (isFoundationMode) {
                         aggregatedData = aggregatedData.filter(r => r.isFoundationE2E);
@@ -1456,17 +1456,13 @@
                             ${isFoundationMode ? '' : `
                             <div style="display: flex; align-items: center; gap: 10px;">
                               <label style="font-weight: bold; margin: 0;">Tags:</label>
-                              <label style=\"display: inline-flex; align-items: center; gap: 6px;\">
-                                <input type=\"checkbox\" id=\"filterFoundation\" onchange=\"filterVerifiedTable()\" checked>
-                                <span>Foundation E2E GUI</span>
-                              </label>
                               <label style="display: inline-flex; align-items: center; gap: 6px;">
                                 <input type="checkbox" id="filterA11y" onchange="filterVerifiedTable()" checked>
                                 <span>A11y tree</span>
                               </label>
                               <label style="display: inline-flex; align-items: center; gap: 6px;">
                                 <input type="checkbox" id="filterCoding" onchange="filterVerifiedTable()" checked>
-                                <span>Coding-based action</span>
+                                <span>Additional coding-based action</span>
                               </label>
                             </div>
                             `}
@@ -1543,7 +1539,10 @@
 
                     function setDefaultModelTypeFilters() {
                       // Set default selections: Specialized model and General model
-                      const defaultSelections = ['Specialized model', 'General model'];
+                      let defaultSelections = ['Specialized model', 'General model'];
+                      if (window.verifiedSubTab === 'all') {
+                        defaultSelections = ['Specialized model', 'General model', 'Agentic framework'];
+                      }
                       
                       // Uncheck "All" first
                       const allCheckbox = document.getElementById('approachFilterAll');
@@ -1814,7 +1813,7 @@
                                     <i class=\"fas fa-tree\" title=\"Uses additional a11y tree\" aria-label=\"Uses additional a11y tree\" style=\"position: absolute; top: -6px; right: -4px; color: #2e7d32; font-size: 0.9em;\"></i>
                                   ` : ''}
                                   ${(!window.verifiedSubTab || window.verifiedSubTab === 'all') && row.hasAdditionalTool ? `
-                                    <i class=\"fas fa-code\" title=\"Uses coding-based action\" aria-label=\"Uses coding-based action\" style=\"position: absolute; top: 10px; right: -4px; color: #1976d2; font-size: 0.85em;\"></i>
+                                    <i class=\"fas fa-code\" title=\"Uses Additional coding-based action\" aria-label=\"Uses Additional coding-based action\" style=\"position: absolute; top: 10px; right: -4px; color: #1976d2; font-size: 0.85em;\"></i>
                                   ` : ''}
                                 </div>
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
@@ -2047,7 +2046,6 @@
                       // Additional filters
                       const filterA11y = document.getElementById('filterA11y')?.checked;
                       const filterTool = document.getElementById('filterTool')?.checked || document.getElementById('filterCoding')?.checked;
-                      const filterFoundation = document.getElementById('filterFoundation')?.checked;
                       
                       let filteredData = window.verifiedTableData;
                       
@@ -2067,10 +2065,6 @@
                       // Apply additional filters (only in All tab)
                       const isFoundationModeLocal = (window.verifiedSubTab === 'foundation');
                       if (!isFoundationModeLocal) {
-                        // Foundation tag (when unchecked, hide foundation E2E rows)
-                        if (filterFoundation === false) {
-                          filteredData = filteredData.filter(row => !(row.isFoundationE2E));
-                        }
                         // A11y tree tag: checked => include both Yes and No; unchecked => only No
                         if (filterA11y === false) {
                           filteredData = filteredData.filter(row => !row.hasAdditionalA11yTree);
