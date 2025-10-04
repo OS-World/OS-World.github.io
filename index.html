@@ -1242,12 +1242,17 @@
                         const v = String(col).trim().toLowerCase();
                         return v === 'additional coding-based action' || v === 'additional tool used';
                       });
+                      // Detect the column for Multiple rollout (case-insensitive)
+                      const multipleRolloutColName = allColumns.find(col => String(col).trim().toLowerCase() === 'multiple rollout');
                       if (additionalA11yColName) {
                         // Do not show this column in the right-side category breakdown table
                         excludeColumns.push(additionalA11yColName);
                       }
                       if (additionalToolColName) {
                         excludeColumns.push(additionalToolColName);
+                      }
+                      if (multipleRolloutColName) {
+                        excludeColumns.push(multipleRolloutColName);
                       }
                       const categoryColumns = allColumns.filter(col => !excludeColumns.includes(col));
                       const isYesLike = (val) => {
@@ -1272,7 +1277,8 @@
                             successRates: [],
                             categoryData: {}, // Store data for each category
                             hasAdditionalA11yTree: false,
-                            hasAdditionalTool: false
+                            hasAdditionalTool: false,
+                            hasMultipleRollout: false
                           };
                           
                           // Initialize category data storage
@@ -1294,6 +1300,10 @@
                         // Update additional tool flag
                         if (additionalToolColName && isYesLike(row[additionalToolColName])) {
                           groups[key].hasAdditionalTool = true;
+                        }
+                        // Update multiple rollout flag
+                        if (multipleRolloutColName && isYesLike(row[multipleRolloutColName])) {
+                          groups[key].hasMultipleRollout = true;
                         }
                         
                         // Collect main success rate
@@ -1469,6 +1479,10 @@
                               <label style="display: inline-flex; align-items: center; gap: 6px;">
                                 <input type="checkbox" id="filterCoding" onchange="filterVerifiedTable()" checked>
                                 <span>Additional coding-based action</span>
+                              </label>
+                              <label style="display: inline-flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" id="filterMulti" onchange="filterVerifiedTable()" checked>
+                                <span>Multiple rollout</span>
                               </label>
                             </div>
                             `}
@@ -2045,6 +2059,7 @@
                       // Additional filters
                       const filterA11y = document.getElementById('filterA11y')?.checked;
                       const filterTool = document.getElementById('filterTool')?.checked || document.getElementById('filterCoding')?.checked;
+                      const filterMulti = document.getElementById('filterMulti')?.checked;
                       
                       let filteredData = window.verifiedTableData;
                       
@@ -2068,9 +2083,13 @@
                         if (filterA11y === false) {
                           filteredData = filteredData.filter(row => !row.hasAdditionalA11yTree);
                         }
-                        // Coding-based action tag: checked => include both Yes and No; unchecked => only No
+                        // Additional coding-based action tag: checked => include both Yes and No; unchecked => only No
                         if (filterTool === false) {
                           filteredData = filteredData.filter(row => !row.hasAdditionalTool);
+                        }
+                        // Multiple rollout tag: checked => include both Yes and No; unchecked => only No
+                        if (filterMulti === false) {
+                          filteredData = filteredData.filter(row => !row.hasMultipleRollout);
                         }
                       }
                       
