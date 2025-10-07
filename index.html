@@ -1836,6 +1836,9 @@
                                   ${(!window.verifiedSubTab || window.verifiedSubTab === 'all') && row.hasAdditionalTool ? `
                                     <i class=\"fas fa-code\" title=\"Uses Additional coding-based action\" aria-label=\"Uses Additional coding-based action\" style=\"position: absolute; top: 10px; right: -4px; color: #1976d2; font-size: 0.85em;\"></i>
                                   ` : ''}
+                                  ${(!window.verifiedSubTab || window.verifiedSubTab === 'all') && row.hasMultipleRollout ? `
+                                    <span title=\"Multiple rollout\" aria-label=\"Multiple rollout\" style=\"position: absolute; top: 26px; right: -4px; font-size: 0.9em; line-height: 1;\">🔁</span>
+                                  ` : ''}
                                 </div>
                                 <p class="institution" style="color: #666; font-size: 0.9em; margin: 2px 0;">${row.Institution || ''}</p>
                                 ${dateDisplay ? `<p class="eval-date" style="color: #999; font-size: 0.8em; margin: 2px 0;">📅 ${dateDisplay}</p>` : ''}
