@@ -33,6 +33,8 @@
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="static/images/favicon.png">
 
@@ -52,6 +54,13 @@
       }
       .visitor-counter-container #visitor-count {
         font-size: 1em !important;
+      }
+      .visitor-counter-container #visitor-count-today {
+        font-size: 1em !important;
+      }
+      .visitor-counter-container #visitor-map {
+        width: 180px !important;
+        height: 110px !important;
       }
     }
   </style>
@@ -2564,29 +2573,56 @@
       <!-- Visitor Counter -->
       <div class="has-text-centered" style="margin-bottom: 20px;">
         <div class="visitor-counter-container" style="
-          display: inline-flex; 
-          align-items: center; 
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
           gap: 10px; 
-          padding: 10px 20px; 
+          padding: 12px 20px; 
           background: rgba(245, 245, 245, 0.8); 
-          border-radius: 20px; 
+          border-radius: 16px; 
           border: 1px solid #e0e0e0;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
           transition: all 0.3s ease;
-          flex-wrap: wrap;
           justify-content: center;
         " 
         onmouseover="this.style.background='rgba(235, 235, 235, 0.9)'; this.style.transform='translateY(-1px)'"
         onmouseout="this.style.background='rgba(245, 245, 245, 0.8)'; this.style.transform='translateY(0)'">
-          <i class="fas fa-eye" style="color: #666; font-size: 1.1em;"></i>
-          <span style="color: #666; font-size: 0.9em; white-space: nowrap;">Total Visitors:</span>
-          <span id="visitor-count" style="
-            color: #2e7d32; 
-            font-weight: bold; 
-            font-size: 1.1em;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 0.5px;
-          ">Loading...</span>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+            <i class="fas fa-eye" style="color: #666; font-size: 1.1em;"></i>
+            <span style="color: #666; font-size: 0.9em; white-space: nowrap;">Total Visitors:</span>
+            <span id="visitor-count" style="
+              color: #2e7d32;
+              font-weight: bold;
+              font-size: 1.1em;
+              font-family: 'Courier New', monospace;
+              letter-spacing: 0.5px;
+            ">Loading...</span>
+            <span style="color: #bbb;">|</span>
+            <span style="color: #666; font-size: 0.9em; white-space: nowrap;">Total Views:</span>
+            <span id="visitor-count-today" style="
+              color: #1565c0;
+              font-weight: bold;
+              font-size: 1.1em;
+              font-family: 'Courier New', monospace;
+              letter-spacing: 0.5px;
+            ">Loading...</span>
+          </div>
+          <span id="busuanzi_value_site_uv" style="display: none;"></span>
+          <span id="busuanzi_value_site_pv" style="display: none;"></span>
+          <div id="visitor-last-updated" style="color: #888; font-size: 0.8em;">
+            Updated: --
+          </div>
+          <div id="visitor-location-summary" style="color: #666; font-size: 0.85em;">
+            Locating visitor region...
+          </div>
+          <div id="visitor-map" style="
+            width: 220px;
+            height: 130px;
+            border-radius: 10px;
+            border: 1px solid #d7d7d7;
+            overflow: hidden;
+            display: none;
+          "></div>
         </div>
       </div>
 
@@ -2611,70 +2647,176 @@
     </div>
   </footer>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
   <!-- Visitor Counter Script -->
   <script>
-    // Initialize visitor counter
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const visitorCountElement = document.getElementById('visitor-count');
-      const apiUrl = 'https://api.countapi.xyz/hit/os-world.github.io/visits';
-      
-      // Function to update visitor count
-      function updateVisitorCount() {
-        // Set timeout for API request
+      const visitorTodayElement = document.getElementById('visitor-count-today');
+      const visitorUpdatedElement = document.getElementById('visitor-last-updated');
+      const visitorLocationSummaryElement = document.getElementById('visitor-location-summary');
+      const visitorMapElement = document.getElementById('visitor-map');
+      const busuanziUvElement = document.getElementById('busuanzi_value_site_uv');
+      const busuanziPvElement = document.getElementById('busuanzi_value_site_pv');
+
+      let visitorMap = null;
+
+      function normalizeCount(rawValue) {
+        if (typeof rawValue !== 'string') {
+          return '--';
+        }
+        const digitsOnly = rawValue.replace(/[^\d]/g, '');
+        if (!digitsOnly) {
+          return '--';
+        }
+        return Number(digitsOnly).toLocaleString();
+      }
+
+      function updateLastUpdated() {
+        visitorUpdatedElement.textContent = 'Updated: ' + new Date().toLocaleString();
+      }
+
+      function setCounts(totalVisitors, totalViews) {
+        visitorCountElement.textContent = totalVisitors;
+        visitorTodayElement.textContent = totalViews;
+        visitorCountElement.style.color = '#2e7d32';
+        visitorTodayElement.style.color = '#1565c0';
+        visitorCountElement.style.transform = 'scale(1.08)';
+        visitorTodayElement.style.transform = 'scale(1.08)';
+        setTimeout(() => {
+          visitorCountElement.style.transform = 'scale(1)';
+          visitorTodayElement.style.transform = 'scale(1)';
+        }, 250);
+        updateLastUpdated();
+      }
+
+      function loadCachedCounts() {
+        let cachedVisitors = null;
+        let cachedViews = null;
+        try {
+          cachedVisitors = localStorage.getItem('osworld-visitor-total');
+          cachedViews = localStorage.getItem('osworld-visitor-views');
+        } catch (_e) {
+          return false;
+        }
+        if (cachedVisitors !== null || cachedViews !== null) {
+          visitorCountElement.textContent = normalizeCount(String(cachedVisitors || ''));
+          visitorTodayElement.textContent = normalizeCount(String(cachedViews || ''));
+          visitorCountElement.style.color = '#666';
+          visitorTodayElement.style.color = '#666';
+          visitorUpdatedElement.textContent = 'Updated: cached data';
+          return true;
+        }
+        return false;
+      }
+
+      function updateCountsFromBusuanzi() {
+        let attempts = 0;
+        const maxAttempts = 40;
+        const timer = setInterval(() => {
+          attempts += 1;
+          const uvRaw = (busuanziUvElement.textContent || '').trim();
+          const pvRaw = (busuanziPvElement.textContent || '').trim();
+          const uvText = normalizeCount(uvRaw);
+          const pvText = normalizeCount(pvRaw);
+          if (uvText !== '--' && pvText !== '--') {
+            clearInterval(timer);
+            setCounts(uvText, pvText);
+            try {
+              localStorage.setItem('osworld-visitor-total', uvRaw);
+              localStorage.setItem('osworld-visitor-views', pvRaw);
+            } catch (_e) {
+              // Ignore storage unavailability.
+            }
+            return;
+          }
+
+          if (attempts >= maxAttempts) {
+            clearInterval(timer);
+            if (!loadCachedCounts()) {
+              visitorCountElement.textContent = '--';
+              visitorTodayElement.textContent = '--';
+              visitorCountElement.style.color = '#666';
+              visitorTodayElement.style.color = '#666';
+              visitorUpdatedElement.textContent = 'Updated: unavailable';
+              console.log('Visitor counter error: Busuanzi unavailable in this network.');
+            }
+          }
+        }, 500);
+      }
+
+      function withTimeout(url, timeoutMs) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        fetch(apiUrl, { signal: controller.signal })
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        return fetch(url, { signal: controller.signal })
+          .finally(() => clearTimeout(timeoutId));
+      }
+
+      function initVisitorMap() {
+        withTimeout('https://ipwho.is/?fields=success,country,region,city,latitude,longitude', 5000)
           .then(response => {
-            clearTimeout(timeoutId);
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
           })
           .then(data => {
-            if (data && typeof data.value === 'number') {
-              // Format number with commas
-              const formattedCount = data.value.toLocaleString();
-              visitorCountElement.textContent = formattedCount;
-              visitorCountElement.style.color = '#2e7d32';
-              
-              // Add subtle animation
-              visitorCountElement.style.transform = 'scale(1.15)';
-              setTimeout(() => {
-                visitorCountElement.style.transform = 'scale(1)';
-              }, 300);
-              
-              // Store count in localStorage as backup
-              localStorage.setItem('osworld-visitor-count', data.value);
-            } else {
-              throw new Error('Invalid data received');
+            if (!data || data.success !== true) {
+              throw new Error('Location unavailable');
+            }
+
+            const latitude = Number(data.latitude);
+            const longitude = Number(data.longitude);
+            if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+              throw new Error('Invalid location coordinates');
+            }
+
+            const city = data.city || '';
+            const region = data.region || '';
+            const country = data.country || '';
+            const locationParts = [city, region, country].filter(Boolean);
+            const locationText = locationParts.length > 0 ? locationParts.join(', ') : 'Approximate location unavailable';
+            visitorLocationSummaryElement.textContent = 'Approx. visitor region: ' + locationText;
+
+            if (typeof L !== 'undefined') {
+              visitorMapElement.style.display = 'block';
+              visitorMap = L.map('visitor-map', {
+                zoomControl: false,
+                attributionControl: false,
+                scrollWheelZoom: false,
+                dragging: true
+              }).setView([latitude, longitude], 3);
+
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+              }).addTo(visitorMap);
+
+              L.circleMarker([latitude, longitude], {
+                radius: 6,
+                color: '#1565c0',
+                fillColor: '#4fc3f7',
+                fillOpacity: 0.9,
+                weight: 2
+              }).addTo(visitorMap).bindTooltip(locationText, { direction: 'top', permanent: false });
+
+              setTimeout(() => visitorMap.invalidateSize(), 50);
             }
           })
           .catch(error => {
-            clearTimeout(timeoutId);
-            console.log('Visitor counter error:', error.message);
-            
-            // Try to use cached count
-            const cachedCount = localStorage.getItem('osworld-visitor-count');
-            if (cachedCount) {
-              visitorCountElement.textContent = parseInt(cachedCount).toLocaleString() + '+';
-              visitorCountElement.style.color = '#666';
-            } else {
-              visitorCountElement.textContent = '1000+';
-              visitorCountElement.style.color = '#666';
-            }
+            console.log('Visitor map error:', error.message);
+            visitorLocationSummaryElement.textContent = 'Approx. visitor region: unavailable';
           });
       }
-      
-      // Add transition effects
+
       visitorCountElement.style.transition = 'all 0.3s ease';
-      
-      // Update count immediately
-      updateVisitorCount();
-      
-      // Optional: Update count periodically (every 5 minutes)
-      setInterval(updateVisitorCount, 300000);
+      visitorTodayElement.style.transition = 'all 0.3s ease';
+
+      updateCountsFromBusuanzi();
+      setInterval(updateCountsFromBusuanzi, 300000);
+      initVisitorMap();
     });
   </script>
 
