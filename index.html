@@ -2598,7 +2598,7 @@
               letter-spacing: 0.5px;
             ">Loading...</span>
             <span style="color: #bbb;">|</span>
-            <span style="color: #666; font-size: 0.9em; white-space: nowrap;">Total Views:</span>
+            <span id="visitor-secondary-label" style="color: #666; font-size: 0.9em; white-space: nowrap;">Metric:</span>
             <span id="visitor-count-today" style="
               color: #1565c0;
               font-weight: bold;
@@ -2655,20 +2655,33 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const visitorCountElement = document.getElementById('visitor-count');
-      const visitorTodayElement = document.getElementById('visitor-count-today');
+      const visitorSecondaryElement = document.getElementById('visitor-count-today');
+      const visitorSecondaryLabelElement = document.getElementById('visitor-secondary-label');
       const visitorUpdatedElement = document.getElementById('visitor-last-updated');
       const visitorLocationSummaryElement = document.getElementById('visitor-location-summary');
       const visitorMapElement = document.getElementById('visitor-map');
       const busuanziUvElement = document.getElementById('busuanzi_value_site_uv');
       const busuanziPvElement = document.getElementById('busuanzi_value_site_pv');
+      const namespace = 'os-world.github.io';
+      const totalKey = 'visits';
+      const now = new Date();
+      const todayDateKey = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, '0'),
+        String(now.getDate()).padStart(2, '0')
+      ].join('-');
+      const todayKey = 'visits-' + todayDateKey;
+      const incrementedSessionKey = 'osworld-visit-incremented-' + todayDateKey;
 
       let visitorMap = null;
+      let visitorMarker = null;
+      let isRefreshingCounts = false;
 
       function normalizeCount(rawValue) {
-        if (typeof rawValue !== 'string') {
+        if (typeof rawValue !== 'string' && typeof rawValue !== 'number') {
           return '--';
         }
-        const digitsOnly = rawValue.replace(/[^\d]/g, '');
+        const digitsOnly = String(rawValue).replace(/[^\d]/g, '');
         if (!digitsOnly) {
           return '--';
         }
@@ -2679,73 +2692,61 @@
         visitorUpdatedElement.textContent = 'Updated: ' + new Date().toLocaleString();
       }
 
-      function setCounts(totalVisitors, totalViews) {
-        visitorCountElement.textContent = totalVisitors;
-        visitorTodayElement.textContent = totalViews;
+      function setSecondaryLabel(labelText) {
+        visitorSecondaryLabelElement.textContent = labelText;
+      }
+
+      function setCounts(totalVisitors, secondaryCount) {
+        visitorCountElement.textContent = normalizeCount(totalVisitors);
+        visitorSecondaryElement.textContent = normalizeCount(secondaryCount);
         visitorCountElement.style.color = '#2e7d32';
-        visitorTodayElement.style.color = '#1565c0';
+        visitorSecondaryElement.style.color = '#1565c0';
         visitorCountElement.style.transform = 'scale(1.08)';
-        visitorTodayElement.style.transform = 'scale(1.08)';
+        visitorSecondaryElement.style.transform = 'scale(1.08)';
         setTimeout(() => {
           visitorCountElement.style.transform = 'scale(1)';
-          visitorTodayElement.style.transform = 'scale(1)';
+          visitorSecondaryElement.style.transform = 'scale(1)';
         }, 250);
         updateLastUpdated();
       }
 
       function loadCachedCounts() {
-        let cachedVisitors = null;
-        let cachedViews = null;
+        let cachedTotal = null;
+        let cachedSecondary = null;
+        let cachedLabel = null;
         try {
-          cachedVisitors = localStorage.getItem('osworld-visitor-total');
-          cachedViews = localStorage.getItem('osworld-visitor-views');
+          cachedTotal = localStorage.getItem('osworld-visitor-total');
+          cachedSecondary = localStorage.getItem('osworld-visitor-secondary');
+          cachedLabel = localStorage.getItem('osworld-visitor-secondary-label');
+          if (cachedSecondary === null) {
+            cachedSecondary = localStorage.getItem('osworld-visitor-views');
+          }
         } catch (_e) {
           return false;
         }
-        if (cachedVisitors !== null || cachedViews !== null) {
-          visitorCountElement.textContent = normalizeCount(String(cachedVisitors || ''));
-          visitorTodayElement.textContent = normalizeCount(String(cachedViews || ''));
+        if (cachedTotal !== null || cachedSecondary !== null) {
+          visitorCountElement.textContent = normalizeCount(cachedTotal || '');
+          visitorSecondaryElement.textContent = normalizeCount(cachedSecondary || '');
           visitorCountElement.style.color = '#666';
-          visitorTodayElement.style.color = '#666';
+          visitorSecondaryElement.style.color = '#666';
+          setSecondaryLabel(cachedLabel || 'Metric:');
           visitorUpdatedElement.textContent = 'Updated: cached data';
           return true;
         }
         return false;
       }
 
-      function updateCountsFromBusuanzi() {
-        let attempts = 0;
-        const maxAttempts = 40;
-        const timer = setInterval(() => {
-          attempts += 1;
-          const uvRaw = (busuanziUvElement.textContent || '').trim();
-          const pvRaw = (busuanziPvElement.textContent || '').trim();
-          const uvText = normalizeCount(uvRaw);
-          const pvText = normalizeCount(pvRaw);
-          if (uvText !== '--' && pvText !== '--') {
-            clearInterval(timer);
-            setCounts(uvText, pvText);
-            try {
-              localStorage.setItem('osworld-visitor-total', uvRaw);
-              localStorage.setItem('osworld-visitor-views', pvRaw);
-            } catch (_e) {
-              // Ignore storage unavailability.
-            }
-            return;
+      function saveCachedCounts(totalCount, secondaryCount, secondaryLabel) {
+        try {
+          localStorage.setItem('osworld-visitor-total', String(totalCount));
+          localStorage.setItem('osworld-visitor-secondary', String(secondaryCount));
+          localStorage.setItem('osworld-visitor-secondary-label', secondaryLabel);
+          if (secondaryLabel === 'Total Views:') {
+            localStorage.setItem('osworld-visitor-views', String(secondaryCount));
           }
-
-          if (attempts >= maxAttempts) {
-            clearInterval(timer);
-            if (!loadCachedCounts()) {
-              visitorCountElement.textContent = '--';
-              visitorTodayElement.textContent = '--';
-              visitorCountElement.style.color = '#666';
-              visitorTodayElement.style.color = '#666';
-              visitorUpdatedElement.textContent = 'Updated: unavailable';
-              console.log('Visitor counter error: Busuanzi unavailable in this network.');
-            }
-          }
-        }, 500);
+        } catch (_e) {
+          // Ignore storage unavailability.
+        }
       }
 
       function withTimeout(url, timeoutMs) {
@@ -2755,67 +2756,255 @@
           .finally(() => clearTimeout(timeoutId));
       }
 
-      function initVisitorMap() {
-        withTimeout('https://ipwho.is/?fields=success,country,region,city,latitude,longitude', 5000)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+      function fetchJson(url, timeoutMs) {
+        return withTimeout(url, timeoutMs).then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        });
+      }
+
+      function fetchCountApiValue(url) {
+        return fetchJson(url, 5000).then(data => {
+          if (!data || typeof data.value !== 'number') {
+            throw new Error('Invalid counter data');
+          }
+          return data.value;
+        });
+      }
+
+      function updateCountsFromCountApi() {
+        const totalGetUrl = `https://api.countapi.xyz/get/${namespace}/${totalKey}`;
+        const totalHitUrl = `https://api.countapi.xyz/hit/${namespace}/${totalKey}`;
+        const todayGetUrl = `https://api.countapi.xyz/get/${namespace}/${todayKey}`;
+        const todayHitUrl = `https://api.countapi.xyz/hit/${namespace}/${todayKey}`;
+
+        let hasIncremented = false;
+        try {
+          hasIncremented = sessionStorage.getItem(incrementedSessionKey) === '1';
+        } catch (_e) {
+          hasIncremented = false;
+        }
+
+        const totalUrl = hasIncremented ? totalGetUrl : totalHitUrl;
+        const todayUrl = hasIncremented ? todayGetUrl : todayHitUrl;
+
+        return Promise.all([fetchCountApiValue(totalUrl), fetchCountApiValue(todayUrl)])
+          .then(([totalCount, todayCount]) => {
+            setSecondaryLabel('Today:');
+            setCounts(totalCount, todayCount);
+            saveCachedCounts(totalCount, todayCount, 'Today:');
+            if (!hasIncremented) {
+              try {
+                sessionStorage.setItem(incrementedSessionKey, '1');
+              } catch (_e) {
+                // Ignore storage unavailability.
+              }
             }
-            return response.json();
-          })
-          .then(data => {
-            if (!data || data.success !== true) {
-              throw new Error('Location unavailable');
-            }
-
-            const latitude = Number(data.latitude);
-            const longitude = Number(data.longitude);
-            if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-              throw new Error('Invalid location coordinates');
-            }
-
-            const city = data.city || '';
-            const region = data.region || '';
-            const country = data.country || '';
-            const locationParts = [city, region, country].filter(Boolean);
-            const locationText = locationParts.length > 0 ? locationParts.join(', ') : 'Approximate location unavailable';
-            visitorLocationSummaryElement.textContent = 'Approx. visitor region: ' + locationText;
-
-            if (typeof L !== 'undefined') {
-              visitorMapElement.style.display = 'block';
-              visitorMap = L.map('visitor-map', {
-                zoomControl: false,
-                attributionControl: false,
-                scrollWheelZoom: false,
-                dragging: true
-              }).setView([latitude, longitude], 3);
-
-              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19
-              }).addTo(visitorMap);
-
-              L.circleMarker([latitude, longitude], {
-                radius: 6,
-                color: '#1565c0',
-                fillColor: '#4fc3f7',
-                fillOpacity: 0.9,
-                weight: 2
-              }).addTo(visitorMap).bindTooltip(locationText, { direction: 'top', permanent: false });
-
-              setTimeout(() => visitorMap.invalidateSize(), 50);
-            }
+            return true;
           })
           .catch(error => {
-            console.log('Visitor map error:', error.message);
-            visitorLocationSummaryElement.textContent = 'Approx. visitor region: unavailable';
+            console.log('CountAPI error:', error.message);
+            return false;
+          });
+      }
+
+      function updateCountsFromBusuanzi() {
+        setSecondaryLabel('Total Views:');
+        return new Promise(resolve => {
+          let attempts = 0;
+          const maxAttempts = 40;
+          const timer = setInterval(() => {
+            attempts += 1;
+            const uvRaw = (busuanziUvElement.textContent || '').trim();
+            const pvRaw = (busuanziPvElement.textContent || '').trim();
+            const uvText = normalizeCount(uvRaw);
+            const pvText = normalizeCount(pvRaw);
+            if (uvText !== '--' && pvText !== '--') {
+              clearInterval(timer);
+              setCounts(uvRaw, pvRaw);
+              saveCachedCounts(uvRaw, pvRaw, 'Total Views:');
+              resolve(true);
+              return;
+            }
+
+            if (attempts >= maxAttempts) {
+              clearInterval(timer);
+              console.log('Busuanzi error: unavailable in this network.');
+              resolve(false);
+            }
+          }, 500);
+        });
+      }
+
+      async function refreshVisitorCounts() {
+        if (isRefreshingCounts) {
+          return;
+        }
+        isRefreshingCounts = true;
+        const countApiSuccess = await updateCountsFromCountApi();
+        if (!countApiSuccess) {
+          const busuanziSuccess = await updateCountsFromBusuanzi();
+          if (!busuanziSuccess && !loadCachedCounts()) {
+            visitorCountElement.textContent = '--';
+            visitorSecondaryElement.textContent = '--';
+            visitorCountElement.style.color = '#666';
+            visitorSecondaryElement.style.color = '#666';
+            setSecondaryLabel('Metric:');
+            visitorUpdatedElement.textContent = 'Updated: unavailable';
+          }
+        }
+        isRefreshingCounts = false;
+      }
+
+      function initBaseMap() {
+        if (typeof L === 'undefined') {
+          return false;
+        }
+        visitorMapElement.style.display = 'block';
+        visitorMap = L.map('visitor-map', {
+          zoomControl: false,
+          attributionControl: false,
+          scrollWheelZoom: false,
+          dragging: true
+        }).setView([20, 0], 1);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19
+        }).addTo(visitorMap);
+
+        setTimeout(() => visitorMap.invalidateSize(), 50);
+        return true;
+      }
+
+      function drawLocationOnMap(latitude, longitude, locationText) {
+        if (!visitorMap) {
+          return;
+        }
+        if (visitorMarker) {
+          visitorMap.removeLayer(visitorMarker);
+        }
+        visitorMap.setView([latitude, longitude], 3);
+        visitorMarker = L.circleMarker([latitude, longitude], {
+          radius: 6,
+          color: '#1565c0',
+          fillColor: '#4fc3f7',
+          fillOpacity: 0.9,
+          weight: 2
+        }).addTo(visitorMap).bindTooltip(locationText, { direction: 'top', permanent: false });
+      }
+
+      function tryParseLocation(data, fields) {
+        const latitude = Number(data[fields.latitude]);
+        const longitude = Number(data[fields.longitude]);
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+          return null;
+        }
+        const city = data[fields.city] || '';
+        const region = data[fields.region] || '';
+        const country = data[fields.country] || '';
+        const locationParts = [city, region, country].filter(Boolean);
+        const locationText = locationParts.length > 0 ? locationParts.join(', ') : 'Approximate location unavailable';
+        return { latitude, longitude, locationText };
+      }
+
+      async function fetchLocationWithFallback() {
+        const providers = [
+          {
+            url: 'https://ipwho.is/?fields=success,country,region,city,latitude,longitude',
+            parser: (data) => {
+              if (!data || data.success !== true) {
+                return null;
+              }
+              return tryParseLocation(data, {
+                country: 'country',
+                region: 'region',
+                city: 'city',
+                latitude: 'latitude',
+                longitude: 'longitude'
+              });
+            }
+          },
+          {
+            url: 'https://ipapi.co/json/',
+            parser: (data) => tryParseLocation(data || {}, {
+              country: 'country_name',
+              region: 'region',
+              city: 'city',
+              latitude: 'latitude',
+              longitude: 'longitude'
+            })
+          },
+          {
+            url: 'https://ipinfo.io/json',
+            parser: (data) => {
+              if (!data || typeof data.loc !== 'string') {
+                return null;
+              }
+              const parts = data.loc.split(',');
+              if (parts.length !== 2) {
+                return null;
+              }
+              return tryParseLocation({
+                country: data.country || '',
+                region: data.region || '',
+                city: data.city || '',
+                latitude: parts[0],
+                longitude: parts[1]
+              }, {
+                country: 'country',
+                region: 'region',
+                city: 'city',
+                latitude: 'latitude',
+                longitude: 'longitude'
+              });
+            }
+          }
+        ];
+
+        for (const provider of providers) {
+          try {
+            const data = await fetchJson(provider.url, 5000);
+            const location = provider.parser(data);
+            if (location) {
+              return location;
+            }
+          } catch (_e) {
+            // Try next provider.
+          }
+        }
+
+        return null;
+      }
+
+      function initVisitorMap() {
+        const mapReady = initBaseMap();
+        if (!mapReady) {
+          visitorLocationSummaryElement.textContent = 'Approx. visitor region: map library unavailable';
+          return;
+        }
+
+        visitorLocationSummaryElement.textContent = 'Locating visitor region...';
+        fetchLocationWithFallback()
+          .then(location => {
+            if (location) {
+              visitorLocationSummaryElement.textContent = 'Approx. visitor region: ' + location.locationText;
+              drawLocationOnMap(location.latitude, location.longitude, location.locationText);
+            } else {
+              visitorLocationSummaryElement.textContent = 'Approx. visitor region: unavailable (showing world map)';
+            }
+          })
+          .catch(() => {
+            visitorLocationSummaryElement.textContent = 'Approx. visitor region: unavailable (showing world map)';
           });
       }
 
       visitorCountElement.style.transition = 'all 0.3s ease';
-      visitorTodayElement.style.transition = 'all 0.3s ease';
+      visitorSecondaryElement.style.transition = 'all 0.3s ease';
 
-      updateCountsFromBusuanzi();
-      setInterval(updateCountsFromBusuanzi, 300000);
+      refreshVisitorCounts();
+      setInterval(refreshVisitorCounts, 300000);
       initVisitorMap();
     });
   </script>
